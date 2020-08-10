@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.dao.RoleDao">
+
+    <resultMap id="Role" type="Role">
+        <id property="id" column="role_id" />
+        <result property="name" column="role_name"/>
+    </resultMap>
+
+    <select id="findUserRoles" parameterType="Integer" resultMap="Role">
+        SELECT r.role_id,role_name from user_role ur LEFT JOIN role r on ur.role_id = r.role_id where user_id = #{value}
+    </select>
+
+    <select id="findRoleByName" resultMap="Role" parameterType="String">
+        SELECT role_id,role_name from role where role_name = #{value}
+    </select>
+
+    <insert id="saveRole" parameterType="Integer">
+        INSERT INTO user_role(user_id, role_id) VALUES (#{value},1)
+    </insert>
+</mapper>
