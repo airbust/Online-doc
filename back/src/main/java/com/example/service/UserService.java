@@ -1,9 +1,9 @@
 package com.example.service;
 
 import com.example.config.JwtConfig;
-import com.example.dao.RoleDao;
+import com.example.dao.FileDao;
+import com.example.dao.GroupDao;
 import com.example.dao.UserDao;
-import com.example.entity.Role;
 import com.example.entity.User;
 import com.example.utils.JwtTokenUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -26,8 +26,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private RoleDao roleDao;
-    @Autowired
     private JwtConfig jwtConfig;
     @Autowired
     private HttpServletRequest request;
@@ -48,7 +46,7 @@ public class UserService implements UserDetailsService {
         //登录验证
         User user = userDao.getUserByName(name);
         if (user == null) throw new RuntimeException("用户名错误");
-        if (!user.getPassword().equals(pwd)) throw new RuntimeException("用户名错误");
+        if (!user.getPassword().equals(pwd)) throw new RuntimeException("密码错误");
 
         //签发token
         final UserDetails userDetails = this.loadUserByUsername(user.getName());
@@ -86,8 +84,6 @@ public class UserService implements UserDetailsService {
         newUser.setPassword(password);
         newUser.setMail(mail);
         userDao.saveUser(newUser);
-//        Integer userId = userDao.getUserByName(name).getId();
-//        roleDao.saveRole(userId);//默认用户角色
     }
 
     /**
@@ -138,14 +134,10 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         User user = userDao.getUserByName(name);
         List<SimpleGrantedAuthority> authorities = new ArrayList<>(1);
-        //用于添加用户的权限。将用户权限添加到authorities
-        List<Role> roles = roleDao.findUserRoles(user.getId());
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
+        //登录时貌似添加权限无意义？token仅存用户名就行...
+        authorities.add(new SimpleGrantedAuthority("OTHER"));
         return new org.springframework.security.core.userdetails.User(user.getName(), "***********", authorities);
     }
-
     /**
      * 从token中提取用户信息
      * @param authHeader Bearer

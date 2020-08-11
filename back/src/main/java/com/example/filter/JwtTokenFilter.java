@@ -1,7 +1,6 @@
 package com.example.filter;
 
 import com.example.config.JwtConfig;
-import com.example.controller.ErrorController;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -68,10 +67,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         if (giveFlag) {
-
             //token因某原因校验失败,给定游客身份->[游客]角色未写入数据库角色表
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority("NORMAL"));
+            authorities.add(new SimpleGrantedAuthority("OTHER"));
             //假定身份 赋予权限
             User user = new User("NORMAL", "NORMAL", authorities);
             UsernamePasswordAuthenticationToken authentication =

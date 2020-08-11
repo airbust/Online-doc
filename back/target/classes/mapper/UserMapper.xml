@@ -9,22 +9,21 @@
         <result property="name" column="user_name"/>
         <result property="password" column="user_password"/>
         <result property="mail" column="user_mail"/>
-        <result property="avatar" column="user_avatar"/>
     </resultMap>
 
     <!--主键自增，保存完后会自动返回主键id -->
     <insert id="saveUser" parameterType="User">
-        INSERT INTO user(user_name,user_password,user_mail,user_avatar)
-        VALUES (#{name},#{password},#{mail},#{avatar})
+        INSERT INTO user(user_name,user_password,user_mail)
+        VALUES (#{name},#{password},#{mail})
     </insert>
 
     <select id="getUserById" resultMap="User">
-        SELECT user_id,user_name,user_password,user_mail,user_avatar
+        SELECT user_id,user_name,user_password,user_mail
         FROM user WHERE user_id=#{value}
     </select>
 
     <select id="getUserByName" resultMap="User">
-        SELECT user_id,user_name,user_password,user_mail,user_avatar
+        SELECT user_id,user_name,user_password,user_mail
         FROM user WHERE user_name=#{value}
     </select>
 

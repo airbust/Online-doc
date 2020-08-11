@@ -1,14 +1,17 @@
 package com.example.dao;
 
+import com.example.entity.Group;
 import com.example.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @Mapper
-public interface UserDao {
+public interface GroupDao {
 
-    User getUserById(Integer id);
-    User getUserByName(String name);
-    void saveUser(User newUser);
+    Group getGroupById(Integer groupId);
+    List<User> getMemberById(Integer groupId);
+
 }
