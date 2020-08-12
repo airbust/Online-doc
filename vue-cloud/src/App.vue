@@ -1,22 +1,34 @@
 <template>
   <div id="app">
-
-    <router-view/>
+    <Header style="height:7%"/>
+    <el-container style="height:93%">
+      <el-aside  style="width:16%;">
+        <Left/>
+      </el-aside>
+      <el-main style="width: 84%">
+        <router-view/>
+      </el-main>
+    </el-container>
   </div>
+
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+
+  import Header from "./components/Header";
+  import Left from "./components/Left";
+  export default {
+    name: 'App',
+    components: {Left, Header}
+  }
 </script>
 
 <style>
   html,body,#app{
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 
-}
+  }
 </style>

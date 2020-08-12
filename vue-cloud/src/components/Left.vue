@@ -1,29 +1,30 @@
 <template>
   <el-container>
-    <el-header>
-  <el-menu
-    default-active="2"
-    class="el-menu-vertical-demo"
- >
-    <el-menu-item index="2">
-      <i class="el-icon-tickets"></i>
-      <span slot="title">工作台</span>
-    </el-menu-item>
-    <el-menu-item index="3">
-      <i class="el-icon-message"></i>
-      <span slot="title">收件箱</span>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <i class="el-icon-menu"></i>
-      <span slot="title">团队空间</span>
-    </el-menu-item>
-    <el-menu-item index="5">
-      <i class="el-icon-delete"></i>
-      <span slot="title">回收站</span>
-    </el-menu-item>
-  </el-menu>
-    </el-header>
-    <el-main></el-main>
+    <el-main>
+      <el-menu
+        :default-active="this.$route.path"
+        class="el-menu-vertical-demo"
+        :router="true"
+      >
+      <el-menu-item index="/" >
+        <i class="el-icon-tickets"></i>
+        <span slot="title">工作台</span>
+      </el-menu-item>
+      <el-menu-item index="3">
+        <i class="el-icon-message"></i>
+        <span slot="title">收件箱</span>
+      </el-menu-item>
+      <el-menu-item index="4">
+        <i class="el-icon-menu"></i>
+        <span slot="title">团队空间</span>
+      </el-menu-item>
+      <el-menu-item index="5">
+        <i class="el-icon-delete"></i>
+        <span slot="title">回收站</span>
+      </el-menu-item>
+     </el-menu>
+
+    </el-main>
     <el-footer >
       <el-progress :text-inside="false" :stroke-width="10" :percentage="use" :show-text="false"></el-progress>
       <el-breadcrumb separator="/" style="margin-top: 5px;font-size: 12px;">
@@ -39,7 +40,7 @@
         name: "Left",
       data(){
           return {
-            use:"0",
+            use:0,
             usesize:'0'
           }
       },
@@ -54,12 +55,12 @@
           }else{
             this.use=persent
           }
-this.usesize=res.data.data.realsize
+          this.usesize=res.data.data.realsize
 
         })
       },
       methods:{
-          
+
       }
     }
 </script>
@@ -69,12 +70,15 @@ this.usesize=res.data.data.realsize
   background-color:  #f7f7f7;
   border: 0;
   /*text-align: center;*/
-
 }
-  .item{
-    color:#424e67;
-    font-size: 14px;
-  }
+.el-container{
+  height:100%;
+  background-color:  #f7f7f7;
+}
+.item{
+  color:#424e67;
+  font-size: 14px;
+}
 .el-progress-bar__outer{
 
 }

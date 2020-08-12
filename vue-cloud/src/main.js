@@ -6,7 +6,7 @@ import qs from 'qs'
 import App from './App'
 import router from './router'
 import Vuex from 'vuex'
-import store from './vuex/store'
+import store from './store/store'
 import ElementUI from 'element-ui'
 import VueQuillEditor from 'vue-quill-editor';
 import 'quill/dist/quill.core.css'
