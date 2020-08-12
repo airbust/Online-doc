@@ -22,6 +22,10 @@
         <i class="el-icon-delete"></i>
         <span slot="title">回收站</span>
       </el-menu-item>
+      <el-menu-item index="/Edit">
+        <i class="el-icon-tickets"></i>
+        <span slot="title">文档编辑(测试)</span>
+      </el-menu-item>
      </el-menu>
 
     </el-main>
@@ -78,8 +82,5 @@
 .item{
   color:#424e67;
   font-size: 14px;
-}
-.el-progress-bar__outer{
-
 }
 </style>
