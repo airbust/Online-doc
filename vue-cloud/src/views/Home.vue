@@ -27,7 +27,12 @@ import 'quill/dist/quill.bubble.css'
  
 //引入组件，可以直接使用这个组件
 import { quillEditor } from 'vue-quill-editor'
-    export default {
+import { addQuillTitle } from '../quill-title.js'
+import Quill from 'quill' //引入编辑器
+import { ImageDrop } from 'quill-image-drop-module'
+Quill.register('modules/imageDrop', ImageDrop);
+
+export default {
       name: "Home",
       components:{
         Header,
@@ -38,7 +43,36 @@ import { quillEditor } from 'vue-quill-editor'
       data() {
         return {
           content:null,
-          editorOption:{}
+          editorOption:{
+            theme:'snow',
+            modules:{
+              imageDrop:true,
+              toolbar:[
+                ['bold', 'italic', 'underline', 'strike'],    //加粗，斜体，下划线，删除线
+                ['blockquote', 'code-block'],     //引用，代码块
+    
+    
+                [{ 'header': 1 }, { 'header': 2 }],        // 标题，键值对的形式；1、2表示字体大小
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],     //列表
+                [{ 'script': 'sub'}, { 'script': 'super' }],   // 上下标
+                [{ 'indent': '-1'}, { 'indent': '+1' }],     // 缩进
+                [{ 'direction': 'rtl' }],             // 文本方向
+    
+    
+                [{ 'size': ['small', false, 'large', 'huge'] }], // 字体大小
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],     //几级标题
+    
+    
+                [{ 'color': [] }, { 'background': [] }],     // 字体颜色，字体背景颜色
+                [{ 'font': [] }],     //字体
+                [{ 'align': [] }],    //对齐方式
+    
+    
+                ['clean'],    //清除字体样式
+                ['image','video']    //上传图片、上传视频
+              ]
+            }
+          },
         }
       },
       created(){
@@ -54,6 +88,9 @@ import { quillEditor } from 'vue-quill-editor'
           });
         }
 
+      },
+      mounted() {
+        addQuillTitle(); 
       },
         methods:{
           onEditorReady (editor) {
@@ -72,7 +109,8 @@ import { quillEditor } from 'vue-quill-editor'
             // 内容改变事件
             console.log('333')
           }
-        }
+        },
+        
     }
 </script>
 

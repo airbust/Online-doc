@@ -45,6 +45,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      'window.Quill': 'quill/dist/quill.js',
+      'Quill': 'quill/dist/quill.js'
+    }),
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
