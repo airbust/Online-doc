@@ -1,6 +1,5 @@
 package com.example.config;
 
-import com.example.filter.JwtTokenFilter;
 import com.example.security.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public JwtTokenFilter authenticationTokenFilterBean() throws Exception {
-        return new JwtTokenFilter();
-    }
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
-
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -38,25 +30,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        //禁用csrf  options全部放行  post put delete get 全部拦截校验
-        httpSecurity
-//                .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-//                .and()
-                .csrf().disable()
-                // 基于token，所以不需要session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers(HttpMethod.POST).authenticated()
-                .antMatchers(HttpMethod.PUT).authenticated()
-                .antMatchers(HttpMethod.DELETE).authenticated()
-                .antMatchers(HttpMethod.GET).authenticated();
-//        httpSecurity.formLogin().loginProcessingUrl("/login").and()
-//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
-        httpSecurity
-                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
-        httpSecurity.headers().cacheControl();
+
+        //默认都会产生一个hiden标签 里面有安全相关的验证 防止请求伪造 这边我们暂时不需要 可禁用掉
+        httpSecurity .csrf().disable();
+
     }
 
 }

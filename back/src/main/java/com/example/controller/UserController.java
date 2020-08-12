@@ -19,7 +19,6 @@ public class UserController {
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/hello")
     public Result Hello(){
         return Result.create(200, "Test success!");
@@ -38,10 +37,11 @@ public class UserController {
     @PostMapping("/login")
     public Result login(String name, String password){
         try {
+            System.out.println("name = " + name);
             Map map = userService.login(name,password);
             return Result.create(200, "登录成功", map);
         } catch (RuntimeException e) {
-            return Result.create(202, e.getMessage());
+            return Result.create(200, e.getMessage());
         }
     }
 

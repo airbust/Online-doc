@@ -15,11 +15,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@Service
 public class FileService {
     @Autowired
     private UserDao userDao;
@@ -83,7 +85,7 @@ public class FileService {
             if(group.getAdminId().equals(userId)) role.setName("USER");
             else{
                 List<User> members = groupDao.getMemberById(file.getGroupId());
-                Boolean flag = true;
+                boolean flag = true;
                 for(User member : members){
                     if(member.getId().equals(userId)) {
                         role.setName("GROUP"); flag=false;
