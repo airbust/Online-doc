@@ -20,6 +20,11 @@
 
   //引入组件，可以直接使用这个组件
   import { quillEditor } from 'vue-quill-editor'
+  import { addQuillTitle } from '../quill-title.js'
+  import Quill from 'quill' //引入编辑器
+  import { ImageDrop } from 'quill-image-drop-module'
+  Quill.register('modules/imageDrop', ImageDrop);
+  
   export default {
     name: "Edit",
     components:{ quillEditor },

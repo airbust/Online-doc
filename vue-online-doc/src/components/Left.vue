@@ -29,13 +29,6 @@
      </el-menu>
 
     </el-main>
-    <el-footer >
-      <el-progress :text-inside="false" :stroke-width="10" :percentage="use" :show-text="false"></el-progress>
-      <el-breadcrumb separator="/" style="margin-top: 5px;font-size: 12px;">
-        <el-breadcrumb-item>{{usesize}}</el-breadcrumb-item>
-        <el-breadcrumb-item>500M</el-breadcrumb-item>
-      </el-breadcrumb>
-    </el-footer>
   </el-container>
 </template>
 
