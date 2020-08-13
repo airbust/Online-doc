@@ -108,6 +108,12 @@ public class FileService {
 		return fileDao.getFileByUserId(user.getId());
 	}
 	
+	public List<File> getMyDocument(int page, int showCount){
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		List<File> tmp = fileDao.getFileByUserId(user.getId());
+		return tmp.subList((page - 1) * showCount, page * showCount - 1);
+	}
+	
 	/**
 	 * 通过用户名加载用户到 Spring Security
 	 * 
