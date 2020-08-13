@@ -31,19 +31,19 @@
     </select>
 
     <select id="getFileByUserId" resultMap="File">
-        select * from file where user_id = #{value} and is_delete = 0
+        select * from file where user_id = #{value} and is_delete = 0 order by modify_time desc
     </select>
 
     <select id="getFileByGrouprId" resultMap="File">
-        select * from file where group_id = #{value} and is_delete = 0
+        select * from file where group_id = #{value} and is_delete = 0 order by modify_time desc
     </select>
 
     <select id="getDeletedFileByUserId" resultMap="File">
-        select * from file where user_id = #{value} and is_delete != 0
+        select * from file where user_id = #{value} and is_delete != 0 order by modify_time desc
     </select>
 
     <select id="getDeletedFileByGroupId" resultMap="File">
-        select * from file where group_id = #{value} and is_delete != 0
+        select * from file where group_id = #{value} and is_delete != 0 order by modify_time desc
     </select>    
 
     <update id="deleteFile" parameterType="File">
@@ -59,4 +59,3 @@
     </update>
 
 </mapper>
-
