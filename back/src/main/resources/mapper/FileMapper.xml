@@ -13,11 +13,50 @@
         <result property="modifyCnt" column="modify_cnt"/>
         <result property="userId" column="user_id"/>
         <result property="groupId" column="group_id"/>
+        <result property="isEdit" column="is_edit"/>
+        <result property="isDelete" column="is_delete"/>
     </resultMap>
 
     <select id="getFileById" resultMap="File">
-        SELECT * FROM file WHERE file_id = #{value}
+        SELECT  * FROM file WHERE file_id = #{value} ORDER BY modify_cnt limit 1
     </select>
 
+	<insert id="saveFile" parameterType="File">
+        INSERT INTO File(file_id,file_name,file_info,file_body,modify_time,modify_cnt,user_id,group_id,is_edit,is_delete)
+        VALUES (#{fileId},#{fileName},#{fileInfo},#{fileBody},#{modifyTime},#{modifyCnt},#{userId},#{groupId},#{isEdit},#{isDelete})
+    </insert>
+
+    <select id="getAllFileById" resultMap="File">
+        select * from file where file_id = #{value}
+    </select>
+
+    <select id="getFileByUserId" resultMap="File">
+        select * from file where user_id = #{value} and is_delete = 0 order by file_id
+    </select>
+
+    <select id="getFileByGrouprId" resultMap="File">
+        select * from file where group_id = #{value} and is_delete = 0
+    </select>
+
+    <select id="getDeletedFileByUserId" resultMap="File">
+        select * from file where user_id = #{value} and is_delete != 0
+    </select>
+
+    <select id="getDeletedFileByGroupId" resultMap="File">
+        select * from file where group_id = #{value} and is_delete != 0
+    </select>
+
+    <update id="deleteFile" parameterType="File">
+        update file set is_delete = 1 where file_id = #{value}
+    </update>
+
+    <update id="recoverFile" parameterType="File">
+        update file set is_delete = 0 where file_id = #{value}
+    </update>
+
+    <update id="updateEditState" parameterType="File">
+        update file set is_edit = is_edit ^ 1 where file_id = #{value}
+    </update>
 
 </mapper>
+

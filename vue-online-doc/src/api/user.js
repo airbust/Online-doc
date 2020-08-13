@@ -34,5 +34,29 @@ export default {
       method: 'post',
       data: qs.stringify({'mail': mail})
     })
-  }
+  },
+  getFileData(keyword) {
+    return request({
+      url:'/user/getFileData',
+      method:'get',
+      data: qs.stringify({'key':keyword})
+    })
+  },
+  getUserInfo(){
+    return request({
+      url:'/user/getUserInfo',
+      method:'get'
+    })
+  },
+  editUser(gen,bir,job,summary){
+    return request({
+      url:'/user/edituser',
+      method:'post',
+      data: qs.stringify({
+        'gender': gen,'birth':bir,
+        'job':job,'summary':summary
+      })
+    })
+  },
+
 }

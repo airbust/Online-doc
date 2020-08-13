@@ -14,28 +14,21 @@
         <i class="el-icon-message"></i>
         <span slot="title">收件箱</span>
       </el-menu-item>
-      <el-menu-item index="4">
+      <el-menu-item index="/TeamSpace">
         <i class="el-icon-menu"></i>
         <span slot="title">团队空间</span>
       </el-menu-item>
-      <el-menu-item index="5">
+      <el-menu-item index="/Recycle">
         <i class="el-icon-delete"></i>
         <span slot="title">回收站</span>
       </el-menu-item>
       <el-menu-item index="/Edit">
         <i class="el-icon-tickets"></i>
-        <span slot="title">文档编辑(测试)</span>
+        <span slot="title">新建文档</span>
       </el-menu-item>
      </el-menu>
 
     </el-main>
-    <el-footer >
-      <el-progress :text-inside="false" :stroke-width="10" :percentage="use" :show-text="false"></el-progress>
-      <el-breadcrumb separator="/" style="margin-top: 5px;font-size: 12px;">
-        <el-breadcrumb-item>{{usesize}}</el-breadcrumb-item>
-        <el-breadcrumb-item>500M</el-breadcrumb-item>
-      </el-breadcrumb>
-    </el-footer>
   </el-container>
 </template>
 
@@ -49,19 +42,6 @@
           }
       },
       created(){
-        this.$http.post(this.$HOST+'v2/getusesize',this.$qs.stringify({
-          sign:this.$sign
-        })).then(res=>{
-          var MB=524288000;
-         var  persent=parseInt(res.data.data.size/MB)
-          if(persent==0){
-            this.use=1
-          }else{
-            this.use=persent
-          }
-          this.usesize=res.data.data.realsize
-
-        })
       },
       methods:{
 

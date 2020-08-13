@@ -19,50 +19,44 @@
       <el-table-column label="操作" width="160">
           <template slot-scope="scope">
               <el-button size="mini" type="primary"
-                  @click="editFile(scope.row.fileId)">编辑</el-button>
-              <el-button size="mini" type="danger" 
-                  @click="deleteFile(scope.row.fileId)">删除</el-button>
+                  @click="recoverFile(scope.row.fileId)">恢复</el-button>
           </template>
         </el-table-column>
     </el-table>
-    
+
   </div>
 </template>
 
 <script>
   import file from '@/api/file'
   export default {
-    name: "MyCreation",
+    name: "Recycle",
     data(){
       return{
         FileData:[],
-        total: 3,
+        total: 0,
         keyword:''
       }
     },
     created() {
-      file.getCreation().then((res)=>{this.FileData=res.data})
+      file.getDeletedDocment().then((res)=>{this.FileData=res.data})
     },
     methods:{
-      editFile(id){
-        console.info('edit file: id='+id)
-        this.$router.push({path: '/File/'+id})
-      },
-      deleteFile(id){
-        console.info('delete file: id='+id)
-        file.deleteDocument(id).then(res=>{
+      recoverFile(id){
+        file.recoverDeletedDocumentById(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getCreation().then((res)=>{this.FileData=res.data})
+          file.getDeletedDocment().then((res)=>{this.FileData=res.data})
         })
       },
       getFileData(keyword){
-        file.getCreation().then((res)=>{
+        file.getDeletedDocment()
+        .then((res)=>{
           this.FileData=[];
-          for(var i=0;i<this.total;i++){
-            if(this.keyword==res.data[i].fileName||this.keyword==res.data[i].modifyTime)
-              this.FileData.push(res.data[i]);
+          for(var i=0;i<res.data.total;i++){
+            if(this.keyword==res.data.file[i].name||this.keyword==res.data.file[i].date)
+              this.FileData.push(res.data.file[i]);
             if(this.keyword=='') 
-              this.FileData=res.data;
+              this.FileData=res.data.file;
           }
         })
       }

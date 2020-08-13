@@ -11,4 +11,5 @@ public interface UserDao {
     User getUserById(Integer id);
     User getUserByName(String name);
     void saveUser(User newUser);
+    void updateUser(User user);
 }

@@ -2,6 +2,7 @@
   <el-container>
       <el-header>
         <el-input v-model="title" placeholder="请输入标题"></el-input>
+        <p style="display: none">{{fileId = this.$route.params.fileId}}</p>
       </el-header>
       <el-main> <quill-editor
         v-model="content"
@@ -13,7 +14,7 @@
       ></quill-editor>
       </el-main>
       <el-footer>
-        <el-button @click="saveFile">保存</el-button>
+        <el-button @click="editFile">更新保存</el-button>
       </el-footer>
   </el-container>
 </template>
@@ -71,15 +72,23 @@
       }
     },
     created(){
-
+      this.loadFile()
     },
     mounted() {
       addQuillTitle();
     },
     methods:{
-      saveFile(){
+      loadFile(){
+        console.log('getFile: id='+this.$route.params.fileId)
+        file.getDocument(this.$route.params.fileId).then(res=>{
+          console.log(res.message)
+          this.title = res.data.fileName
+          this.content = res.data.fileBody
+        })
+      },
+      editFile(){
         console.log('save begin')
-        file.sendDocument(this.title,this.content)
+        file.updateDocument(this.$route.params.fileId,this.title,this.content)
         .then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
         })

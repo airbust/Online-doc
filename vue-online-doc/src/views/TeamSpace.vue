@@ -1,10 +1,8 @@
 <template>
   <el-container>
     <el-tabs v-model="activeName" type="" @tab-click="handleClick">
-      <el-tab-pane label="我的创建" name="third"><Right3></Right3></el-tab-pane>
-      <el-tab-pane label="最近浏览" name="first"><Right1></Right1></el-tab-pane>
-      <el-tab-pane label="我的收藏" name="second"><Right2></Right2></el-tab-pane>
-      <!--el-tab-pane label="我的test" name="forth"><Right4></Right4></el-tab-pane-->
+      <el-tab-pane label="团队文档" name="first"><Right1></Right1></el-tab-pane>
+      <el-tab-pane label="团队信息" name="second"><Right2></Right2></el-tab-pane>
     </el-tabs>
   </el-container>
 
@@ -12,21 +10,17 @@
 
 
 <script>
-  import Right1 from "../components/Recent"
-  import Right2 from "../components/MyStar"
-  import Right3 from "../components/MyCreation"
-  //import Right4 from "../components/MyTest";
+  import Right1 from "../components/TeamFile"
+  import Right2 from "../components/MyTeam"
   export default {
-    name:"WorkStation",
+    name:"TeamSpace",
     components: {
       Right1,
-      Right2,
-      Right3,
-      //Right4
+      Right2
     },
     data() {
       return {
-        activeName: 'third'
+        activeName: 'first'
       };
     },
     created(){
@@ -44,14 +38,14 @@
     },
     methods: {
       handleClick(tab, event) {
-        // console.log(tab, event);
+        console.log(tab, event);
       }
     }
   };
 </script>
 <style scoped>
- body{
-  margin: 0;
-  padding: 0;
-}
+  body{
+    margin: 0;
+    padding: 0;
+  }
 </style>

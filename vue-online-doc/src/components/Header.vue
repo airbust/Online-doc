@@ -48,9 +48,6 @@
               <el-form-item label="邮箱" :label-width="labelWidth" prop="email">
                 <div style="width: 100%">{{userInfo.email}}</div>
               </el-form-item>
-              <el-form-item label="QQ号" :label-width="labelWidth" prop="qqNumber">
-                <el-input v-model="userInfo.qq" style="width: 100%"></el-input>
-              </el-form-item>
               <el-form-item label="职业" :label-width="labelWidth">
                 <el-input v-model="userInfo.job" style="width: 100%"></el-input>
               </el-form-item>
@@ -124,22 +121,39 @@ export default {
   data(){
     return{
       name:'未登录',
+      activeNames: ['1', '2'], //激活的折叠面板
       userInfo: {
         name: '',
         gender: '',
         birth: '',
         email: '',
-        qq: '',
         job:'',
         summary:'',
         avatar: ''
       },
-      drawer:false
-      }
+      drawer:false,
+
+      file: {}, //头像图片
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      updatePwdMailCode: '', // 修改密码验证码
+      mail: '', //用户原邮箱
+      newMail: '',    //新邮箱
+      newMailCode: '',  //新邮箱验证码
+      updatePwdSendFlag: false,
+      updateMailToOldSendFlag: false,
+      updateMailToNewSendFlag: false,
+      //侧栏基础元素
+      activeNames: ['1', '2'], //激活的折叠面板
+      activeName: "0", // 激活的标签
+      labelWidth: "85px",
+    }
   },
   components:{ },
   created(){
     this.name=localStorage.getItem('name')
+    this.getUserInfo()
   },
   methods:{
     loginout(){
@@ -148,6 +162,14 @@ export default {
         this.$router.push({path: '/Login'})
       })
     },
+    handleClick(tab, event) {// 选择博客/资源标签时直接跳转
+        if(tab.name==4) {
+          this.$router.push({ path:'/myBlog'  }) 
+          this.drawer = false;}
+        else if(tab.name==3) {
+          this.$router.push({ path:'/file'  })
+          this.drawer = false;}
+      },
     handleCommand(command) {// 点击头像触发的动作
       switch (command) {
       case "logout" : {
@@ -161,23 +183,23 @@ export default {
     },
     getUserInfo(){ //用户信息 
       if(this.$store.state.token){
+        console.info('存在token')
         user.getUserInfo().then(response=>{
-          // console.info(response.data)
+          console.info(response.data)
           var a = response.data
           this.userInfo.name = a.name
           this.userInfo.gender = a.gender
           this.userInfo.birth = a.birth
           this.userInfo.email = a.mail
-          this.userInfo.qq = a.qq
           this.userInfo.job = a.job
-          this.userInfo.summary = a.summary
+          this.userInfo.summary = a.info
           this.userInfo.avatar = a.avatar
         })
       }
     },
     submitForm() { //修改用户信息
       var a = this.userInfo
-      user.editUser(a.gender,a.birth,a.qq,a.job,a.summary).
+      user.editUser(a.gender,a.birth,a.job,a.summary).
       then(response => {
         if(response.code == 200) {
           this.$message({
@@ -191,7 +213,32 @@ export default {
           })
         }
       });
-    }
+    },
+    fileChange(e,list){//上传头像.子函数
+        this.file=e;
+    },
+    SubbmitFile(){//上传头像
+        let param = new FormData(); 
+        param.append("file", this.file.raw);
+        let config = {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+        config.headers['Authorization'] = store.state.token
+        // console.log(param)
+        axios.post("/api/file/uploadAvatar/", param, config,{timeout:900000})
+        .then(response => {
+          if (response) { 
+            this.$router.go(0)
+            this.file={}
+            // console.log(response.data);
+          } else {
+            alert(response.data.msg);
+          }
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+      },
   }
 }
 </script>

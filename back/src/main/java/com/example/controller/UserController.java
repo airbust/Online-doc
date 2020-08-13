@@ -66,4 +66,22 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getUserInfo")
+    public Result getUserInfo(){
+        try {
+            return Result.create(200, "获取用户信息成功", userService.getUserInfo());
+        } catch (RuntimeException e) {
+            return Result.create(200, "获取用户信息失败",e.getMessage());
+        }
+    }
+
+    @PostMapping("/edituser")
+    public Result updateUser(String gender,String birth,String job,String summary){
+        try {
+            userService.updateUserInfo(gender,birth,job,summary);
+            return Result.create(200, "更新成功");
+        } catch (RuntimeException e) {
+            return Result.create(200, "更新失败，" + e.getMessage());
+        }
+    }
 }

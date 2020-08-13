@@ -138,6 +138,24 @@ public class UserService implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority("OTHER"));
         return new org.springframework.security.core.userdetails.User(user.getName(), "***********", authorities);
     }
+
+    public User getUserInfo(){
+        return userDao.getUserByName("zero");
+    }
+    /**
+     * 更新用户信息
+     */
+    public void updateUserInfo(String gender, String birth, String job, String summary) {
+//        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+        User user = userDao.getUserByName("zero");
+        if(gender!=null) user.setGender(gender);
+        if(birth!=null) user.setBirth(birth);
+        if(job!=null) user.setJob(job);
+        if(summary!=null) user.setInfo(summary);
+        System.out.println("user.toString() = " + user.toString());
+        userDao.updateUser(user);
+    }
+
     /**
      * 从token中提取用户信息
      * @param authHeader Bearer
