@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.dao.DiscussDao">
+
+    <resultMap id="Discuss" type="discuss">
+        <id property="discussId" column="discuss_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="fileId" column="file_id"/>
+        <result property="discussBody" column="discuss_body"/>
+        <result property="discussTime" column="discuss_time"/>
+    </resultMap>
+
+    <insert id="saveDiscuss" parameterType="Discuss">
+        INSERT INTO discuss(user_id,file_id,discuss_body,discuss_time)
+        values (#{userId},#{fileId},#{discussBody},#{discussTime})
+    </insert>
+
+    <select id="getDiscussById" resultMap="Discuss">
+        SELECT * from discuss where discuss_id = #{value}
+    </select>
+
+    <delete id="deleteDiscussById" parameterType="Integer">
+        delete from discuss where discuss_id = #{value}
+    </delete>
+
+    <select id="getDiscussByFileId" resultMap="Discuss">
+        SELECT * from discuss where file_id = #{value} order by discuss_time desc
+    </select>
+
+</mapper>
