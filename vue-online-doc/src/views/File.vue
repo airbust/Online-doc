@@ -18,6 +18,8 @@
       ></quill-editor>
       </el-main>
       <el-footer>
+        <div>[调试]当前您的身份是：{{this.$store.state.roles}}</div>
+        <div>[调试]当前文档权限是：{{auth}}</div>
         <el-button @click="startEdit" v-if="!flag">编辑</el-button>
         <el-button @click="endEdit" v-if="flag">预览</el-button>
         <el-button @click="editFile">更新保存</el-button>
@@ -46,6 +48,7 @@
       return {
         title: '',
         flag:false,
+        auth: {}, //当前文档对应权限：user默认有全部权限，group默认有读权限
         content:null,
         editorOption:{
             theme:'snow',
@@ -88,9 +91,11 @@
       loadFile(){
         console.log('getFile: id='+this.$route.params.fileId)
         file.getDocument(this.$route.params.fileId).then(res=>{
-          console.log(res.message)
-          this.title = res.data.fileName
-          this.content = res.data.fileBody
+          console.log(res)
+          this.$store.commit('login', res.data.map)//存储token
+          this.auth = res.data.role
+          this.title = res.data.file.fileName
+          this.content = res.data.file.fileBody
           this.is_Edit = res.data.is_Edit
         })
       },

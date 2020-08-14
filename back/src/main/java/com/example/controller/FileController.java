@@ -26,8 +26,9 @@ public class FileController {
     public Result findFileById(@PathVariable Integer docId) {
     	Integer fileId = docId;
     	try {
-    		File file = fileService.findFileById(fileId);
-    		return Result.create(200, "查询成功", file);
+    		DocResult docResult = fileService.findFileById(fileId);
+            System.out.println("docResult = " + docResult);
+    		return Result.create(200, "查询成功", docResult);
     	}catch(Exception e) {
     		return Result.create(200, "查询失败," + e.getMessage());
     	}

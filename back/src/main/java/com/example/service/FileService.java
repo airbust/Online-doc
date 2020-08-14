@@ -3,11 +3,9 @@ package com.example.service;
 import com.example.config.JwtConfig;
 import com.example.dao.FileDao;
 import com.example.dao.GroupDao;
+import com.example.dao.RoleDao;
 import com.example.dao.UserDao;
-import com.example.entity.File;
-import com.example.entity.Group;
-import com.example.entity.Role;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,6 +28,8 @@ public class FileService {
 	@Autowired
 	private FileDao fileDao;
 	@Autowired
+	private RoleDao roleDao;
+	@Autowired
 	private JwtConfig jwtConfig;
 	@Autowired
 	private HttpServletRequest request;
@@ -38,13 +38,32 @@ public class FileService {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
-	public File findFileById(Integer fileId) throws RuntimeException {
-		// TODO 权限
-		System.out.println("fileId = " + fileId);
-		File file = fileDao.getFileById(fileId);
+	public DocResult findFileById(Integer fileId) throws RuntimeException {
+		// TODO 确保登录
+		System.out.println("查询文章id = " + fileId);
+		File file = fileDao.getFileById(fileId); //文档
+		Role role = roleDao.getAuthByFileId(fileId); //文档权限
+		String userName = jwtTokenUtil.getUsernameFromRequest(request);
+		final UserDetails userDetails = this.loadUserByUsername(Integer.toString(fileId));
+		final String token = jwtTokenUtil.generateToken(userDetails);
+		//获取用户权限
+		Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+		List<String> roles = new ArrayList<>();
+		for (GrantedAuthority authority : authorities) {
+			roles.add(authority.getAuthority());
+		}
+		Map<String, Object> map = new HashMap<>(3);//token(角色)
+		map.put("token", jwtConfig.getPrefix() + token);
+		map.put("name", userName);
+		map.put("roles", roles);
+		//设置过期时间 (key value time s)
+		redisTemplate.opsForValue().
+				set("TOKEN_" + userName, jwtConfig.getPrefix() + token, 60, TimeUnit.SECONDS);
 		if(file == null)
 			throw new RuntimeException("文件不存在");
-		return file;
+		if(role == null)
+			throw new RuntimeException("文件权限损坏");
+		return new DocResult(file,role,map);//文档、文档权限、角色Token
 	}
 
 	// ******************************************************************************
@@ -122,30 +141,26 @@ public class FileService {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>(1);
 		// 用于添加用户的权限。将用户权限添加到authorities
 		File file = fileDao.getFileById(Integer.valueOf(fileId));
-		Role role = new Role();
+//		Role role = new Role();
+		String roleName = "OTHER";
 		if (file.getUserId() != 0) { // 个人文档
 			if (file.getUserId().equals(userId))
-				role.setName("USER");
-			else
-				role.setName("OTHER");
+				roleName = "USER";
 		} else { // 团队文档
 			Group group = groupDao.getGroupById(file.getGroupId());
 			if (group.getAdminId().equals(userId))
-				role.setName("USER");
+				roleName = "USER";
 			else {
 				List<User> members = groupDao.getMemberById(file.getGroupId());
-				boolean flag = true;
 				for (User member : members) {
 					if (member.getId().equals(userId)) {
-						role.setName("GROUP");
-						flag = false;
+						roleName = "GROUP";
+						break;
 					}
 				}
-				if (flag)
-					role.setName("OTHER");
 			}
 		}
-		authorities.add(new SimpleGrantedAuthority(role.getName()));
+		authorities.add(new SimpleGrantedAuthority(roleName));
 		return new org.springframework.security.core.userdetails.User(user.getName(), "***********", authorities);
 	}
 
