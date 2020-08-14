@@ -1,7 +1,7 @@
 <template>
-  <el-container>
+  <el-container v-if="readable">
       <el-header>
-        <el-input v-model="title" placeholder="请输入标题"></el-input>
+        <el-input v-model="title" placeholder="请输入标题" v-if="writable&&flag"></el-input>
         <div class="hd" v-if="!flag">{{this.title}}</div>
         <p style="display: none">{{fileId = this.$route.params.fileId}}</p>
       </el-header>
@@ -14,15 +14,15 @@
         @blur="onEditorBlur($event)"
         @focus="onEditorFocus($event)"
         @ready="onEditorReady($event)"
-        v-if="flag"
+        v-if="flag&&writable"
       ></quill-editor>
       </el-main>
       <el-footer>
         <div>[调试]当前您的身份是：{{this.$store.state.roles}}</div>
         <div>[调试]当前文档权限是：{{auth}}</div>
-        <el-button @click="startEdit" v-if="!flag">编辑</el-button>
-        <el-button @click="endEdit" v-if="flag">预览</el-button>
-        <el-button @click="editFile">更新保存</el-button>
+        <el-button @click="startEdit" v-if="writable&&!flag">编辑</el-button>
+        <el-button @click="endEdit" v-if="flag&&writable">预览</el-button>
+        <el-button @click="editFile" v-if="writable">更新保存</el-button>
       </el-footer>
   </el-container>
 </template>
@@ -48,7 +48,11 @@
       return {
         title: '',
         flag:false,
-        auth: {}, //当前文档对应权限：user默认有全部权限，group默认有读权限
+        readable:false,
+        writable:false,
+        //is_Edit:0,
+        auth: {},//{groupWrite:1,otherRead:1,otherWrite:0}, 当前文档对应权限：user默认有全部权限，group默认有读权限 
+        //role:"OTHER",
         content:null,
         editorOption:{
             theme:'snow',
@@ -82,7 +86,8 @@
       }
     },
     created(){
-      this.loadFile()
+      this.loadFile();
+      this.init_authority();
     },
     mounted() {
       addQuillTitle();
@@ -96,16 +101,47 @@
           this.auth = res.data.role
           this.title = res.data.file.fileName
           this.content = res.data.file.fileBody
-          this.is_Edit = res.data.is_Edit
+          this.is_Edit = res.data.file.is_Edit
         })
+      },
+      init_authority(){
+        if(this.$store.state.roles=="USER"){
+          this.readable=true;
+          this.writable=true&&this.is_Edit;
+        }
+        else if(this.$store.state.roles=="OTHER"){
+          if(this.auth.otherRead==1){
+            this.readable=true;
+          }else{
+            this.readable=false;
+          }
+          if(this.auth.otherWrite==1){
+            this.writable=(true&&this.is_Edit==0);
+          }else{
+            this.writable=false;
+          }
+        }
+        else if(this.$store.state.roles=="GROUP"){
+          this.readable=true;
+          if(this.auth.groupWrite==1){
+            this.writable=(true&&this.is_Edit==0);
+          }else{
+            this.writable=false;
+          }
+        }
+        if(this.readable==false){
+          window.alert("无访问权限");
+        }
       },
       startEdit(){
         this.flag=true;
+        //change is_edit to 1
       },
       endEdit(){
         this.flag=false;
       },
       editFile(){
+        //change is_edit to 0
         console.log('save begin')
         file.updateDocument(this.$route.params.fileId,this.title,this.content)
         .then(res=>{
