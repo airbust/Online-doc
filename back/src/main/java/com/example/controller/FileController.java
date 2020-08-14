@@ -31,10 +31,10 @@ public class FileController {
     	}catch(Exception e) {
     		return Result.create(200, "查询失败," + e.getMessage());
     	}
-        
+
 
     }
-    
+
     @PostMapping("/send")
     public Result newFile(String docTitle, String docBody) {
     	try {
@@ -45,8 +45,8 @@ public class FileController {
     		return Result.create(200, "上传失败," + e.getMessage());
     	}
     }
-    
-    
+
+
     @PostMapping("/edit")
     public Result newFile(Integer docId, String docTitle, String docBody) {
     	try {
@@ -57,29 +57,29 @@ public class FileController {
     		return Result.create(200, "编辑失败," + e.getMessage());
     	}
     }
-    
-    @DeleteMapping("/delete")
-    public Result deleteFile(Integer docId) {
-    	try {
-    		fileService.deleteFile(docId);
-    		return Result.create(200, "删除成功");
-    	}
-    	catch(Exception e) {
-    		return Result.create(200, "删除失败," + e.getMessage());
-    	}
-    }	
-    
+
+//    @DeleteMapping("/delete")
+//    public Result deleteFile(Integer docId) {
+//    	try {
+//    		fileService.deleteFile(docId);
+//    		return Result.create(200, "删除成功");
+//    	}
+//    	catch(Exception e) {
+//    		return Result.create(200, "删除失败," + e.getMessage());
+//    	}
+//    }
+
     @GetMapping("/getRecycle")
     public Result getRecycleFile() {
     	return Result.create(200, "查询成功", fileService.getDeletedFile());
     }
-    
-    @GetMapping("/getCreation")
-    public Result getCreationFile() {
-    	return Result.create(200, "查询成功", fileService.getCreationFile());
-    }
-    
-    @GetMapping("/isEditable") 
+
+//    @GetMapping("/getCreation")
+//    public Result getCreationFile() {
+//    	return Result.create(200, "查询成功", fileService.getCreationFile());
+//    }
+
+    @GetMapping("/isEditable")
     public Result isEditable(Integer docId) {
     	try {
         	boolean res = fileService.isEditable(docId);
@@ -89,8 +89,8 @@ public class FileController {
     		return Result.create(200, "查询失败," + e.getMessage());
     	}
     }
-    
-    @GetMapping("/isEditing") 
+
+    @GetMapping("/isEditing")
     public Result isEditing(Integer docId) {
     	try {
         	boolean res = fileService.isEditable(docId);
@@ -100,7 +100,7 @@ public class FileController {
     		return Result.create(200, "查询失败," + e.getMessage());
     	}
     }
-    
+
     @GetMapping("/recoverDeletedDocumentById")
     public Result recoverDeletedDocumentById(Integer docId) {
     	try {
@@ -111,17 +111,17 @@ public class FileController {
     		return Result.create(200, "操作失败," + e.getMessage());
     	}
     }
-    
-    @GetMapping("/getMyDocument")
-    public Result getMyDocument(Integer page, Integer showCount) {
-    	try {
-        	List<File> file = fileService.getMyDocument(page, showCount);
-        	return Result.create(200, "查询成功", file);
-    	}
-    	catch(Exception e) {
-    		return Result.create(200, "查询失败," + e.getMessage());
-    	}
-    }
+
+//    @GetMapping("/getMyDocument")
+//    public Result getMyDocument(Integer page, Integer showCount) {
+//    	try {
+//        	List<File> file = fileService.getMyDocument(page, showCount);
+//        	return Result.create(200, "查询成功", file);
+//    	}
+//    	catch(Exception e) {
+//    		return Result.create(200, "查询失败," + e.getMessage());
+//    	}
+//    }
     @DeleteMapping("/delete/{fileId}")
     public Result deleteFile(@PathVariable Integer fileId) {
         try {

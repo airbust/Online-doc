@@ -52,9 +52,7 @@ public class FileService {
 	public void newFile(String fileName, String fileBody) throws RuntimeException {
 		if (fileName.equals(""))
 			throw new RuntimeException("标题为空");
-//		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-//		jwt暂时出了bug
-		User user = userDao.getUserByName("zero");
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		File file = new File(fileName, fileBody, new Date(), user.getId(), 0);
 		fileDao.saveFile(file);
 	}
@@ -103,14 +101,12 @@ public class FileService {
 	}
 
 	public List<File> getDeletedFile() {
-//		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		User user = userDao.getUserByName("zero");
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		return fileDao.getDeletedFileByUserId(user.getId());
 	}
 
 	public List<File> getCreationFile() {
-//		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		User user = userDao.getUserByName("zero");
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		return fileDao.getFileByUserId(user.getId());
 	}
 

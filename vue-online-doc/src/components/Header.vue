@@ -158,7 +158,7 @@ export default {
   methods:{
     loginout(){
       user.logout().then(res=>{
-        localStorage.setItem('name','')
+        this.$store.commit('logout')//清除token等信息
         this.$router.push({path: '/Login'})
       })
     },

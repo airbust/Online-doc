@@ -2,18 +2,24 @@
   <el-container>
       <el-header>
         <el-input v-model="title" placeholder="请输入标题"></el-input>
+        <div class="hd" v-if="!flag">{{this.title}}</div>
         <p style="display: none">{{fileId = this.$route.params.fileId}}</p>
       </el-header>
-      <el-main> <quill-editor
+      <el-main> 
+        <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
+        <quill-editor
         v-model="content"
         ref="myQuillEditor"
         :options="editorOption"
         @blur="onEditorBlur($event)"
         @focus="onEditorFocus($event)"
         @ready="onEditorReady($event)"
+        v-if="flag"
       ></quill-editor>
       </el-main>
       <el-footer>
+        <el-button @click="startEdit" v-if="!flag">编辑</el-button>
+        <el-button @click="endEdit" v-if="flag">预览</el-button>
         <el-button @click="editFile">更新保存</el-button>
       </el-footer>
   </el-container>
@@ -39,6 +45,7 @@
     data() {
       return {
         title: '',
+        flag:false,
         content:null,
         editorOption:{
             theme:'snow',
@@ -84,7 +91,14 @@
           console.log(res.message)
           this.title = res.data.fileName
           this.content = res.data.fileBody
+          this.is_Edit = res.data.is_Edit
         })
+      },
+      startEdit(){
+        this.flag=true;
+      },
+      endEdit(){
+        this.flag=false;
       },
       editFile(){
         console.log('save begin')
@@ -101,9 +115,9 @@
         // 失去焦点事件
         console.log('111')
       },
-      onEditorFocus () {
+      onEditorFocus (event) {
         // 获得焦点事件
-        console.log('222')
+        event.enable(false);
       },
       onEditorChange () {
         // 内容改变事件
@@ -114,6 +128,14 @@
 </script>
 
 <style scoped>
+.hd{
+    text-align: center;
+    line-height: 50px;
+  }
+  .bd{
+    margin-left: 50px;
+    margin-top: 30px;
+  }
   .el-header{
     width: 100%;
     box-shadow:  0 2px 6px 0 rgba(0,0,0,.05);
