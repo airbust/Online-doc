@@ -7,15 +7,15 @@ import lombok.ToString;
 @ToString
 public class Role {
 
-    private Integer id;//角色id
-    private String name;//角色名 user group other
-    private Integer auth_read;
-    private Integer auth_write;
-    private Integer auth_discuss;
-    private Integer auth_share;
+    private Integer id;
+    private Integer groupWrite;
+    private Integer groupDiscuss;
+    private Integer groupShare;
+    private Integer otherRead;
+    private Integer otherWrite;
+    private Integer otherDiscuss;
+    private Integer otherShare;
 
     public Role() {
     }
-    public Role(String name) {
-        this.name = name;
-    }}
+}

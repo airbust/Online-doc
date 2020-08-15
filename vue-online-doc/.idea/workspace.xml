@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="7e90a53c-f91f-4b1c-874c-1d273423b3b7" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Vue Single File Component" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1fyY4JmvIfFBoKEuSvyJ75hq5rY" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7e90a53c-f91f-4b1c-874c-1d273423b3b7" name="Default Changelist" comment="" />
+      <created>1597191606670</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1597191606670</updated>
+      <workItem from="1597191608505" duration="9091000" />
+      <workItem from="1597217474536" duration="10219000" />
+      <workItem from="1597272199312" duration="19083000" />
+      <workItem from="1597322159961" duration="590000" />
+      <workItem from="1597322772009" duration="543000" />
+      <workItem from="1597323378321" duration="1574000" />
+      <workItem from="1597324982278" duration="205000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="358" y="163" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1597305553347">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="358" y="163" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.720@0.0.1280.720" timestamp="1597305553347" />
+    <state x="371" y="107" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1597228361298">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="371" y="107" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.720@0.0.1280.720" timestamp="1597228361298" />
+    <state width="1237" height="106" key="GridCell.Tab.0.bottom" timestamp="1597322412730">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state width="1237" height="106" key="GridCell.Tab.0.bottom/0.0.1280.720@0.0.1280.720" timestamp="1597322412730" />
+    <state width="1237" height="106" key="GridCell.Tab.0.center" timestamp="1597322412729">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state width="1237" height="106" key="GridCell.Tab.0.center/0.0.1280.720@0.0.1280.720" timestamp="1597322412729" />
+    <state width="1237" height="106" key="GridCell.Tab.0.left" timestamp="1597322412729">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state width="1237" height="106" key="GridCell.Tab.0.left/0.0.1280.720@0.0.1280.720" timestamp="1597322412729" />
+    <state width="1237" height="106" key="GridCell.Tab.0.right" timestamp="1597322412729">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state width="1237" height="106" key="GridCell.Tab.0.right/0.0.1280.720@0.0.1280.720" timestamp="1597322412729" />
+    <state x="644" y="184" key="com.intellij.ide.util.TipDialog" timestamp="1597217475571">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="644" y="184" key="com.intellij.ide.util.TipDialog/0.0.1280.720@0.0.1280.720" timestamp="1597217475571" />
+  </component>
+</project>
