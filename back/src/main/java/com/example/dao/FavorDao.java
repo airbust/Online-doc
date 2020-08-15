@@ -12,10 +12,13 @@ import com.example.entity.Favor;
 @Mapper
 public interface FavorDao {
 	void saveFavor(Favor favor);
-	
-	List<Integer> getFavorFileIdByUserId(Integer userId, Integer start, Integer showCount);
-	
+
+//	List<Integer> getFavorFileIdByUserId(Integer userId, Integer start, Integer showCount);
+	List<Integer> getFavorFileIdByUserId(Integer userId);
+
 	void deleteFavorById(Integer favorId);
-	
+
 	void deleteFavor(Integer userId, Integer fileId);
+
+	Favor getFavorByUserIdAndFileId(Integer userId, Integer fileId);
 }

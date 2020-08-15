@@ -17,8 +17,8 @@ public class DiscussController {
 	@PostMapping("/send/{fileId}")
 	Result newDiscuss(@PathVariable Integer fileId, String discussBody) {
 		try {
-			System.out.println("fileId = " + fileId);
-			System.out.println("discussBody = " + discussBody);
+//			System.out.println("fileId = " + fileId);
+//			System.out.println("discussBody = " + discussBody);
 			discussService.newDiscuss(fileId, discussBody);
 			return Result.create(200, "评论成功");
 		}
