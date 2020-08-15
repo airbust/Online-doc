@@ -40,10 +40,9 @@ public class GroupController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    private User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-
     @PostMapping("/setup")
     public Result setupTeam(@RequestBody String teamName) {
+        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
         Group group = new Group();
         group.setAdminId(user.getId());
         group.setGroupName(teamName);
@@ -59,6 +58,7 @@ public class GroupController {
 
     @GetMapping("/myTeamInfo")
     public Result getMyTeamInfo(){
+        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
         List<Group> adminGroups = groupService.selectGroupsByAdminId(user.getId());
         List<GroupVO> adminGroupVOs = new ArrayList<>();
         for(Group group : adminGroups) {
@@ -105,6 +105,7 @@ public class GroupController {
 
     @PostMapping("/join/{teamId}")
     public Result joinTeam(@PathVariable("teamId") Integer teamId) {
+        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
         return addTeamMember(teamId, user.getId());
     }
 
@@ -130,6 +131,7 @@ public class GroupController {
 
     @DeleteMapping("/quit/{teamId}")
     public Result quitTeam(@PathVariable("teamId") Integer teamId) {
+        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
         return removeTeamMember(teamId, user.getId());
     }
 }
