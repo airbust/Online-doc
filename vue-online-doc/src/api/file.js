@@ -64,4 +64,16 @@ export default {
       method: 'get'
     })
   },
+  isEditable(docId){  //获取是否具有编辑权限
+    return request({
+      url: '/doc/' + docId + '/isEditable',
+      method: 'get',
+    })
+  },
+  isEditing(docId){   //获取文档当前状态
+    return request({
+      url: '/doc/' + docId + '/isEditing',
+      method: 'get',
+    })
+  },
 }

@@ -8,23 +8,25 @@
       >
       <el-menu-item index="/" >
         <i class="el-icon-tickets"></i>
-        <span slot="title">工作台</span>
+        <span style="font-size: 17px; color:rgb(90, 90, 90)" slot="title">工作台</span>
       </el-menu-item>
       <el-menu-item index="3">
         <i class="el-icon-message"></i>
-        <span slot="title">收件箱</span>
+        <span style="font-size: 17px; color:rgb(90, 90, 90)" slot="title">收件箱</span>
       </el-menu-item>
+      <el-divider></el-divider>
       <el-menu-item index="/TeamSpace">
         <i class="el-icon-menu"></i>
-        <span slot="title">团队空间</span>
+        <span style="font-size: 17px; color:rgb(90, 90, 90)" slot="title">团队空间</span>
       </el-menu-item>
       <el-menu-item index="/Recycle">
         <i class="el-icon-delete"></i>
-        <span slot="title">回收站</span>
+        <span style="font-size: 17px; color:rgb(90, 90, 90)" slot="title">回收站</span>
       </el-menu-item>
+      <el-divider></el-divider>
       <el-menu-item index="/Edit">
         <i class="el-icon-tickets"></i>
-        <span slot="title">新建文档</span>
+        <span style="font-size: 17px; color:rgb(90, 90, 90)" slot="title">新建文档</span>
       </el-menu-item>
      </el-menu>
 

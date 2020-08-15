@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   //全局状态
   state:{
+    layout: 1, //是否平铺布局
     roles: localStorage.getItem('roles') == null ? '' : localStorage.getItem('roles'),
     token: localStorage.getItem('token') == null ? '' : localStorage.getItem('token'),
     name: localStorage.getItem('name') == null ? '' : localStorage.getItem('name')
@@ -30,10 +31,19 @@ export default new Vuex.Store({
     refresh(state, token) {
       this.state.token = token;
       localStorage.setItem('token', token);
+    },
+    setLayout(state,isTile){
+      this.state.layout = isTile
     }
   },
   getters:{
+    getLayout(state){
+      return this.state.layout
+    }
   },
   actions:{
+    setLayoutStatus({commit,state},isTile){
+      commit('setLayout',isTile)
+    }
   }
 })

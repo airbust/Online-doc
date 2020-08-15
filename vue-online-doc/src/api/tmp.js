@@ -98,18 +98,7 @@ export default{
       method: 'delete',
     })
   },
-  isEditable(docId){  //获取是否具有编辑权限
-    return request({
-      url: '/doc/' + docId + '/isEditable',
-      method: 'get',
-    })
-  },
-  isEditing(docId){   //获取文档当前状态
-    return request({
-      url: '/doc/' + docId + '/isEditing',
-      method: 'get',
-    })
-  },
+  
   updateEditingT(docId){  //更改文档状态
     return request({
       url: '/doc/' + docId + '/updateEditingT',

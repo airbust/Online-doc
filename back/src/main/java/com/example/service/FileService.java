@@ -112,11 +112,9 @@ public class FileService {
 		fileDao.updateEditState(fileId);
 	}
 
-	public boolean isEditable(Integer fileId) throws RuntimeException{
-		File file = fileDao.getFileById(fileId);
-		if(file == null)
-			throw new RuntimeException("文件不存在");
-		return file.getIsEdit() == 0;
+	public void changeEditable(boolean lock, Integer fileId) throws RuntimeException{
+		if(lock) fileDao.setEditStatus(1,fileId);
+		else fileDao.setEditStatus(0,fileId);
 	}
 
 	public List<File> getDeletedFile() {

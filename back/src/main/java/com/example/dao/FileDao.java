@@ -14,25 +14,26 @@ import org.springframework.stereotype.Repository;
 public interface FileDao {
 
     File getFileById(Integer fileId);
-    
+
     void saveFile(File file);
-    
+
     void modifyFile(File file);
-    
+
     List<File> getAllFileById(Integer fileId);
-    
+
     List<File> getFileByUserId(Integer userId);
-    
+
     List<File> getFileByGroupId(Integer groupId);
-    
+
     List<File> getDeletedFileByUserId(Integer userId);
-    
+
     List<File> getDeletedFileByGroupId(Integer groupId);
-    
+
     void deleteFile(Integer fileId);
-    
+
     void recoverFile(Integer fileId);
-    
+
     void updateEditState(Integer fileId);
-    
+
+    void setEditStatus(Integer isEdit, Integer fileId);
 }

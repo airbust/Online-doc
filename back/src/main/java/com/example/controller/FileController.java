@@ -32,8 +32,6 @@ public class FileController {
     	}catch(Exception e) {
     		return Result.create(200, "查询失败," + e.getMessage());
     	}
-
-
     }
 
     @PostMapping("/send")
@@ -80,22 +78,24 @@ public class FileController {
 //    	return Result.create(200, "查询成功", fileService.getCreationFile());
 //    }
 
-    @GetMapping("/isEditable")
-    public Result isEditable(Integer docId) {
+    @GetMapping("/{docId}/isEditable")
+    public Result isEditable(@PathVariable String docId) {
     	try {
-        	boolean res = fileService.isEditable(docId);
-        	return Result.create(200, "查询成功", res);
+            System.out.println("结束编辑 docId = " + Integer.valueOf(docId));
+        	fileService.changeEditable(false,Integer.valueOf(docId));
+        	return Result.create(200, "结束编辑-lock");
     	}
     	catch(Exception e) {
     		return Result.create(200, "查询失败," + e.getMessage());
     	}
     }
 
-    @GetMapping("/isEditing")
-    public Result isEditing(Integer docId) {
+    @GetMapping("/{docId}/isEditing")
+    public Result isEditing(@PathVariable String docId) {
     	try {
-        	boolean res = fileService.isEditable(docId);
-        	return Result.create(200, "查询成功", !res);
+            System.out.println("开始编辑 docId = " + Integer.valueOf(docId));
+        	fileService.changeEditable(true,Integer.valueOf(docId));
+        	return Result.create(200, "开始编辑-unlock");
     	}
     	catch(Exception e) {
     		return Result.create(200, "查询失败," + e.getMessage());

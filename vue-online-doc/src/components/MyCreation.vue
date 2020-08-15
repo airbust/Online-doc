@@ -1,30 +1,55 @@
 <template>
-  <div class="bt">
-    <el-input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></el-input>&nbsp;
+  <div>
+    
+    <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
+      <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
+          <div style="width: 120px;" @mouseenter="pEnter(fileId)" @mouseleave="pLeave(fileId)">
+            <div style="height:20px" >
+              <el-dropdown @command="handleCommand">
+                <div>
+                    <i v-if="showOption[fileId]" class="el-icon-s-tools"></i>
+                </div>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item >新标签页打开</el-dropdown-item>
+                  <el-dropdown-item divided>收藏</el-dropdown-item>
+                  <el-dropdown-item>分享</el-dropdown-item>
+                  <el-dropdown-item divided>重命名</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+            <img src="@/assets/doc1.png" @click="goto(fileId)" class="image">
+            <div style="margin-top: 14px; text-align: center">
+              <a>{{o.fileName}}</a>
+            </div>
+          </div>
+      </el-col>
+    </el-row>
 
-    <el-table :data="FileData" style="width: 100%">
-      <el-table-column label="#" width="100">
-          <template slot-scope="scope">
-              <span style="margin-left: 10px">{{ scope.row.fileId }}</span>
-          </template>
+    <!-- 表格视图 --> 
+    <div v-if="!layout">
+      <el-input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></el-input>&nbsp;
+      <el-table :data="FileData" style="width: 100%">
+        <el-table-column label="#" width="100">
+            <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.fileId }}</span>
+            </template>
+          </el-table-column>
+        <el-table-column prop="fileName" label="文件名" width="200">
         </el-table-column>
-      <el-table-column prop="fileName" label="文件名" width="200">
-      </el-table-column>
-      <el-table-column prop="modifyCnt" label="修改次数" width="200">
-      </el-table-column>
-      <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
-      </el-table-column>
-      <el-table-column prop="fileInfo"  label="简介" width="200">
-      </el-table-column>
-      <el-table-column label="操作" width="160">
-          <template slot-scope="scope">
-              <el-button size="mini" type="primary"
-                  @click="editFile(scope.row.fileId)">编辑</el-button>
-              <el-button size="mini" type="danger" 
-                  @click="deleteFile(scope.row.fileId)">删除</el-button>
-          </template>
+        <el-table-column prop="modifyCnt" label="修改次数" width="200">
         </el-table-column>
-    </el-table>
+        <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
+        </el-table-column>
+        <el-table-column label="操作" width="160">
+            <template slot-scope="scope">
+                <el-button size="mini" type="primary"
+                    @click="goto(scope.row.fileId)">编辑</el-button>
+                <el-button size="mini" type="danger" 
+                    @click="deleteFile(scope.row.fileId)">删除</el-button>
+            </template>
+          </el-table-column>
+      </el-table>
+    </div>
     
   </div>
 </template>
@@ -35,18 +60,40 @@
     name: "MyCreation",
     data(){
       return{
-        FileData:[],
+        FileData:[
+          {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+        ],
+        showOption: [],
         total: 3,
         keyword:''
       }
     },
+    computed:{
+      layout() { 
+        return this.$store.state.layout==1
+      }
+    },
     created() {
-      file.getCreation().then((res)=>{this.FileData=res.data})
+      file.getCreation().then((res)=>{
+        this.FileData=res.data
+        console.log(res)
+        for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
+      })
     },
     methods:{
-      editFile(id){
-        console.info('edit file: id='+id)
-        this.$router.push({path: '/File/'+id})
+      pEnter(index) { 
+        this.$set(this.showOption,index,1)
+      },
+      pLeave(index) {
+        this.$set(this.showOption,index,0)
+      },
+      handleCommand(command) {
       },
       deleteFile(id){
         console.info('delete file: id='+id)
@@ -65,11 +112,64 @@
               this.FileData=res.data;
           }
         })
+      },
+      goto(id){
+        this.$router.push({path: '/File/'+id})
       }
     }
   }
 </script>
 
 <style scoped>
+  .time {
+    font-size: 13px;
+    color: #999;
+  }
+  .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+  }
+  .button {
+    padding: 0;
+    float: right;
+  }
+  .image {
+    margin-left: 24px;
+    width: 70px;
+    cursor:pointer;
+    display: block;
+  }
+  .clearfix:before,
+  .clearfix:after {
+      display: table;
+      content: "";
+  }
+  .clearfix:after {
+      clear: both
+  }
 
+  .el-row {
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap
+  }
+  .el-col {
+    width:120px;  
+    border-radius: 4px;
+    align-items: stretch;
+    margin-bottom: 40px;
+    /* background: #333; */
+  }
+  .el-col :hover{
+    background: rgb(247, 247, 247);
+  }
+
+.zhuanti img { width: 100%; -moz-transition: all .5s ease; -webkit-transition: all .5s ease; -ms-transition: all .5s ease; -o-transition: all .5s ease; transition: all .5s ease; opacity: 0.5 }
+.zhuanti p { position: absolute; top: 30%; left: 0; right: 0; color: #FFF; text-align: center; font-size: 15px; overflow: hidden; margin-top: 5px; padding: 0 40px; }
+.zhuanti p a { color: #fff; }
+.zhuanti span { width: 80px; margin: 10px auto; background: transparent; font-size: 12px; border: 1px solid #FFF; border-radius: 40px; padding: 4px 0; color: #FFF; display: block; clear: both; -webkit-transition: all .3s ease; -moz-transition: all .3s ease; -ms-transition: all .3s ease; -o-transition: all .3s ease; transition: all .3s ease; }
+.zhuanti li:hover img { opacity: 0.6 }
+.zhuanti li:hover span { background: #FFF; }
+.zhuanti li:hover span a { color: #333 }
+  
 </style>

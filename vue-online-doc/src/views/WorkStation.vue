@@ -1,32 +1,48 @@
 <template>
   <el-container>
-    <el-tabs v-model="activeName" type="" @tab-click="handleClick">
-      <el-tab-pane label="我的创建" name="third"><Right3></Right3></el-tab-pane>
-      <el-tab-pane label="最近浏览" name="first"><Right1></Right1></el-tab-pane>
-      <el-tab-pane label="我的收藏" name="second"><Right2></Right2></el-tab-pane>
-      <!--el-tab-pane label="我的test" name="forth"><Right4></Right4></el-tab-pane-->
-    </el-tabs>
+    <el-aside style="width:75%; margin-right:50px">
+      <el-tabs v-model="activeName" type="" @tab-click="handleClick">
+        <el-tab-pane label="我的创建" style="font-size: 17px; color:rgb(90, 90, 90)" name="MyCreation"><my-creation/></el-tab-pane>
+        <el-tab-pane label="我的收藏" style="font-size: 17px; color:rgb(90, 90, 90)" name="MyStar"><my-star/></el-tab-pane>
+        <el-tab-pane label="最近浏览" style="font-size: 17px; color:rgb(90, 90, 90)" name="Recent"><recent/></el-tab-pane>
+        <!--el-tab-pane label="我的test" name="forth"><Right4></Right4></el-tab-pane-->
+      </el-tabs>
+    </el-aside>
+    <el-main style=" background: rgb(247, 247, 247);">
+      <el-tooltip class="item" effect="dark" content="平铺" placement="top">
+        <span><i @click="layoutTile()" style="font-size: 25px; color: grey" class="el-icon-menu"></i></span>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="列表" placement="top">
+        <span><i @click="layoutList()" style="font-size: 25px; color: grey" class="el-icon-s-unfold"></i></span>
+      </el-tooltip>
+      
+      <div style="margin-top: 40px"><el-button style="width: 170px" type="info">新建</el-button></div>
+      <div style="margin-top: 15px"><el-button style="width: 170px">模板库</el-button></div>
+      <div style="margin-top: 15px"><el-button style="width: 170px">导入</el-button></div>
+
+    </el-main>
+    
   </el-container>
 
 </template>
 
 
 <script>
-  import Right1 from "../components/Recent"
-  import Right2 from "../components/MyStar"
-  import Right3 from "../components/MyCreation"
+  import Recent from "../components/Recent"
+  import MyStar from "../components/MyStar"
+  import MyCreation from "../components/MyCreation"
   //import Right4 from "../components/MyTest";
   export default {
     name:"WorkStation",
     components: {
-      Right1,
-      Right2,
-      Right3,
+      Recent,
+      MyStar,
+      MyCreation,
       //Right4
     },
     data() {
       return {
-        activeName: 'third'
+        activeName: 'MyCreation'
       };
     },
     created(){
@@ -43,6 +59,14 @@
       }
     },
     methods: {
+      layoutTile(){
+        console.log('切换为平铺布局')
+        this.$store.dispatch('setLayoutStatus',1)
+      },
+      layoutList(){
+        console.log('切换为列表布局')
+        this.$store.dispatch('setLayoutStatus',0)
+      },
       handleClick(tab, event) {
         // console.log(tab, event);
       }
@@ -53,5 +77,6 @@
  body{
   margin: 0;
   padding: 0;
+  
 }
 </style>

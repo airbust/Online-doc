@@ -4,11 +4,11 @@
     <a href="javascript:void(0)"  class="nav"></a>
     <a href="javascript:void(0)"  class="nav"></a>
     <span style="float: right;" class="name">{{name}}</span>
-      <el-dropdown @command="handleCommand" class="avatar">
-  <span class="el-dropdown-link">
-     <img src="../assets/avatar.svg" alt=""  slot="reference" >
 
-  </span>
+    <el-dropdown @command="handleCommand_info" class="avatar">
+      <span class="el-dropdown-link">
+        <img src="../assets/avatar.svg" alt=""  slot="reference" >
+      </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="goUserInfo">个人中心</el-dropdown-item>
         <el-dropdown-item>设置</el-dropdown-item>
@@ -16,10 +16,56 @@
       </el-dropdown-menu>
     </el-dropdown>
 
-    <!--侧栏抽屉-->
-    <el-drawer  :visible.sync="drawer"  :show-close="true" :with-header="false" size="30%" :append-to-body="true"
+    <!-- <el-dropdown class="avatar" style="margin-right: 20px" :trigger="hover"> -->
+      <span  class="bell" @click="handleCommand_notice" >
+        <img src="../assets/bell.png" alt=""  slot="reference" >
+      </span>
+    <!-- </el-dropdown> -->
+
+    <!--侧栏消息抽屉-->
+     <el-drawer  :visible.sync="notice_drawer"  :show-close="true" :with-header="false" size="27%" :append-to-body="true" :modal="false"
+          style="height: 100%; margin-top:70px;">
+      <el-tabs v-model="activeName_notice" type="border-card" style="padding:5px">
+        <el-tab-pane label="全部消息" name="0">
+          <div style="width: 100%; height: 840px;">
+            <el-timeline style="margin-left: -40px">
+              <el-timeline-item v-for="comment in commentList" :key="comment.id"  placement="top" timestamp="2020-6-25">
+                <div style="height: 80px">
+                  <div class="commentList">
+                    <span class="left p1">
+                      <img src="@/assets/doc1.png">
+                    </span>
+                    <span class="right p1">
+                      <div class="rightTop">
+                        <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
+                        <span style="font-size:16px; font-weight:bold">「 {{comment.file.title.substring(0,10)}}」</span>
+                      </div>
+                      <div class="rightCenter" style="font-size:14px;">{{comment.body}}</div>
+                    </span>
+                  </div>
+                </div>
+                <el-divider style="magin-top:20px"></el-divider>
+              </el-timeline-item>
+              <el-timeline-item v-if="commentList.length == 0" placement="top">
+                <el-card>
+                  <span style="font-size: 16px">空空如也~</span>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="未读" name="1">
+          <div style="min-height: 840px;"></div>
+        </el-tab-pane>
+        
+
+      </el-tabs>
+    </el-drawer>
+
+    <!--侧栏个人信息抽屉-->
+    <el-drawer  :visible.sync="info_drawer"  :show-close="true" :with-header="false" size="30%" :append-to-body="true"
           style="height: 100%; ">
-      <el-tabs style="margin-top: 50px; height: 100%;" type="border-card" tab-position="left" v-model="activeName" @tab-click="handleClick">
+      <el-tabs style="margin-top: 50px; height: 100%;" type="border-card" tab-position="left" v-model="activeName_info">
           <el-tab-pane label="个人中心" name="0">
             <span slot="label"><i class="el-icon-user-solid"></i> 个人中心</span>
             
@@ -122,6 +168,15 @@ export default {
     return{
       name:'未登录',
       activeNames: ['1', '2'], //激活的折叠面板
+      activeName_info: 0, //默认标签
+      activeName_notice: 0,
+      noticeList: [],//系统通知
+      commentList: [
+        {id:1,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
+        {id:2,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
+        {id:3,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
+        {id:4,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
+      ],//用户评论
       userInfo: {
         name: '',
         gender: '',
@@ -131,7 +186,8 @@ export default {
         summary:'',
         avatar: ''
       },
-      drawer:false,
+      notice_drawer: false,
+      info_drawer:false,
 
       file: {}, //头像图片
       oldPassword: '',
@@ -162,22 +218,16 @@ export default {
         this.$router.push({path: '/Login'})
       })
     },
-    handleClick(tab, event) {// 选择博客/资源标签时直接跳转
-        if(tab.name==4) {
-          this.$router.push({ path:'/myBlog'  }) 
-          this.drawer = false;}
-        else if(tab.name==3) {
-          this.$router.push({ path:'/file'  })
-          this.drawer = false;}
-      },
-    handleCommand(command) {// 点击头像触发的动作
+    handleCommand_notice(){
+      this.notice_drawer = true
+    },
+    handleCommand_info(command) {// 点击头像触发的动作
       switch (command) {
       case "logout" : {
         this.logout();
       };break;
       case "goUserInfo" : {
-        // 打开抽屉
-        this.drawer = true;
+        this.info_drawer = true;
       };break;
       }
     },
@@ -269,6 +319,12 @@ export default {
     width: 30px;
     height:30px;
   }
+  .bell{
+    float: right;
+    width: 30px;
+    height:30px;
+    margin-right: 20px;
+  }
   img{
     width: 30px;
     margin-top: -5px;
@@ -278,5 +334,38 @@ export default {
     font-size: 14px;
     font-weight: 500;
     color: #424e67;
+  }
+
+  .commentList {
+    width: 100%;
+    margin: 0 auto;
+  }
+  .commentList .p1 {
+    float: left;
+  }
+  .commentList .left {
+    display: inline-block;
+    width: 10%;
+    height: 100%;
+  }
+  .commentList .left img {
+    margin-top: 10px;
+    width: 100%;
+  }
+  .commentList .right {
+    display: inline-block;
+    width: 85%;
+    margin-left: 15px;
+  }
+  .commentList .rightTop {
+    height: 30px;
+    margin-top: 3px;
+    margin-left: 3px;
+  }
+  .commentList .rightCenter {
+    margin-left: 20px;
+    margin-top: 10px;
+    line-height: 30px;
+    height: 37px;
   }
 </style>
