@@ -102,9 +102,9 @@
           this.title = res.data.file.fileName
           this.content = res.data.file.fileBody
           this.is_Edit = res.data.file.is_Edit
+          this.writable=true&&this.is_Edit==0;
         })
       },
-          this.writable=true&&this.is_Edit==0;
       init_authority(){
         if(this.$store.state.roles=="USER"){
           this.readable=true;

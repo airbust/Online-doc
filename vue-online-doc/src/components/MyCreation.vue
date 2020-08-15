@@ -1,13 +1,14 @@
 <template>
   <div>
     
+    <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
           <div style="width: 120px;" @mouseenter="pEnter(fileId)" @mouseleave="pLeave(fileId)">
             <div style="height:20px" >
               <el-dropdown @command="handleCommand">
-                <div>
-                    <i v-if="showOption[fileId]" class="el-icon-s-tools"></i>
+                <div style="width:100px">
+                    <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
                 </div>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item >新标签页打开</el-dropdown-item>

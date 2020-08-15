@@ -2,9 +2,9 @@
   <el-container>
     <el-aside style="width:75%; margin-right:50px">
       <el-tabs v-model="activeName" type="" @tab-click="handleClick">
-        <el-tab-pane label="我的创建" style="font-size: 17px; color:rgb(90, 90, 90)" name="MyCreation"><my-creation/></el-tab-pane>
-        <el-tab-pane label="我的收藏" style="font-size: 17px; color:rgb(90, 90, 90)" name="MyStar"><my-star/></el-tab-pane>
-        <el-tab-pane label="最近浏览" style="font-size: 17px; color:rgb(90, 90, 90)" name="Recent"><recent/></el-tab-pane>
+        <el-tab-pane label="我的创建" class="fontStyle" name="MyCreation"><my-creation/></el-tab-pane>
+        <el-tab-pane label="我的收藏" class="fontStyle" name="MyStar"><my-star/></el-tab-pane>
+        <el-tab-pane label="最近浏览" class="fontStyle" name="Recent"><recent/></el-tab-pane>
         <!--el-tab-pane label="我的test" name="forth"><Right4></Right4></el-tab-pane-->
       </el-tabs>
     </el-aside>
@@ -77,6 +77,9 @@
  body{
   margin: 0;
   padding: 0;
-  
+}
+.fontStyle{
+  font-size: 17px; 
+  color:rgb(90, 90, 90)
 }
 </style>
