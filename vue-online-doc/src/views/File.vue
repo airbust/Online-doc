@@ -50,7 +50,7 @@
         flag:false,
         readable:false,
         writable:false,
-        is_Edit:0,
+        //is_Edit:0,
         auth: {},//{groupWrite:1,otherRead:1,otherWrite:0}, 当前文档对应权限：user默认有全部权限，group默认有读权限 
         //role:"OTHER",
         content:null,
@@ -104,10 +104,11 @@
           this.is_Edit = res.data.file.is_Edit
         })
       },
+          this.writable=true&&this.is_Edit==0;
       init_authority(){
         if(this.$store.state.roles=="USER"){
           this.readable=true;
-          this.writable=true&&this.is_Edit==0;
+          this.writable=true&&this.is_Edit;
         }
         else if(this.$store.state.roles=="OTHER"){
           if(this.auth.otherRead==1){
@@ -135,9 +136,7 @@
       },
       startEdit(){
         this.flag=true;
-        file.isEditing(this.$route.params.fileId).then(res=>{
-          console.log('change is_edit to 1')
-        })
+        //change is_edit to 1
       },
       endEdit(){
         this.flag=false;
