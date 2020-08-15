@@ -1,11 +1,11 @@
 <template>
   <el-container>
       <el-header>
-        <el-input v-model="title" placeholder="请输入标题" v-if="flag"></el-input>
+        <el-input v-model="title" placeholder="请输入标题" v-if="flag" style="width:60%"></el-input>
         <div class="hd" v-if="!flag">{{this.title}}</div>
       </el-header>
       
-      <el-main>
+      <el-main style="width: 80%">
         <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
         <quill-editor
         v-model="content"
@@ -124,6 +124,7 @@
     line-height: 50px;
   }
   .bd{
+    width: 75%;
     margin-left: 50px;
     margin-top: 30px;
   }

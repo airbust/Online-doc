@@ -182,4 +182,13 @@ public class FileController {
             return Result.create(200, "删除失败" + e.getMessage());
         }
     }
+    @PostMapping("/{fileId}/updateAuth")
+    public Result updateAuth(@PathVariable Integer fileId, String role, String auth){
+        try {
+            fileService.updateAuth(fileId,role,auth);
+            return Result.create(200, "修改成功");
+        } catch (RuntimeException e) {
+            return Result.create(200, "修改失败" + e.getMessage());
+        }
+    }
 }

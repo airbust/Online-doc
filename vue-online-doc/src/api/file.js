@@ -76,4 +76,12 @@ export default {
       method: 'get',
     })
   },
+  updateAuth(docId,role,auth){
+    return request({
+      url: '/doc/' + docId + '/updateAuth',
+      method: 'post',
+      data: qs.stringify({'role':role,'auth':auth})
+      // data: {auth:auth}
+    })
+  }
 }

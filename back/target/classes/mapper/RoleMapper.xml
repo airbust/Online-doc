@@ -6,24 +6,47 @@
 
     <resultMap id="Role" type="role">
         <id property="id" column="role_id"/>
+        <result property="fileId" column="file_id"/>
         <result property="groupWrite" column="group_write"/>
         <result property="groupDiscuss" column="group_discuss"/>
-        <result property="groupShare" column="group_share"/>
         <result property="otherRead" column="other_read"/>
-        <result property="otherWrite" column="other_write"/>
         <result property="otherDiscuss" column="other_discuss"/>
-        <result property="otherShare" column="other_share"/>
     </resultMap>
 
     <select id="getAuthByFileId" parameterType="Integer" resultMap="Role">
-        SELECT * FROM role LEFT JOIN file_role ON role.role_id = file_role.role_id
-        WHERE file_role.file_id = #{fileId}
+        SELECT * FROM role WHERE file_id = #{fileId}
     </select>
 
-    <insert id="updateRed" parameterType="String">
-        insert into datered(red_date)
-        values (#{datesave})
+    <insert id="saveAuthByFileId" parameterType="Role">
+        insert into role
+        values(null,#{fileId},#{groupWrite},#{groupDiscuss},#{otherRead},#{otherDiscuss})
     </insert>
+
+    <update id="updateOtherAuth" parameterType="Integer">
+        UPDATE role
+        <set>
+            <if test="read!=null">
+                other_read = #{read},
+            </if>
+            <if test="discuss!=null">
+                other_discuss = #{discuss},
+            </if>
+        </set>
+        WHERE file_id = #{fileId}
+    </update>
+
+    <update id="updateGroupAuth" parameterType="Integer">
+        UPDATE role
+        <set>
+            <if test="discuss!=null">
+                group_discuss = #{discuss},
+            </if>
+            <if test="write!=null">
+                group_write = #{write},
+            </if>
+        </set>
+        WHERE file_id = #{fileId}
+    </update>
 
 <!--    <delete id="deleteTag" parameterType="Integer">-->
 <!--        DELETE FROM tag-->
