@@ -115,7 +115,7 @@
   import file from '@/api/file'
   import message from '@/api/message'
   export default {
-    name: "Edit",erer
+    name: "Edit",
     components:{ quillEditor },
     data() {
       return {
@@ -310,8 +310,8 @@
         // 获得焦点事件
         event.enable(false);
       },
-      onEditorChange () {er
-        // 内容改变事件er
+      onEditorChange () {
+        // 内容改变事件
         console.log('333')
       },
       gotoHistory(id,versionNum){//跳转至历史版本文档
