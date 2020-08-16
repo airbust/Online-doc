@@ -6,6 +6,27 @@
         <el-button @click="startEdit" v-if="writable&&!flag">编辑</el-button>
         <el-button @click="endEdit" v-if="writable&&flag">预览</el-button>
         <el-button @click="editFile" v-if="writable&&flag">更新保存</el-button>
+        <el-button type="text" @click="dialogVisible = true">查看历史版本</el-button>
+        <el-dialog
+          title="历史版本"
+          :visible.sync="dialogVisible"
+          width="70%"
+          :before-close="handleClose">
+          <el-table :data="FileData" style="width: 100%">
+                <el-table-column prop="fileName" label="文件名" width="200">
+                </el-table-column>
+                <el-table-column prop="modifyInfo" label="修改信息" width="300">
+                </el-table-column>
+                <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
+                </el-table-column>er
+                <el-table-column label="操作" width="250">
+                  <template slot-scope="scope">
+                      <el-button size="mini" type="primary"
+                          @click="gotoHistory(scope.row.fileId,scope.row.versionNum)">跳转</el-button>
+                  </template>
+                </el-table-column>
+           </el-table>
+        </el-dialog>
         <!-- 权限设置 -->
         <el-cascader v-if="authable&&!flag"
           style="width:120px"
@@ -87,17 +108,22 @@
   //引入组件，可以直接使用这个组件
   import { quillEditor } from 'vue-quill-editor'
   import { addQuillTitle } from '../quill-title.js'
-  import Quill from 'quill' //引入编辑器
+  import Quill from 'quill' //引入编辑器er
   import { ImageDrop } from 'quill-image-drop-module'
   Quill.register('modules/imageDrop', ImageDrop);
 
   import file from '@/api/file'
   import message from '@/api/message'
   export default {
-    name: "Edit",
+    name: "Edit",erer
     components:{ quillEditor },
     data() {
       return {
+        FileData:[
+          {fileId:"1",fileName:"123",modifyInfo:"init 123",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"1"},
+          {fileId:"1",fileName:"233",modifyInfo:"123->233",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"2"},
+          {fileId:"1",fileName:"2333",modifyInfo:"233->2333",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"3"}
+        ],
         value: ['other','RD'],
         options: [{
           value: 'other', label: '权限设置-其他用户',
@@ -129,6 +155,7 @@
         auth: {},//{groupWrite:1,otherRead:1,otherWrite:0}, 当前文档对应权限：user默认有全部权限，group默认有读权限 
         //role:"OTHER",
         content:null,
+        dialogVisible: false,
         editorOption:{
             theme:'snow',
             modules:{
@@ -161,6 +188,13 @@
       addQuillTitle();
     },
     methods:{
+      handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
       handleChange(){
         console.log(this.value)
         file.updateAuth(this.$route.params.fileId,this.value[0],this.value[1]).then(res=>{
@@ -276,9 +310,12 @@
         // 获得焦点事件
         event.enable(false);
       },
-      onEditorChange () {
-        // 内容改变事件
+      onEditorChange () {er
+        // 内容改变事件er
         console.log('333')
+      },
+      gotoHistory(id,versionNum){//跳转至历史版本文档
+        this.$router.push({path: '/File/'+id+'/'+versionNum})
       }
     }
   }
