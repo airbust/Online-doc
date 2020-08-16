@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface RoleDao {
 
     Role getAuthByFileId(Integer fileId);
+    void saveAuthByFileId(Role role);
+
+    void updateOtherAuth(Integer fileId, Integer read, Integer discuss);
+    void updateGroupAuth(Integer fileId, Integer discuss, Integer write);
 }

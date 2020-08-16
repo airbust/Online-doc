@@ -8,14 +8,20 @@ import lombok.ToString;
 public class Role {
 
     private Integer id;
+    private Integer fileId;
     private Integer groupWrite;
     private Integer groupDiscuss;
-    private Integer groupShare;
     private Integer otherRead;
-    private Integer otherWrite;
     private Integer otherDiscuss;
-    private Integer otherShare;
 
     public Role() {
+
+    }
+    public Role(Integer fileId) {
+        this.fileId = fileId;
+        this.groupWrite = 1;
+        this.groupDiscuss = 1;
+        this.otherRead = 1;
+        this.otherDiscuss = 0;
     }
 }

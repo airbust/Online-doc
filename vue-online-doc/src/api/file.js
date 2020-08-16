@@ -76,4 +76,30 @@ export default {
       method: 'get',
     })
   },
+  updateAuth(docId,role,auth){
+    return request({
+      url: '/doc/' + docId + '/updateAuth',
+      method: 'post',
+      data: qs.stringify({'role':role,'auth':auth})
+      // data: {auth:auth}
+    })
+  },
+  collectDocument(docId){
+    return request({
+      url: '/doc/collect/' + docId,
+      method: 'post'
+    })
+  },
+  removeCollectedDocument(docId){
+    return request({
+      url: '/doc/removeCollectedDoc/' + docId,
+      method: 'delete'
+    })
+  },
+  getMyCollectingDocument(){
+    return request({
+      url: '/doc/MyCollectingDoc',
+      method: 'get'
+    })
+  },
 }

@@ -43,6 +43,7 @@ public class FileService {
 		System.out.println("查询文章id = " + fileId);
 		File file = fileDao.getFileById(fileId); //文档
 		Role role = roleDao.getAuthByFileId(fileId); //文档权限
+		System.out.println("role = " + role);
 		String userName = jwtTokenUtil.getUsernameFromRequest(request);
 		final UserDetails userDetails = this.loadUserByUsername(Integer.toString(fileId));
 		final String token = jwtTokenUtil.generateToken(userDetails);
@@ -74,6 +75,10 @@ public class FileService {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		File file = new File(fileName, fileBody, new Date(), user.getId(), 0);
 		fileDao.saveFile(file);
+		Role role = new Role(file.getFileId());
+//		System.out.println("role = " + role);
+		roleDao.saveAuthByFileId(role);
+//		System.out.println("saveEnd");
 	}
 
 	public void editFile(Integer fileId,String fileName,String fileBody) throws RuntimeException {
@@ -163,5 +168,15 @@ public class FileService {
 	}
 
 
-
+	public void updateAuth(Integer fileId, String role, String auth) {
+		if(role.equals("other")){
+			if(auth.equals("RD")) roleDao.updateOtherAuth(fileId,1,1);
+			else if(auth.equals("R")) roleDao.updateOtherAuth(fileId,1,0);
+			else if(auth.equals("N")) roleDao.updateOtherAuth(fileId,0,0);
+		}else if(role.equals("group")){
+			if(auth.equals("RDW")) roleDao.updateGroupAuth(fileId,1,1);
+			else if(auth.equals("RD")) roleDao.updateGroupAuth(fileId,1,0);
+			else if(auth.equals("R")) roleDao.updateGroupAuth(fileId,0,0);
+		}
+	}
 }

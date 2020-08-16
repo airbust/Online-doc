@@ -1,69 +1,74 @@
 <template>
-  <div class="bt">
-    <el-input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></el-input>&nbsp;
+  <el-container>
+    <el-aside style="width:75%; margin-right:50px">
+      <el-tabs v-model="activeName" type="" @tab-click="handleClick">
+        <el-tab-pane label="我的回收" class="fontStyle" name="MyRecycle"><my-recycle/></el-tab-pane>
+      </el-tabs>
+    </el-aside>
+    <el-main style=" background: rgb(247, 247, 247);">
+      <el-tooltip class="item" effect="dark" content="平铺" placement="top">
+        <span><i @click="layoutTile()" style="font-size: 25px; color: grey" class="el-icon-menu"></i></span>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="列表" placement="top">
+        <span><i @click="layoutList()" style="font-size: 25px; color: grey" class="el-icon-s-unfold"></i></span>
+      </el-tooltip>
 
-    <el-table :data="FileData" style="width: 100%">
-      <el-table-column label="#" width="100">
-          <template slot-scope="scope">
-              <span style="margin-left: 10px">{{ scope.row.fileId }}</span>
-          </template>
-        </el-table-column>
-      <el-table-column prop="fileName" label="文件名" width="200">
-      </el-table-column>
-      <el-table-column prop="modifyCnt" label="修改次数" width="200">
-      </el-table-column>
-      <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
-      </el-table-column>
-      <el-table-column prop="fileInfo"  label="简介" width="200">
-      </el-table-column>
-      <el-table-column label="操作" width="160">
-          <template slot-scope="scope">
-              <el-button size="mini" type="primary"
-                  @click="recoverFile(scope.row.fileId)">恢复</el-button>
-          </template>
-        </el-table-column>
-    </el-table>
+      <div style="margin-top: 40px"><el-button style="width: 170px" type="info">新建</el-button></div>
+      <div style="margin-top: 15px"><el-button style="width: 170px">模板库</el-button></div>
+      <div style="margin-top: 15px"><el-button style="width: 170px">导入</el-button></div>
 
-  </div>
+    </el-main>
+
+  </el-container>
+
 </template>
 
 <script>
-  import file from '@/api/file'
+  import MyRecycle from "../components/MyRecycle";
   export default {
     name: "Recycle",
+    components: {MyRecycle},
     data(){
       return{
-        FileData:[],
-        total: 0,
-        keyword:''
+        activeName: 'MyRecycle'
       }
     },
     created() {
-      file.getDeletedDocment().then((res)=>{this.FileData=res.data})
+      if(localStorage.getItem('name')==''||localStorage.getItem('name')==undefined){
+        this.$confirm('您还未登陆/或者登陆已过期', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$router.push({path: '/Login'})
+        }).catch(() => {
+          // this.$router.push({path: '/Login'})
+        });
+      }
     },
     methods:{
-      recoverFile(id){
-        file.recoverDeletedDocumentById(id).then(res=>{
-          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getDeletedDocment().then((res)=>{this.FileData=res.data})
-        })
+      layoutTile(){
+        console.log('切换为平铺布局')
+        this.$store.dispatch('setLayoutStatus',1)
       },
-      getFileData(keyword){
-        file.getDeletedDocment()
-        .then((res)=>{
-          this.FileData=[];
-          for(var i=0;i<res.data.total;i++){
-            if(this.keyword==res.data.file[i].name||this.keyword==res.data.file[i].date)
-              this.FileData.push(res.data.file[i]);
-            if(this.keyword=='') 
-              this.FileData=res.data.file;
-          }
-        })
+      layoutList(){
+        console.log('切换为列表布局')
+        this.$store.dispatch('setLayoutStatus',0)
+      },
+      handleClick(tab, event) {
+        // console.log(tab, event);
       }
     }
   }
 </script>
 
 <style scoped>
-
+  body{
+    margin: 0;
+    padding: 0;
+  }
+  .fontStyle{
+    font-size: 17px;
+    color:rgb(90, 90, 90)
+  }
 </style>

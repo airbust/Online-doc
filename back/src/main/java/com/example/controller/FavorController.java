@@ -1,11 +1,7 @@
 package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.entity.Result;
 import com.example.service.FavorService;
@@ -15,9 +11,9 @@ import com.example.service.FavorService;
 public class FavorController {
 	@Autowired
 	FavorService favorService;
-	
-	@PostMapping("/collect")
-	Result collectDocument(Integer docId) {
+
+	@PostMapping("/collect/{docId}")
+	Result collectDocument(@PathVariable Integer docId) {
 		try {
 			favorService.favorFile(docId);
 			return Result.create(200, "收藏成功");
@@ -26,14 +22,18 @@ public class FavorController {
 			return Result.create(200, "收藏失败," + e.getMessage());
 		}
 	}
-	
+
+//	@GetMapping("/MyCollectingDoc")
+//	Result collectDocument(Integer page, Integer showCount) {
+//		return Result.create(200, "查询成功", favorService.getCollectionFile(page, showCount));
+//	}
 	@GetMapping("/MyCollectingDoc")
-	Result collectDocument(Integer page, Integer showCount) {
-		return Result.create(200, "查询成功", favorService.getCollectionFile(page, showCount));
+	Result collectDocument() {
+		return Result.create(200, "查询成功", favorService.getCollectionFile());
 	}
-	
-	@DeleteMapping("/removeCollectedDoc")
-	Result removeCollectedDocument(Integer docId) {
+
+	@DeleteMapping("/removeCollectedDoc/{docId}")
+	Result removeCollectedDocument(@PathVariable Integer docId) {
 		favorService.removeFavoredFile(docId);
 		return Result.create(200, "删除成功");
 	}

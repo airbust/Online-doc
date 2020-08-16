@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ import com.example.utils.JwtTokenUtil;
 
 @Service
 public class FavorService {
-	
+
 	@Autowired
 	FavorDao favorDao;
 	@Autowired
@@ -42,24 +41,27 @@ public class FavorService {
 	private RedisTemplate<String, String> redisTemplate;
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-	
+
 	public void favorFile(Integer fileId) throws RuntimeException {
 		File file = fileDao.getFileById(fileId);
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		Favor favor = favorDao.getFavorByUserIdAndFileId(user.getId(),fileId);
 		if(file == null)
 			throw new RuntimeException("文档不存在");
-		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		favorDao.saveFavor(new Favor(user.getId(), fileId, new Date()));
+		if(favor == null)
+			favorDao.saveFavor(new Favor(user.getId(), fileId, new Date()));
 	}
-	
-	public List<File> getCollectionFile(Integer page, Integer showCount) {
+
+	public List<File> getCollectionFile() {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		List<Integer> tmp = favorDao.getFavorFileIdByUserId(user.getId(), (page - 1) * showCount, showCount);
+//		List<Integer> tmp = favorDao.getFavorFileIdByUserId(user.getId(), (page - 1) * showCount, showCount);
+		List<Integer> tmp = favorDao.getFavorFileIdByUserId(user.getId());
 		List<File> file = new ArrayList<>();
 		for(Integer i : tmp)
 			file.add(fileDao.getFileById(i));
 		return file;
 	}
-	
+
 	public void removeFavoredFile(Integer fileId) {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		favorDao.deleteFavor(user.getId(), fileId);

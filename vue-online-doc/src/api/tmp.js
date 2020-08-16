@@ -98,7 +98,6 @@ export default{
       method: 'delete',
     })
   },
-  
   updateEditingT(docId){  //更改文档状态
     return request({
       url: '/doc/' + docId + '/updateEditingT',
@@ -129,30 +128,7 @@ export default{
       method: 'get'
     })
   },
-  getMyDocument(page, showCount){
-    return request({
-      url: '/doc/MyDoc/' + page + '/' + showCount,
-      method: 'get'
-    })
-  },
-  collectDocument(docId){
-    return request({
-      url: '/doc/collect/' + docId,
-      method: 'post'
-    })
-  },
-  removeCollectedDocument(docId){
-    return request({
-      url: '/doc/removeCollectedDoc/' + docId,
-      method: 'delete'
-    })
-  },
-  getMyCollectingDocument(page, showCount){
-    return request({
-      url: '/doc/MyCollectingDoc/' + page + '/' + showCount,
-      method: 'get'
-    })
-  },
+  
   getMyTeamDocument(page, showCount){
     return request({
       url: '/doc/MyTeamDoc/' + page + '/' + showCount,

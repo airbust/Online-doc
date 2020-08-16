@@ -6,19 +6,19 @@
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
           <div style="width: 120px;" @mouseenter="pEnter(fileId)" @mouseleave="pLeave(fileId)">
             <div style="height:20px" >
-              <el-dropdown @command="handleCommand">
+              <el-dropdown @command="collectFile(o.fileId)">
                 <div style="width:100px">
                     <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
                 </div>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item >新标签页打开</el-dropdown-item>
-                  <el-dropdown-item divided>收藏</el-dropdown-item>
+                  <el-dropdown-item  divided>收藏</el-dropdown-item>
                   <el-dropdown-item>分享</el-dropdown-item>
                   <el-dropdown-item divided>重命名</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
-            <img src="@/assets/doc1.png" @click="goto(fileId)" class="image">
+            <img src="@/assets/doc1.png" @click="goto(o.fileId)" class="image">
             <div style="margin-top: 14px; text-align: center">
               <a>{{o.fileName}}</a>
             </div>
@@ -41,10 +41,12 @@
         </el-table-column>
         <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
         </el-table-column>
-        <el-table-column label="操作" width="160">
+        <el-table-column label="操作" width="250">
             <template slot-scope="scope">
                 <el-button size="mini" type="primary"
                     @click="goto(scope.row.fileId)">编辑</el-button>
+                <el-button size="mini" type="success"
+                    @click="collectFile(scope.row.fileId)">收藏</el-button>
                 <el-button size="mini" type="danger" 
                     @click="deleteFile(scope.row.fileId)">删除</el-button>
             </template>
@@ -101,6 +103,12 @@
         file.deleteDocument(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
           file.getCreation().then((res)=>{this.FileData=res.data})
+        })
+      },
+      collectFile(id){
+        console.log(id)
+        file.collectDocument(id).then(res=>{
+          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
         })
       },
       getFileData(keyword){

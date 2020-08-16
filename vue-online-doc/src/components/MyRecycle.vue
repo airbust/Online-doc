@@ -11,10 +11,7 @@
                 <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
               </div>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item >新标签页打开</el-dropdown-item>
-                <el-dropdown-item divided>收藏</el-dropdown-item>
-                <el-dropdown-item>分享</el-dropdown-item>
-                <el-dropdown-item divided>重命名</el-dropdown-item>
+                <el-dropdown-item >恢复</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -44,9 +41,7 @@
         <el-table-column label="操作" width="160">
           <template slot-scope="scope">
             <el-button size="mini" type="primary"
-                       @click="goto(scope.row.fileId)">编辑</el-button>
-            <el-button size="mini" type="danger"
-                       @click="deleteFile(scope.row.fileId)">删除</el-button>
+                       @click="recoverFile(scope.row.fileId)">恢复</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -58,9 +53,9 @@
 <script>
   import file from '@/api/file'
   export default {
-    name: "TeamFile",
-    data(){
-      return{
+    name: "MyRecycle",
+    data() {
+      return {
         FileData:[
           {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
           {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
@@ -72,50 +67,49 @@
         ],
         showOption: [],
         total: 3,
-        keyword:''
+        keyword: ''
       }
     },
-    computed:{
+    computed: {
       layout() {
-        return this.$store.state.layout==1
+        return this.$store.state.layout == 1
       }
     },
     created() {
-      file.getTeamFile().then((res)=>{
-        this.FileData=res.data
-        console.log(res)
-        for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
+      file.getDeletedDocment().then((res) => {
+        this.FileData = res.data
       })
     },
-    methods:{
+    methods: {
       pEnter(index) {
-        this.$set(this.showOption,index,1)
+        this.$set(this.showOption, index, 1)
       },
       pLeave(index) {
-        this.$set(this.showOption,index,0)
+        this.$set(this.showOption, index, 0)
       },
       handleCommand(command) {
       },
-      deleteFile(id){
-        console.info('delete file: id='+id)
-        file.deleteDocument(id).then(res=>{
-          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getTeamFile().then((res)=>{this.FileData=res.data})
-        })
-      },
-      getFileData(){
-        file.getTeamFile().then((res)=>{
-          this.FileData=[];
-          for(var i=0;i<this.total;i++){
-            if(this.keyword==res.data[i].fileName||this.keyword==res.data[i].modifyTime)
+      getFileData() {
+        file.getRecycle().then((res) => {
+          this.FileData = [];
+          for (var i = 0; i < this.total; i++) {
+            if (this.keyword == res.data[i].fileName || this.keyword == res.data[i].modifyTime)
               this.FileData.push(res.data[i]);
-            if(this.keyword=='')
-              this.FileData=res.data;
+            if (this.keyword == '')
+              this.FileData = res.data;
           }
         })
       },
-      goto(id){
-        this.$router.push({path: '/File/'+id})
+      recoverFile(id) {
+        file.recoverDeletedDocumentById(id).then(res => {
+          this.$notify({title: '提示', type: 'success', message: res.message, duration: 1700});
+          file.getDeletedDocment().then((res) => {
+            this.FileData = res.data
+          })
+        })
+      },
+      goto(id) {
+        this.$router.push({path: '/File/' + id})
       }
     }
   }
