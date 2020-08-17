@@ -1,6 +1,5 @@
 <template>
   <el-container >
-
     <!-- 左侧文档视图 -->
     <el-aside style="width:75%; margin-right:50px ; ">
       <el-tabs v-model="activeName" type="border-card" style="height:85vh" :stretch="true"  @tab-click="handleClick">

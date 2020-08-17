@@ -67,7 +67,7 @@
           // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
         ],
         showOption: [],
-        total: 3,
+        total: 0,
         keyword:''
       }
     },
@@ -94,6 +94,7 @@
       getFile(){
         file.getTeamFile(this.$store.state.groupName).then((res)=>{
           this.FileData=res.data
+          this.total = res.data.length
           // console.log(res)
           for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
         })
@@ -116,6 +117,7 @@
       getFileData(){
         file.getTeamFile().then((res)=>{
           this.FileData=[];
+          this.total = res.data.length
           for(var i=0;i<this.total;i++){
             if(this.keyword==res.data[i].fileName||this.keyword==res.data[i].modifyTime)
               this.FileData.push(res.data[i]);

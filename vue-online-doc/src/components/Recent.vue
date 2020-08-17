@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height:75vh">
 
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
@@ -11,10 +11,9 @@
                 <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
               </div>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item >新标签页打开</el-dropdown-item>
-                <el-dropdown-item divided>收藏</el-dropdown-item>
-                <el-dropdown-item>分享</el-dropdown-item>
-                <el-dropdown-item divided>重命名</el-dropdown-item>
+                <el-dropdown-item command="open">新标签页打开</el-dropdown-item>
+                <el-dropdown-item command="collect" divided>收藏</el-dropdown-item>
+                <el-dropdown-item command="share">分享</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -44,9 +43,9 @@
         <el-table-column label="操作" width="160">
           <template slot-scope="scope">
             <el-button size="mini" type="primary"
-                       @click="goto(scope.row.fileId)">编辑</el-button>
-            <el-button size="mini" type="danger"
-                       @click="deleteFile(scope.row.fileId)">删除</el-button>
+                       @click="goto(scope.row.fileId)">查看</el-button>
+            <el-button size="mini" type="primary"
+                       @click="collectFile(scope.row.fileId)">收藏</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -59,21 +58,22 @@
   import file from '@/api/file'
   export default {
     name: "Recent",
+    props:  {random : Number},
     data(){
       return{
         FileData:[
-          {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
         ],
+        index: 0,
         showOption: [],
-        total: 3,
+        total: 0,
         keyword:''
       }
+    },
+    watch:{
+      random(val){console.log(val), this.getFile() }
     },
     computed:{
       layout() {
@@ -81,38 +81,48 @@
       }
     },
     created() {
-      // file.getRecent().then((res)=>{
-      //   this.FileData=res.data
-      //   console.log(res)
-      //   for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
-      // })
+      this.getFile()
     },
+
     methods:{
-      pEnter(index) {
-        this.$set(this.showOption,index,1)
-      },
-      pLeave(index) {
-        this.$set(this.showOption,index,0)
-      },
       handleCommand(command) {
+        if(command == 'open') {}
+        else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
+        else if(command == 'share') {}
       },
-      deleteFile(id){
-        console.info('delete file: id='+id)
-        file.Deleted(id).then(res=>{
-          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getRecent().then((res)=>{this.FileData=res.data})
+      getFile(){
+        //TODO
+        // file.getRecent().then((res)=>{
+        file.getCreation().then((res)=>{
+        this.FileData=res.data
+        this.total = res.data.length
+        for(var i=0;i<this.total;++i) this.showOption[i]=0 
+      })
+      },
+      collectFile(id){
+        file.collectDocument(id).then(res=>{
+          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
         })
       },
       getFileData(){
         file.getRecent().then((res)=>{
           this.FileData=[];
+          this.total = res.data.length
           for(var i=0;i<this.total;i++){
-            if(this.keyword==res.data[i].fileName||this.keyword==res.data[i].modifyTime)
+            if(this.keyword==res.data[i].fileName)
               this.FileData.push(res.data[i]);
             if(this.keyword=='')
               this.FileData=res.data;
           }
         })
+      },
+
+      pEnter(index) {
+        this.$set(this.showOption,index,1)
+        this.index = index
+      },
+      pLeave(index) {
+        this.$set(this.showOption,index,0)
       },
       goto(id){
         this.$router.push({path: '/File/'+id})

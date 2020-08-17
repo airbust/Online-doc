@@ -1,20 +1,19 @@
 <template>
-  <div>
+  <div style="height:75vh">
 
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
         <div style="width: 120px;" @mouseenter="pEnter(fileId)" @mouseleave="pLeave(fileId)">
           <div style="height:20px" >
-            <el-dropdown @command="unCollectFile(o.fileId)">
+            <el-dropdown @command="handleCommand">
               <div style="width:100px">
                 <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
               </div>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item >新标签页打开</el-dropdown-item>
-                <el-dropdown-item divided>取消收藏</el-dropdown-item>
-                <el-dropdown-item>分享</el-dropdown-item>
-                <el-dropdown-item divided>重命名</el-dropdown-item>
+                <el-dropdown-item command="open" >新标签页打开</el-dropdown-item>
+                <el-dropdown-item command="collect" divided>取消收藏</el-dropdown-item>
+                <el-dropdown-item command="share">分享</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -44,11 +43,9 @@
         <el-table-column label="操作" width="250">
           <template slot-scope="scope">
             <el-button size="mini" type="primary"
-                       @click="goto(scope.row.fileId)">编辑</el-button>
+                       @click="goto(scope.row.fileId)">查看</el-button>
             <el-button size="mini" type="success"
                        @click="unCollectFile(scope.row.fileId)">取消收藏</el-button>
-            <el-button size="mini" type="danger"
-                       @click="deleteFile(scope.row.fileId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,11 +58,13 @@
   import file from '@/api/file'
   export default {
     name: "MyStar",
+    props:  {random : Number},
     data(){
       return{
         FileData:[],
+        index: 0,
         showOption: [],
-        total: 3,//TODO
+        total: 0,
         keyword:''
       }
     },
@@ -74,29 +73,31 @@
         return this.$store.state.layout==1
       }
     },
+    watch:{
+      random(val){console.log(val), this.getFile() }
+    },
     created() {
-      file.getMyCollecting().then((res)=>{
-        this.FileData=res.data
-        console.log('begin')
-        console.log(this.FileData)
-        for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
-      })
+      this.getFile()
     },
     methods:{
+      getFile(){
+        file.getMyCollecting().then((res)=>{
+        this.FileData=res.data
+        this.total = res.data.length
+        for(var i=0;i<this.total;++i) this.showOption[i]=0 //暂未获取文章数total
+      })
+      },
       pEnter(index) {
         this.$set(this.showOption,index,1)
+        this.index = index
       },
       pLeave(index) {
         this.$set(this.showOption,index,0)
       },
       handleCommand(command) {
-      },
-      deleteFile(id){
-        console.info('delete file: id='+id)
-        file.Deleted(id).then(res=>{
-          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getMyCollecting().then((res)=>{this.FileData=res.data})
-        })
+        if(command == 'open') {}
+        else if(command == 'collect') {this.unCollectFile(this.FileData[this.index].fileId)}
+        else if(command == 'share') {}
       },
       unCollectFile(id){
         file.removeCollectedDocument(id).then(res=>{
@@ -107,6 +108,7 @@
       getFileData(){
         file.getMyCollecting().then((res)=>{
           this.FileData=[];
+          this.total = res.data.length
           for(var i=0;i<this.total;i++){
             if(this.keyword==res.data[i].fileName)
               this.FileData.push(res.data[i]);

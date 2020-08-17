@@ -2,10 +2,9 @@
   <el-container>
     <el-aside style="width:75%; margin-right:50px">
       <el-tabs v-model="activeName" type="" @tab-click="handleClick">
-        <el-tab-pane label="我的创建" class="fontStyle" name="MyCreation"><my-creation/></el-tab-pane>
-        <el-tab-pane label="我的收藏" class="fontStyle" name="MyStar"><my-star/></el-tab-pane>
-        <el-tab-pane label="最近浏览" class="fontStyle" name="Recent"><recent/></el-tab-pane>
-        <!--el-tab-pane label="我的test" name="forth"><Right4></Right4></el-tab-pane-->
+        <el-tab-pane label="我的创建" class="fontStyle" name="MyCreation"><my-creation :random="refreshCreation"/></el-tab-pane>
+        <el-tab-pane label="我的收藏" class="fontStyle" name="MyStar"><my-star :random="refreshStar"/></el-tab-pane>
+        <el-tab-pane label="最近浏览" class="fontStyle" name="Recent"><recent :random="refreshRecent"/></el-tab-pane>
       </el-tabs>
     </el-aside>
     <el-main style=" background: rgb(247, 247, 247);">
@@ -16,9 +15,8 @@
         <span><i @click="layoutList()" style="font-size: 25px; color: grey" class="el-icon-s-unfold"></i></span>
       </el-tooltip>
       
-      <div style="margin-top: 40px"><el-button style="width: 170px" type="info">新建</el-button></div>
+      <div style="margin-top: 40px"><el-button @click="newFile()" style="width: 170px" type="info">新建</el-button></div>
       <div style="margin-top: 15px"><el-button style="width: 170px">模板库</el-button></div>
-      <div style="margin-top: 15px"><el-button style="width: 170px">导入</el-button></div>
 
     </el-main>
     
@@ -31,18 +29,19 @@
   import Recent from "../components/Recent"
   import MyStar from "../components/MyStar"
   import MyCreation from "../components/MyCreation"
-  //import Right4 from "../components/MyTest";
   export default {
     name:"WorkStation",
     components: {
       Recent,
       MyStar,
       MyCreation,
-      //Right4
     },
     data() {
       return {
-        activeName: 'MyCreation'
+        activeName: 'MyCreation',
+        refreshCreation: 0,
+        refreshStar: 0,
+        refreshRecent: 0
       };
     },
     created(){
@@ -59,16 +58,18 @@
       }
     },
     methods: {
+      newFile(){
+        this.$router.push({path:'/Edit'})
+      },
       layoutTile(){
-        console.log('切换为平铺布局')
         this.$store.dispatch('setLayoutStatus',1)
       },
       layoutList(){
-        console.log('切换为列表布局')
         this.$store.dispatch('setLayoutStatus',0)
       },
       handleClick(tab, event) {
-        // console.log(tab, event);
+        if(this.activeName=='MyStar') { this.refreshStar = Math.random() }
+        else if(this.activeName=='Recent') { this.refreshRecent = Math.random() }
       }
     }
   };

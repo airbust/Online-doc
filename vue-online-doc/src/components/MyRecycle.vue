@@ -11,7 +11,8 @@
                 <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
               </div>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item >恢复</el-dropdown-item>
+                <el-dropdown-item command="recover">恢复</el-dropdown-item>
+                <el-dropdown-item command="delete">彻底删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -60,7 +61,8 @@
       return {
         FileData:[],
         showOption: [],
-        total: 3,
+        index: 0,
+        total: 0,
         keyword: ''
       }
     },
@@ -72,27 +74,20 @@
     created() {
       file.getDeleted().then((res) => {
         this.FileData = res.data
+        this.total = res.data.length
       })
     },
     methods: {
       pEnter(index) {
         this.$set(this.showOption, index, 1)
+        this.index = index
       },
       pLeave(index) {
         this.$set(this.showOption, index, 0)
       },
       handleCommand(command) {
-      },
-      getFileData() {
-        file.getRecycle().then((res) => {
-          this.FileData = [];
-          for (var i = 0; i < this.total; i++) {
-            if (this.keyword == res.data[i].fileName || this.keyword == res.data[i].modifyTime)
-              this.FileData.push(res.data[i]);
-            if (this.keyword == '')
-              this.FileData = res.data;
-          }
-        })
+        if(command == 'recover') {this.recoverFile(this.FileData[this.index].fileId)}
+        else if(command == 'delete') {this.deleteFile(this.FileData[this.index].fileId)}
       },
       recoverFile(id) {
         file.recoverDeleted(id).then(res => {
@@ -103,11 +98,29 @@
         })
       },
       deleteFile(id) {
-        file.foreverDeleted(id).then(res => {
-          this.$notify({title: '提示', type: 'success', message: res.message, duration: 1700});
-          file.getDeleted().then((res) => {
-            this.FileData = res.data
+        this.$confirm('确认删除？')
+          .then(_ => {
+            file.foreverDeleted(id).then(res => {
+              this.$notify({title: '提示', type: 'success', message: res.message, duration: 1700});
+              file.getDeleted().then((res) => {
+                this.FileData = res.data
+              })
+            })
+            done();
           })
+          .catch(_ => {});
+      },
+
+      getFileData() {
+        file.getRecycle().then((res) => {
+          this.FileData = [];
+          this.total = res.data.length
+          for (var i = 0; i < this.total; i++) {
+            if (this.keyword == res.data[i].fileName || this.keyword == res.data[i].modifyTime)
+              this.FileData.push(res.data[i]);
+            if (this.keyword == '')
+              this.FileData = res.data;
+          }
         })
       },
       goto(id) {

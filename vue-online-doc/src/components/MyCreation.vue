@@ -1,20 +1,20 @@
 <template>
-  <div>
-    
+  <div style="height:75vh">
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
           <div style="width: 120px;" @mouseenter="pEnter(fileId)" @mouseleave="pLeave(fileId)">
             <div style="height:20px" >
-              <el-dropdown @command="collectFile(o.fileId)">
+              <el-dropdown @command="handleCommand">
                 <div style="width:100px">
                     <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
                 </div>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item >新标签页打开</el-dropdown-item>
-                  <el-dropdown-item  divided>收藏</el-dropdown-item>
-                  <el-dropdown-item>分享</el-dropdown-item>
-                  <el-dropdown-item divided>重命名</el-dropdown-item>
+                  <el-dropdown-item command="open">新标签页打开</el-dropdown-item>
+                  <el-dropdown-item command="collect" divided>收藏</el-dropdown-item>
+                  <el-dropdown-item command="share">分享</el-dropdown-item>
+                  <el-dropdown-item command="delete">删除</el-dropdown-item>
+                  <el-dropdown-item command="rename" divided>重命名</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -44,7 +44,7 @@
         <el-table-column label="操作" width="250">
             <template slot-scope="scope">
                 <el-button size="mini" type="primary"
-                    @click="goto(scope.row.fileId)">编辑</el-button>
+                    @click="goto(scope.row.fileId)">查看</el-button>
                 <el-button size="mini" type="success"
                     @click="collectFile(scope.row.fileId)">收藏</el-button>
                 <el-button size="mini" type="danger" 
@@ -67,13 +67,10 @@
           // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
           // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
           // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
         ],
+        index: 0, //当前高亮的图标
         showOption: [],
-        total: 3,
+        total: 0,
         keyword:''
       }
     },
@@ -83,30 +80,37 @@
       }
     },
     created() {
-      file.getCreation().then((res)=>{
-        this.FileData=res.data
-        // console.log(res)
-        for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
-      })
+      this.getFile()
     },
     methods:{
       pEnter(index) { 
         this.$set(this.showOption,index,1)
+        this.index = index
       },
       pLeave(index) {
         this.$set(this.showOption,index,0)
       },
       handleCommand(command) {
+        if(command == 'open') {}
+        else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
+        else if(command == 'share') {}
+        else if(command == 'delete') {this.deleteFile(this.FileData[this.index].fileId)}
+        else if(command == 'rename') {}
+      },
+      getFile(){
+        file.getCreation().then((res)=>{
+          this.FileData=res.data
+          this.total = res.data.length
+          for(var i=0;i<this.total;++i) this.showOption[i]=0 //暂未获取文章数total
+        })
       },
       deleteFile(id){
-        console.info('delete file: id='+id)
         file.Deleted(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getCreation().then((res)=>{this.FileData=res.data})
+          this.getFile()
         })
       },
       collectFile(id){
-        console.log(id)
         file.collectDocument(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
         })
@@ -114,6 +118,7 @@
       getFileData(keyword){
         file.getCreation().then((res)=>{
           this.FileData=[];
+          this.total = res.data.length
           for(var i=0;i<this.total;i++){
             if(this.keyword==res.data[i].fileName)
               this.FileData.push(res.data[i]);
