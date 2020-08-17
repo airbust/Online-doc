@@ -143,14 +143,13 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserInfo(){
-        return userDao.getUserByName("zero");
+        return userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
     }
     /**
      * 更新用户信息
      */
     public void updateUserInfo(String gender, String birth, String job, String summary) {
-//        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-        User user = userDao.getUserByName("zero");
+        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
         if(gender!=null) user.setGender(gender);
         if(birth!=null) user.setBirth(birth);
         if(job!=null) user.setJob(job);

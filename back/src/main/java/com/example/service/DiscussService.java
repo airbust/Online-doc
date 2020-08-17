@@ -1,16 +1,14 @@
 package com.example.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.example.dao.GroupDao;
+import com.example.entity.DiscussResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import com.example.config.JwtConfig;
 import com.example.dao.DiscussDao;
 import com.example.dao.FileDao;
 import com.example.dao.UserDao;
@@ -28,19 +26,15 @@ public class DiscussService {
 	@Autowired
 	private FileDao fileDao;
 	@Autowired
-	private JwtConfig jwtConfig;
-	@Autowired
 	private HttpServletRequest request;
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
 	public void newDiscuss(Integer fileId, String discussBody) throws RuntimeException {
-		if(discussBody == null || discussBody =="" )
+		if(discussBody == null || discussBody.equals(""))
 			throw new RuntimeException("评论内容为空");
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		Discuss dis = new Discuss(user.getId(), fileId, discussBody, new Date());
+		Discuss dis = new Discuss(user.getId(), fileId, discussBody, new Date(), 0);
 		discussDao.saveDiscuss(dis);
 	}
 
@@ -55,8 +49,36 @@ public class DiscussService {
 		return dis;
 	}
 
-	public List<Discuss> getDiscussByFileId(Integer fileId) {
-		return discussDao.getDiscussByFileId(fileId);
+	public List<DiscussResult> getDiscussByFileId(Integer fileId) {
+		List<Discuss> discussList = discussDao.getDiscussByFileId(fileId);
+		System.out.println("discussList = " + discussList);
+		List<DiscussResult> discussResultList = new ArrayList<>();
+		for(Discuss discuss : discussList){
+			User user = userDao.getUserById(discuss.getUserId());
+			discussResultList.add(new DiscussResult(discuss,user,null));
+		}
+		System.out.println("discussResultList = " + discussResultList);
+		return discussResultList;
 	}
 
+	public List<DiscussResult> getAllDiscuss() {
+		Integer userId = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request)).getId();
+		List<Discuss> discussList= discussDao.getUserFileDiscussByUserId(userId);
+//		System.out.println("discussList = " + discussList);
+		List<Discuss> discussList1 = discussDao.getTeamFileDiscussByUserId(userId);
+//		System.out.println("discussList1 = " + discussList1);
+
+		List<DiscussResult> discussResultList = new ArrayList<>();
+		for(Discuss discuss : discussList){
+			User user = userDao.getUserById(discuss.getUserId());
+			String fileName = fileDao.getFileById(discuss.getFileId()).getFileName();
+			discussResultList.add(new DiscussResult(discuss,user,fileName));
+		}
+		for(Discuss discuss : discussList1){
+			User user = userDao.getUserById(discuss.getUserId());
+			String fileName = fileDao.getFileById(discuss.getFileId()).getFileName();
+			discussResultList.add(new DiscussResult(discuss,user,fileName));
+		}
+		return discussResultList;
+	}
 }

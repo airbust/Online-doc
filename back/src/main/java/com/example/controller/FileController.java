@@ -30,7 +30,6 @@ public class FileController {
     	Integer fileId = docId;
     	try {
     		DocResult docResult = fileService.findFileById(fileId);
-            System.out.println("docResult = " + docResult);
     		return Result.create(200, "查询成功", docResult);
     	}catch(Exception e) {
     		return Result.create(200, "查询失败," + e.getMessage());

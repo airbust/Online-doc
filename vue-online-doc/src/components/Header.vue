@@ -7,9 +7,8 @@
 
     <el-dropdown @command="handleCommand_info" class="avatar">
       <span class="el-dropdown-link">
-        <!-- <img src="../assets/avatar.svg" alt=""  slot="reference" > -->
-        <img  src="http://39.107.228.168/avatar/zero.jpg" class="avatar" alt=""  slot="reference"
-                      onerror="javascript:this.src='../assets/avatar.svg'">
+        <img v-if="validAvatar()" :src="avatar" class="avatar" alt=""  slot="reference">
+        <img v-else src="../assets/avatar.svg" alt=""  slot="reference" >
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="goUserInfo">个人中心</el-dropdown-item>
@@ -19,7 +18,8 @@
 
     <!-- <el-dropdown class="avatar" style="margin-right: 20px" :trigger="hover"> -->
       <span  class="bell" @click="handleCommand_notice" >
-        <img src="../assets/bell.png" alt=""  slot="reference" >
+        <img v-if="unreadCnt" style="width:33px;height:33px" src="../assets/bell2.png" alt=""  slot="reference" >
+        <img v-else src="../assets/bell.png" style="width:34px;height:34px" alt=""  slot="reference" >
       </span>
     <!-- </el-dropdown> -->
 
@@ -30,7 +30,7 @@
         <el-tab-pane label="全部消息" name="0">
           <div style="width: 100%; height: 840px;">
             <el-timeline style="margin-left: -40px">
-              <el-timeline-item v-for="comment in commentList" :key="comment.id"  placement="top" timestamp="2020-6-25">
+              <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" timestamp="2020-6-25">
                 <div style="height: 80px">
                   <div class="commentList">
                     <span class="left p1">
@@ -39,9 +39,9 @@
                     <span class="right p1">
                       <div class="rightTop">
                         <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
-                        <span style="font-size:16px; font-weight:bold">「 {{comment.file.title.substring(0,10)}}」</span>
+                        <span style="font-size:16px; font-weight:bold">「 {{comment.fileName}}」</span>
                       </div>
-                      <div class="rightCenter" style="font-size:14px;">{{comment.body}}</div>
+                      <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}}</div>
                     </span>
                   </div>
                 </div>
@@ -55,8 +55,33 @@
             </el-timeline>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="未读" name="1">
-          <div style="min-height: 840px;"></div>
+        <el-tab-pane :label="unread" name="1">
+          <div style="width: 100%; height: 840px;">
+            <el-timeline style="margin-left: -40px">
+              <el-timeline-item v-for="comment in unreadList" :key="comment.discuss.discussId"  placement="top" timestamp="2020-6-25">
+                <div style="height: 80px">
+                  <div class="commentList">
+                    <span class="left p1">
+                      <img src="@/assets/doc1.png">
+                    </span>
+                    <span class="right p1">
+                      <div class="rightTop">
+                        <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
+                        <span style="font-size:16px; font-weight:bold">「 {{comment.fileName}}」</span>
+                      </div>
+                      <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}}</div>
+                    </span>
+                  </div>
+                </div>
+                <el-divider style="magin-top:20px"></el-divider>
+              </el-timeline-item>
+              <el-timeline-item v-if="unreadList.length == 0" placement="top">
+                <el-card>
+                  <span style="font-size: 16px">空空如也~</span>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
         </el-tab-pane>
         
 
@@ -163,6 +188,7 @@
 
 <script>
 import user from '@/api/user'
+import message from '@/api/message'
 import axios from 'axios'
 export default {
   name: "Header",
@@ -170,24 +196,19 @@ export default {
     return{
       name:'未登录',
       avatar: '',
+      total: 0, //总评论数量
+      unreadCnt: 0,
       activeNames: ['1', '2'], //激活的折叠面板
-      activeName_info: 0, //默认标签
-      activeName_notice: 0,
+      activeName_info: "0", //默认标签
+      activeName_notice: "1",
       noticeList: [],//系统通知
+      unreadList: [],
       commentList: [
-        {id:1,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
-        {id:2,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
-        {id:3,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
-        {id:4,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
+        // {id:1,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
+        // {id:2,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
       ],//用户评论
       userInfo: {
-        name: '',
-        gender: '',
-        birth: '',
-        email: '',
-        job:'',
-        summary:'',
-        avatar: ''
+        name: '', gender: '',  birth: '', email: '', job:'', summary:'', avatar: ''
       },
       notice_drawer: false,
       info_drawer:false,
@@ -209,14 +230,38 @@ export default {
       labelWidth: "85px",
     }
   },
+  computed:{
+    unread() {return '未读('+this.unreadCnt+')'}
+  },
   components:{ },
   created(){
     this.name=localStorage.getItem('name')
     this.getUserInfo()
+    this.getComment()
   },
   methods:{
+    getComment(){
+      console.info('getComment')
+      message.getAllDiscuss().then(res=>{
+        console.log(res.data)
+        this.commentList = res.data
+        this.total = res.data.length
+        this.unreadCnt = 0
+        for(var i=0;i<this.total;i++){
+          if(this.commentList[i].discuss.isRead==0 ){
+            this.unreadList.push(res.data[i]);
+            this.unreadCnt ++;
+          }
+        }
+      })
+    },
+    validAvatar(){
+      if(this.avatar == null || this.avatar == undefined) return false
+      return this.avatar.length>0?true:false
+    },
     loginout(){
       user.logout().then(res=>{
+        this.avatar = ''
         this.$store.commit('logout')//清除token等信息
         this.$router.push({path: '/Login'})
       })
@@ -237,6 +282,7 @@ export default {
     getUserInfo(){ //用户信息 
       if(this.$store.state.token){
         console.info('存在token')
+        console.info(this.$store.state.name)
         user.getUserInfo().then(response=>{
           console.info(response.data)
           var a = response.data
@@ -371,5 +417,11 @@ export default {
     margin-top: 10px;
     line-height: 30px;
     height: 37px;
+  }
+
+  .avatar{
+    width:30px;
+    height:30px;
+    border-radius: 50%;
   }
 </style>

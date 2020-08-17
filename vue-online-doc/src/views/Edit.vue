@@ -8,7 +8,7 @@
       <el-main style="width: 80%">
         <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
         <quill-editor
-        v-model="content"
+        v-model="content" style="height: 60vh"
         ref="myQuillEditor"
         :options="editorOption"
         @blur="onEditorBlur($event)"
@@ -90,6 +90,7 @@
         file.sendDocument(this.title,this.content)
         .then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
+          this.$router.push({path:'/'})
         })
       },
       startEdit(){

@@ -11,8 +11,8 @@ import java.util.Date;
 @ToString
 public class File {
 	// 一个问题是，这样记录的话 数据库初始需要为空，之后想一下怎么处理
-	static public Integer fileCnt = 0;
-	
+	static public Integer fileCnt = 10;
+
     private Integer fileId;
     private String fileName;
     private String fileInfo;
@@ -35,5 +35,5 @@ public class File {
 		this.isEdit = 0;
 		this.isDelete = 0;
 	}
-	
+
 }

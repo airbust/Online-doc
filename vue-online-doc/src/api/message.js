@@ -20,5 +20,11 @@ export default {
       url: '/discuss/delete/' + discussId,
       method: 'delete'
     })
+  },
+  getAllDiscuss(){
+    return request({
+      url: '/discuss/getAllDiscuss',
+      method: 'get'
+    })
   }
 }

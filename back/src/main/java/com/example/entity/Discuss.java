@@ -15,12 +15,14 @@ public class Discuss {
 	private Integer fileId;
 	private String discussBody;
 	private Date discussTime;
-	
-	public Discuss(Integer userId, Integer fileId, String discussBody, Date discussTime) {
+	private Integer isRead;
+
+	public Discuss(Integer userId, Integer fileId, String discussBody, Date discussTime,Integer isRead) {
 		this.userId = userId;
 		this.fileId = fileId;
 		this.discussBody = discussBody;
 		this.discussTime = discussTime;
+		this.isRead = isRead;
 	}
-	
+
 }

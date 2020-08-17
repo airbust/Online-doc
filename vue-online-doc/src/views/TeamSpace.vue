@@ -88,7 +88,7 @@
               </el-table-column>
               <el-table-column  prop="mail" label="邮箱" width="220">
               </el-table-column>
-              <el-table-column label="操作"> <template><el-button v-if="isAdmin" class="button" plain >管理者</el-button>
+              <el-table-column label="操作"> <template><el-button v-if="isAdmin" style="width:110px" plain >管理者</el-button>
               </template>
               </el-table-column>
             </el-table>

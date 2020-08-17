@@ -39,8 +39,6 @@ public class FileService {
 	private JwtTokenUtil jwtTokenUtil;
 
 	public DocResult findFileById(Integer fileId) throws RuntimeException {
-		// TODO 确保登录
-		System.out.println("查询文章id = " + fileId);
 		File file = fileDao.getFileById(fileId); //文档
 		Role role = roleDao.getAuthByFileId(fileId); //文档权限
 		System.out.println("role = " + role);
@@ -75,7 +73,7 @@ public class FileService {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		if(teamName != null) {
 			Group group = groupDao.getGroupByName(teamName);
-			File file = new File(fileName, fileBody, new Date(), user.getId(), group.getGroupId());
+			File file = new File(fileName, fileBody, new Date(), 0, group.getGroupId());
 			fileDao.saveFile(file);
 			Role role = new Role(file.getFileId());
 			roleDao.saveAuthByFileId(role);

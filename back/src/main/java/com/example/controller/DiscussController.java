@@ -53,4 +53,14 @@ public class DiscussController {
 			return Result.create(200, "查询失败," + e.getMessage());
 		}
 	}
+
+	@GetMapping("/getAllDiscuss")
+	Result getAllDiscuss(){
+		try {
+			return Result.create(200, "查询成功", discussService.getAllDiscuss());
+		}
+		catch (Exception e) {
+			return Result.create(200, "查询失败," + e.getMessage());
+		}
+	}
 }

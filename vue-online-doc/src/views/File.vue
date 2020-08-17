@@ -3,7 +3,7 @@
     <div class="header">
       
       <div style="float:right">
-        <el-button type="text" @click="historyVisible = true">查看历史版本</el-button>
+        <el-button type="text" @click="historyVisible = true" v-if="writable">查看历史版本</el-button>
         <el-button @click="startEdit" v-if="writable&&!flag">编辑</el-button>
         <el-button @click="endEdit" v-if="writable&&flag">预览</el-button>
         <el-button @click="editFile" v-if="writable&&flag">更新保存</el-button>
@@ -46,19 +46,22 @@
     <el-divider content-position="right">䂖墨文档 </el-divider>
     <div>
       <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
-      <quill-editor 
-      v-model="content"
-      ref="myQuillEditor"
-      :options="editorOption"
-      @blur="onEditorBlur($event)"
-      @focus="onEditorFocus($event)"
-      @ready="onEditorReady($event)"
-      v-if="flag&&writable"
-      ></quill-editor>
-
+      <div>
+        <quill-editor style="height:60vh;"
+        v-model="content"
+        ref="myQuillEditor"
+        :options="editorOption"
+        @blur="onEditorBlur($event)"
+        @focus="onEditorFocus($event)"
+        @ready="onEditorReady($event)"
+        v-if="flag&&writable"
+        ></quill-editor>
+      </div>
       <el-divider></el-divider>
-      <div style="margin-left:50px">[调试]当前您的身份是：{{this.$store.state.roles}}</div>
-      <div style="margin-left:50px">[调试]当前文档权限是：{{auth}}</div>
+      <div v-if="false">
+        <div style="margin-left:50px">[调试]当前您的身份是：{{this.$store.state.roles}}</div>
+        <div style="margin-left:50px">[调试]当前文档权限是：{{auth}}</div>
+      </div>
 
       <el-card v-if="discussable&&!flag" style="margin-top: 50px">
         <!-- 发评论 -->
@@ -73,23 +76,23 @@
         </div>
         <!-- 评论列表 -->
         <div class="message_infos">
-          <div v-for="message in messageList" :key="message.discussId">
+          <div v-for="message in messageList" :key="message.discuss.discussId">
             <div class="commentList">
               <span class="left p1">
-                <img v-if="!message.avatar" src="@/assets/avatar.svg">
-                <img v-else :src="message.avatar"  style="width:50px; height:50px"
+                <img v-if="!message.user.avatar" src="@/assets/avatar.svg">
+                <img v-else :src="message.user.avatar"  style="width:50px; height:50px"
                   onerror="javascript:this.src='@/assets/avatar.svg'" />
               </span>
               <span class="right p1">
-                <div class="rightTop" v-if="message.userId">
-                  <el-link class="userName" :underline="false">{{message.userId}}</el-link>
-                  <span class="timeAgo" >{{message.discussTime}}</span>
-                </div>
-                <div class="rightCenter">{{message.discussBody}}</div>
+                <div class="rightTop" v-if="message.user.id">
+                  <el-link class="userName" :underline="false">{{message.user.name}}</el-link>
+                  <span class="timeAgo" >{{message.discuss.discussTime}}</span>
+                </div>  
+                <div class="rightCenter">{{message.discuss.discussBody}}</div>
                 <div class="rightBottom">
                     <el-divider content-position="right">
-                    <el-link :underline="false" class="el-icon-delete" 
-                        @click="deleteMessage(message.discussId)"/>
+                    <el-link :underline="false" class="el-icon-delete" v-if="myComment(message.user.name)"
+                        @click="deleteMessage(message.discuss.discussId)"/>
                     </el-divider>
                 </div>
               </span>
@@ -131,18 +134,12 @@
         options: [{
           value: 'other', label: '权限设置-其他用户',
           children: [{value: 'RD',label: '允许查看与评论'}, {value: 'R',label: '仅允许查看'}, {value: 'N',label: '不允许查看'}]
-        }, {
+          }, {
           value: 'group', label: '权限设置-团队用户',
           children: [{ value: 'RDW',label: '允许查看评论与编辑'}, { value: 'RD',label: '允许查看与评论'}, { value: 'R',label: '仅允许查看'}]
         } ],
         authList: [],
-        messageList: [
-          {id:0,name:"李华",time: "2020-07-24 14:33:02",body: "123112论评论评论评论评论"},
-          {id:1,name:"李华",time: "2020-07-24 14:33:02",body: "123112论评论评论评论评论"},
-          {id:2,name:"李华",time: "2020-07-24 14:33:02",body: "123112论评论评论评论评论"},
-        ],   //当前页数据
-        pageSize: 5,    //每页显示数量
-        currentPage: 1,   //当前页数
+        messageList: [ ],   //当前页数据
         messageBody: '',
         loading: true, //是否加载中
         ////////////////
@@ -191,18 +188,19 @@
       addQuillTitle();
     },
     methods:{
-      
+      myComment(name){
+        return this.$store.state.name == name ? true : false
+      },
       handleChange(){
-        console.log(this.value)
+        // console.log(this.value)
         file.updateAuth(this.$route.params.fileId,this.value[0],this.value[1]).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 })
         })
       },
       loadMessage () {
         message.getMessage(this.$route.params.fileId).then(res => {
-          console.info('123321')
           this.messageList = res.data
-          console.log(this.messageList)
+          console.log(res.data)
           this.loading = false
         })
       },
@@ -267,7 +265,7 @@
           if(this.auth.groupDiscuss==1) this.discussable=true;
           else this.discussable=false
           if(this.auth.groupWrite==1){
-            this.writable=(true&&this.is_Edit==0);
+            this.writable=true;
           }else this.writable=false
         }
         if(this.readable==false){
@@ -432,6 +430,7 @@
     width:75%
   }
   .bd{
+    min-height:70vh;
     margin-left: 50px;
     margin-top: 30px;
     width:85%
