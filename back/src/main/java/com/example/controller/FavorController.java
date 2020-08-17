@@ -27,7 +27,7 @@ public class FavorController {
 //	Result collectDocument(Integer page, Integer showCount) {
 //		return Result.create(200, "查询成功", favorService.getCollectionFile(page, showCount));
 //	}
-	@GetMapping("/MyCollectingDoc")
+	@GetMapping("/getCollect")
 	Result collectDocument() {
 		return Result.create(200, "查询成功", favorService.getCollectionFile());
 	}

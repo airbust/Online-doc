@@ -64,13 +64,13 @@
     data(){
       return{
         FileData:[
-          {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
         ],
         showOption: [],
         total: 3,
@@ -85,7 +85,7 @@
     created() {
       file.getCreation().then((res)=>{
         this.FileData=res.data
-        console.log(res)
+        // console.log(res)
         for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
       })
     },
@@ -100,7 +100,7 @@
       },
       deleteFile(id){
         console.info('delete file: id='+id)
-        file.deleteDocument(id).then(res=>{
+        file.Deleted(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
           file.getCreation().then((res)=>{this.FileData=res.data})
         })
@@ -115,7 +115,7 @@
         file.getCreation().then((res)=>{
           this.FileData=[];
           for(var i=0;i<this.total;i++){
-            if(this.keyword==res.data[i].fileName||this.keyword==res.data[i].modifyTime)
+            if(this.keyword==res.data[i].fileName)
               this.FileData.push(res.data[i]);
             if(this.keyword=='') 
               this.FileData=res.data;
@@ -172,13 +172,5 @@
   .el-col :hover{
     background: rgb(247, 247, 247);
   }
-
-.zhuanti img { width: 100%; -moz-transition: all .5s ease; -webkit-transition: all .5s ease; -ms-transition: all .5s ease; -o-transition: all .5s ease; transition: all .5s ease; opacity: 0.5 }
-.zhuanti p { position: absolute; top: 30%; left: 0; right: 0; color: #FFF; text-align: center; font-size: 15px; overflow: hidden; margin-top: 5px; padding: 0 40px; }
-.zhuanti p a { color: #fff; }
-.zhuanti span { width: 80px; margin: 10px auto; background: transparent; font-size: 12px; border: 1px solid #FFF; border-radius: 40px; padding: 4px 0; color: #FFF; display: block; clear: both; -webkit-transition: all .3s ease; -moz-transition: all .3s ease; -ms-transition: all .3s ease; -o-transition: all .3s ease; transition: all .3s ease; }
-.zhuanti li:hover img { opacity: 0.6 }
-.zhuanti li:hover span { background: #FFF; }
-.zhuanti li:hover span a { color: #333 }
   
 </style>

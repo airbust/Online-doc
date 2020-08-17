@@ -34,7 +34,7 @@
         select * from file where user_id = #{value} and is_delete = 0 order by file_id
     </select>
 
-    <select id="getFileByGrouprId" resultMap="File">
+    <select id="getFileByGroupId" resultMap="File">
         select * from file where group_id = #{value} and is_delete = 0
     </select>
 
@@ -49,6 +49,10 @@
     <update id="deleteFile" parameterType="File">
         update file set is_delete = 1 where file_id = #{value}
     </update>
+
+    <delete id="foreverDeleted" parameterType="Integer">
+        delete from file where file_id = #{fileId}
+    </delete>
 
     <update id="recoverFile" parameterType="File">
         update file set is_delete = 0 where file_id = #{value}

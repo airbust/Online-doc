@@ -30,6 +30,11 @@ let appid= ""
 let appsecret= ""
 Vue.prototype.$sign=md5(appid + appsecret)
 
+import VueClipboard from 'vue-clipboard2'
+  VueClipboard.config.autoSetContainer = true
+  Vue.use(VueClipboard)
+
+
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({

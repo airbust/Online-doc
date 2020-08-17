@@ -32,6 +32,12 @@
         FROM user WHERE user_name=#{value}
     </select>
 
+    <select id="getMemberById" parameterType="Integer" resultMap="User">
+        SELECT u.user_id, user_name, user_password, user_mail, user_avatar, user_gender, user_birth, user_job, user_info
+        FROM user_group ug LEFT JOIN user u on ug.user_id = u.user_id
+        where ug.group_id = #{groupId}
+    </select>
+
     <update id="updateUser" parameterType="User">
         UPDATE user
         <set>

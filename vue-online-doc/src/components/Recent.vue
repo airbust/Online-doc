@@ -98,7 +98,7 @@
       },
       deleteFile(id){
         console.info('delete file: id='+id)
-        file.deleteDocument(id).then(res=>{
+        file.Deleted(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
           file.getRecent().then((res)=>{this.FileData=res.data})
         })

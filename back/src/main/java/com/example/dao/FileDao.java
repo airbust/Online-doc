@@ -27,13 +27,16 @@ public interface FileDao {
 
     List<File> getDeletedFileByUserId(Integer userId);
 
+    List<File> getFileByTeamName(String teamName);
+
     List<File> getDeletedFileByGroupId(Integer groupId);
 
     void deleteFile(Integer fileId);
-
+    void foreverDeleted(Integer fileId);
     void recoverFile(Integer fileId);
 
     void updateEditState(Integer fileId);
-
     void setEditStatus(Integer isEdit, Integer fileId);
+
+
 }

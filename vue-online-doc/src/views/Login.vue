@@ -29,7 +29,6 @@ import store from '@/store/store'
 import user from '@/api/user'
 export default {
     name: "Login",
-
     data() {
         var name = (rule, value, callback) => {
             if (value === '') {

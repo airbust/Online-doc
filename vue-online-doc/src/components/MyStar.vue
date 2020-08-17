@@ -65,7 +65,7 @@
       return{
         FileData:[],
         showOption: [],
-        total: 3,
+        total: 3,//TODO
         keyword:''
       }
     },
@@ -75,8 +75,9 @@
       }
     },
     created() {
-      file.getMyCollectingDocument().then((res)=>{
+      file.getMyCollecting().then((res)=>{
         this.FileData=res.data
+        console.log('begin')
         console.log(this.FileData)
         for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
       })
@@ -92,19 +93,19 @@
       },
       deleteFile(id){
         console.info('delete file: id='+id)
-        file.deleteDocument(id).then(res=>{
+        file.Deleted(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getMyCollectingDocument().then((res)=>{this.FileData=res.data})
+          file.getMyCollecting().then((res)=>{this.FileData=res.data})
         })
       },
       unCollectFile(id){
         file.removeCollectedDocument(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
-          file.getMyCollectingDocument().then((res)=>{this.FileData=res.data})
+          file.getMyCollecting().then((res)=>{this.FileData=res.data})
         })
       },
       getFileData(){
-        file.getMyCollectingDocument().then((res)=>{
+        file.getMyCollecting().then((res)=>{
           this.FileData=[];
           for(var i=0;i<this.total;i++){
             if(this.keyword==res.data[i].fileName)

@@ -34,14 +34,16 @@
         </el-table-column>
         <el-table-column prop="fileName" label="文件名" width="200">
         </el-table-column>
-        <el-table-column prop="modifyCnt" label="修改次数" width="200">
+        <el-table-column prop="modifyCnt" label="修改次数" width="150">
         </el-table-column>
         <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
         </el-table-column>
-        <el-table-column label="操作" width="160">
+        <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button size="mini" type="primary"
                        @click="recoverFile(scope.row.fileId)">恢复</el-button>
+            <el-button size="mini" type="danger"
+                       @click="deleteFile(scope.row.fileId)">彻底删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -56,15 +58,7 @@
     name: "MyRecycle",
     data() {
       return {
-        FileData:[
-          {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-        ],
+        FileData:[],
         showOption: [],
         total: 3,
         keyword: ''
@@ -76,7 +70,7 @@
       }
     },
     created() {
-      file.getDeletedDocment().then((res) => {
+      file.getDeleted().then((res) => {
         this.FileData = res.data
       })
     },
@@ -101,9 +95,17 @@
         })
       },
       recoverFile(id) {
-        file.recoverDeletedDocumentById(id).then(res => {
+        file.recoverDeleted(id).then(res => {
           this.$notify({title: '提示', type: 'success', message: res.message, duration: 1700});
-          file.getDeletedDocment().then((res) => {
+          file.getDeleted().then((res) => {
+            this.FileData = res.data
+          })
+        })
+      },
+      deleteFile(id) {
+        file.foreverDeleted(id).then(res => {
+          this.$notify({title: '提示', type: 'success', message: res.message, duration: 1700});
+          file.getDeleted().then((res) => {
             this.FileData = res.data
           })
         })

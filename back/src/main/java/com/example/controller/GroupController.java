@@ -1,137 +1,89 @@
 package com.example.controller;
 
-import com.example.dao.UserDao;
-import com.example.entity.Group;
+import com.example.dao.FileDao;
 import com.example.entity.Result;
-import com.example.entity.User;
+import com.example.service.FileService;
 import com.example.service.GroupService;
-import com.example.service.UserService;
-import com.example.utils.DateUtil;
-import com.example.utils.JwtTokenUtil;
-import com.example.utils.TransferUtil;
-import com.example.vo.GroupListVO;
-import com.example.vo.GroupVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.xml.TransformerUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-
+@CrossOrigin
 @RestController
 @RequestMapping("/team")
 public class GroupController {
-
-    @Autowired(required = false)
-    GroupService groupService;
-
     @Autowired
-    UserService userService;
-
+    private FileService fileService;
     @Autowired
-    private HttpServletRequest request;
+    private GroupService groupService;
 
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @PostMapping("/setup")
-    public Result setupTeam(@RequestBody String teamName) {
-        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-        Group group = new Group();
-        group.setAdminId(user.getId());
-        group.setGroupName(teamName);
-        group.setCreateTime(DateUtil.getCurrentTime());
-        group.setGroupMateIds("");
-        int rows = groupService.insertGroup(group);
-        if(rows >= 1) {
-            return Result.create(200, "创建成功", group);
-        } else {
-            return Result.create(202, "创建失败", null);
+    @PostMapping("/create/{groupName}")
+    public Result createGroup(@PathVariable String groupName){
+        try {
+            groupService.createGroup(groupName);
+            return Result.create(200, "创建成功");
+        }
+        catch(Exception e) {
+            return Result.create(200, "创建失败," + e.getMessage());
         }
     }
-
-    @GetMapping("/myTeamInfo")
-    public Result getMyTeamInfo(){
-        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-        List<Group> adminGroups = groupService.selectGroupsByAdminId(user.getId());
-        List<GroupVO> adminGroupVOs = new ArrayList<>();
-        for(Group group : adminGroups) {
-            GroupVO groupVO = new GroupVO();
-            try {
-                TransferUtil.fatherToChild(group, groupVO);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            groupVO.setEditable(true);
-            adminGroupVOs.add(groupVO);
+    @PostMapping("/attend/{groupName}")
+    public Result attendGroup(@PathVariable String groupName){
+        try {
+            groupService.attendGroup(groupName);
+            return Result.create(200, "加入团队成功");
         }
-
-        List<GroupVO> mateGroupVOs = new ArrayList<>();
-        List<Group> mateGroups = groupService.selectGroupsByGroupMate(user.getId());
-        for(Group group : mateGroups) {
-            GroupVO groupVO = new GroupVO();
-            try {
-                TransferUtil.fatherToChild(group, groupVO);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            groupVO.setEditable(false);
-            mateGroupVOs.add(groupVO);
+        catch(Exception e) {
+            return Result.create(200, "加入团队失败," + e.getMessage());
         }
-        GroupListVO groupListVO = new GroupListVO();
-        groupListVO.setAdminGroups(adminGroupVOs);
-        groupListVO.setMateGroups(mateGroupVOs);
-        return Result.create(200, "", groupListVO);
     }
-
-    @DeleteMapping("/dismiss")
-    public Result dismissTeam(@RequestParam("teamId") Integer teamId){
-        groupService.deleteGroup(teamId);
-        return Result.create(200, "",null);
-    }
-
-    @PostMapping("/{teamId}/{userId}")
-    public Result addTeamMember(@PathVariable("teamId") Integer teamId, @PathVariable("userId") Integer userId) {
-        Group group = groupService.selectGroupById(teamId);
-        group.setGroupMateIds((group.getGroupMateIds().equals("")? String.valueOf(userId): group.getGroupMateIds() + "," + userId));
-        return Result.create(200, "加入成功", null);
-    }
-
-    @PostMapping("/join/{teamId}")
-    public Result joinTeam(@PathVariable("teamId") Integer teamId) {
-        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-        return addTeamMember(teamId, user.getId());
-    }
-
-    @DeleteMapping("/{teamId}/{userId}")
-    public Result removeTeamMember(@PathVariable("teamId") Integer teamId, @PathVariable("userId") Integer userId) {
-        Group group = groupService.selectGroupById(teamId);
-        List<String> teammateIds = new ArrayList<String>(Arrays.asList(group.getGroupMateIds().split(",")));
-        teammateIds.remove(userId.toString());
-        StringBuilder idStr = new StringBuilder();
-        if(teammateIds.size() != 0) {
-            for(int i = 0; i < teammateIds.size(); ++i) {
-                if(i == 0) {
-                    idStr.append(teammateIds.get(i));
-                } else {
-                    idStr.append(",").append(teammateIds.get(i));
-                }
-            }
+    @GetMapping("/getGroups")
+    public Result getGroups(){
+        try {
+            return Result.create(200, "获取成功",groupService.getGroups());
         }
-        group.setGroupMateIds(idStr.toString());
-        groupService.updateGroup(group);
-        return Result.create(200, "移除成功");
+        catch(Exception e) {
+            return Result.create(200, "获取失败," + e.getMessage());
+        }
     }
-
-    @DeleteMapping("/quit/{teamId}")
-    public Result quitTeam(@PathVariable("teamId") Integer teamId) {
-        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-        return removeTeamMember(teamId, user.getId());
+    @PostMapping("/addMem")
+    public Result saveGroupMem(String userName,String teamName){
+        try {
+            groupService.saveGroupMem(userName,teamName);
+            return Result.create(200, "添加成功");
+        }
+        catch(Exception e) {
+            return Result.create(200, "添加失败," + e.getMessage());
+        }
+    }
+    @GetMapping("/getGroupMem/{teamName}")
+    public Result getGroupMem(@PathVariable String teamName){
+        try {
+            return Result.create(200, "添加成功",groupService.getGroupMem(teamName));
+        }
+        catch(Exception e) {
+            return Result.create(200, "添加失败," + e.getMessage());
+        }
+    }
+    @PostMapping("/removeMem")
+    public Result removeMem(String teamName,String userName){
+        try {
+            System.out.println("Remove: teamName = "+teamName+"userName = "+userName);
+            groupService.removeMem(teamName,userName);
+            return Result.create(200, "移除成员成功");
+        }
+        catch(Exception e) {
+            return Result.create(200, "移除成员失败," + e.getMessage());
+        }
+    }
+    @PostMapping("/deleteGroup")
+    public Result deleteGroup(String teamName,String userName){
+        try {
+            System.out.println("Remove: teamName = "+teamName);
+            groupService.deleteGroup(teamName);
+            return Result.create(200, "移除成员成功");
+        }
+        catch(Exception e) {
+            return Result.create(200, "移除成员失败," + e.getMessage());
+        }
     }
 }

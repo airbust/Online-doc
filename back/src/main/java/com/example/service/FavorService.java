@@ -5,16 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.example.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.config.JwtConfig;
-import com.example.dao.DiscussDao;
-import com.example.dao.FavorDao;
-import com.example.dao.FileDao;
-import com.example.dao.GroupDao;
-import com.example.dao.UserDao;
 import com.example.entity.Favor;
 import com.example.entity.File;
 import com.example.entity.User;
@@ -29,8 +26,6 @@ public class FavorService {
 	DiscussDao discussDao;
 	@Autowired
 	private UserDao userDao;
-	@Autowired
-	private GroupDao groupDao;
 	@Autowired
 	private FileDao fileDao;
 	@Autowired
@@ -57,8 +52,10 @@ public class FavorService {
 //		List<Integer> tmp = favorDao.getFavorFileIdByUserId(user.getId(), (page - 1) * showCount, showCount);
 		List<Integer> tmp = favorDao.getFavorFileIdByUserId(user.getId());
 		List<File> file = new ArrayList<>();
+//		System.out.println("tmp = " + tmp);
 		for(Integer i : tmp)
 			file.add(fileDao.getFileById(i));
+//		System.out.println("file = " + file);
 		return file;
 	}
 

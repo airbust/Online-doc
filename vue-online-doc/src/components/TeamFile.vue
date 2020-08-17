@@ -18,7 +18,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <img src="@/assets/doc1.png" @click="goto(fileId)" class="image">
+          <img src="@/assets/doc1.png" @click="goto(o.fileId)" class="image">
           <div style="margin-top: 14px; text-align: center">
             <a>{{o.fileName}}</a>
           </div>
@@ -62,32 +62,42 @@
     data(){
       return{
         FileData:[
-          {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":4,"fileName":"测试文档","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":5,"fileName":"静态数据","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":6,"fileName":"232323","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          {"fileId":7,"fileName":"qseawd","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
+          // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
         ],
         showOption: [],
         total: 3,
         keyword:''
       }
     },
+    props:{ groupName: String },
     computed:{
       layout() {
         return this.$store.state.layout==1
       }
     },
+    watch: {
+      groupName(val) {
+        // console.log(val)
+        this.$store.dispatch('setCurGroupName',val)
+        console.log(this.$store.state.groupName)
+        this.getFile()
+      }
+    },
     created() {
-      file.getTeamFile().then((res)=>{
-        this.FileData=res.data
-        console.log(res)
-        for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
-      })
+      if(this.$store.state.groupName!=''){
+        this.getFile()
+      }
     },
     methods:{
+      getFile(){
+        file.getTeamFile(this.$store.state.groupName).then((res)=>{
+          this.FileData=res.data
+          // console.log(res)
+          for(var i=0;i<30;++i) this.showOption[i]=0 //暂未获取文章数total
+        })
+      },
       pEnter(index) {
         this.$set(this.showOption,index,1)
       },
@@ -98,7 +108,7 @@
       },
       deleteFile(id){
         console.info('delete file: id='+id)
-        file.deleteDocument(id).then(res=>{
+        file.Deleted(id).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1700 });
           file.getTeamFile().then((res)=>{this.FileData=res.data})
         })

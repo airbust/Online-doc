@@ -69,16 +69,25 @@ public class FileService {
 
 	// ******************************************************************************
 
-	public void newFile(String fileName, String fileBody) throws RuntimeException {
+	public void newFile(String fileName, String fileBody,String teamName) throws RuntimeException {
 		if (fileName.equals(""))
 			throw new RuntimeException("标题为空");
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		File file = new File(fileName, fileBody, new Date(), user.getId(), 0);
-		fileDao.saveFile(file);
-		Role role = new Role(file.getFileId());
-//		System.out.println("role = " + role);
-		roleDao.saveAuthByFileId(role);
-//		System.out.println("saveEnd");
+		if(teamName != null) {
+			Group group = groupDao.getGroupByName(teamName);
+			File file = new File(fileName, fileBody, new Date(), user.getId(), group.getGroupId());
+			fileDao.saveFile(file);
+			Role role = new Role(file.getFileId());
+			roleDao.saveAuthByFileId(role);
+		}
+		else {
+			File file = new File(fileName, fileBody, new Date(), user.getId(), 0);
+			fileDao.saveFile(file);
+			Role role = new Role(file.getFileId());
+			//		System.out.println("role = " + role);
+			roleDao.saveAuthByFileId(role);
+			//		System.out.println("saveEnd");
+		}
 	}
 
 	public void editFile(Integer fileId,String fileName,String fileBody) throws RuntimeException {
@@ -108,6 +117,13 @@ public class FileService {
 //		if(fileId > File.fileCnt || fileId <= 0)
 //			throw new RuntimeException("文件不存在");
 		fileDao.recoverFile(fileId);
+
+	}
+	public void foreverDeleted(Integer fileId) throws RuntimeException {
+		File file = fileDao.getFileById(fileId);
+		if(file == null)
+			throw new RuntimeException("文件未删除");
+		fileDao.foreverDeleted(fileId);
 	}
 
 	public void updateFileState(Integer fileId) throws RuntimeException {
@@ -132,6 +148,13 @@ public class FileService {
 		return fileDao.getFileByUserId(user.getId());
 	}
 
+	public List<File> getTeamFile(String teamName) {
+		Group group = groupDao.getGroupByName(teamName);
+		return fileDao.getFileByGroupId(group.getGroupId());
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////
+
 	/**
 	 * 通过用户名加载用户到 Spring Security
 	 *
@@ -144,7 +167,6 @@ public class FileService {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>(1);
 		// 用于添加用户的权限。将用户权限添加到authorities
 		File file = fileDao.getFileById(Integer.valueOf(fileId));
-//		Role role = new Role();
 		String roleName = "OTHER";
 		if (file.getUserId() != 0) { // 个人文档
 			if (file.getUserId().equals(userId))
@@ -154,7 +176,7 @@ public class FileService {
 			if (group.getAdminId().equals(userId))
 				roleName = "USER";
 			else {
-				List<User> members = groupDao.getMemberById(file.getGroupId());
+				List<User> members = userDao.getMemberById(file.getGroupId());
 				for (User member : members) {
 					if (member.getId().equals(userId)) {
 						roleName = "GROUP";
@@ -179,4 +201,7 @@ public class FileService {
 			else if(auth.equals("R")) roleDao.updateGroupAuth(fileId,0,0);
 		}
 	}
+
+
+
 }

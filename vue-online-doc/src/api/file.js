@@ -26,9 +26,22 @@ export default {
       method:'get',
     })
   },
+  getTeamFile(teamName){
+    return request({
+      url: '/doc/getTeamFile/' + teamName,
+      method: 'get'
+    })
+  },
+  saveTeamFile(docTitle, docBody,teamName){
+    return request({
+      url: '/doc/saveTeamFile',
+      method: 'post',
+      data: qs.stringify({'docTitle': docTitle, 'docBody': docBody,'teamName':teamName})
+    })
+  },
   sendDocument(docTitle, docBody) {
     return request({
-      url: '/doc',
+      url: '/doc/saveFile',
       method: 'post',
       data: qs.stringify({'docTitle': docTitle, 'docBody': docBody})
     })
@@ -46,24 +59,34 @@ export default {
       method: 'get'
     })
   },
-  deleteDocument(fileId) {    //放入回收站
+
+  // 回收站相关
+  Deleted(fileId) {  
     return request({
       url: '/doc/delete/' + fileId,
       method: 'delete',
     })
   },
-  getDeletedDocment() {
+  getDeleted() {
     return request({
-      url: '/doc/deletedDoc/',
+      url: '/doc/getDelete',
       method: 'get'
     })
   },
-  recoverDeletedDocumentById(fileId){
+  recoverDeleted(fileId){
     return request({
-      url: '/doc/deletedDoc/' + fileId,
-      method: 'get'
+      url: '/doc/recoverDelete/' + fileId,
+      method: 'post'
     })
   },
+  foreverDeleted(fileId){
+    return request({
+      url: '/doc/foreverDelete/' + fileId,
+      method: 'post'
+    })
+  },
+
+  // 编辑锁相关
   isEditable(docId){  //获取是否具有编辑权限
     return request({
       url: '/doc/' + docId + '/isEditable',
@@ -96,9 +119,9 @@ export default {
       method: 'delete'
     })
   },
-  getMyCollectingDocument(){
+  getMyCollecting(){
     return request({
-      url: '/doc/MyCollectingDoc',
+      url: '/doc/getCollect',
       method: 'get'
     })
   },

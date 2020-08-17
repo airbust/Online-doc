@@ -4,6 +4,8 @@ import com.example.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @Mapper
 public interface UserDao {
@@ -12,4 +14,5 @@ public interface UserDao {
     User getUserByName(String name);
     void saveUser(User newUser);
     void updateUser(User user);
+    List<User> getMemberById(Integer groupId);
 }
