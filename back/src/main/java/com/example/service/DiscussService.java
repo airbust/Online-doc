@@ -81,4 +81,8 @@ public class DiscussService {
 		}
 		return discussResultList;
 	}
+
+	public void readDiscussById(Integer discussId) {
+		discussDao.readDiscussById(discussId);
+	}
 }

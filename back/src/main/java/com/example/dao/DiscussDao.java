@@ -22,4 +22,6 @@ public interface DiscussDao {
 	List<Discuss> getUserFileDiscussByUserId(Integer userId);
 
 	List<Discuss> getTeamFileDiscussByUserId(Integer userId);
+
+	void readDiscussById(Integer discussId);
 }

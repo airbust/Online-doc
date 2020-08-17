@@ -21,6 +21,12 @@ export default {
       method: 'delete'
     })
   },
+  readComment(discussId){
+    return request({
+      url: '/discuss/read/' + discussId,
+      method: 'post'
+    })
+  },
   getAllDiscuss(){
     return request({
       url: '/discuss/getAllDiscuss',

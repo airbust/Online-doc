@@ -69,7 +69,8 @@
                         <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
                         <span style="font-size:16px; font-weight:bold">「 {{comment.fileName}}」</span>
                       </div>
-                      <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}}</div>
+                      <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}} 
+                        <span @click="readComment(comment.discuss.discussId)" class="el-icon-bell" style="float:right;font-size:20px"></span></div>
                     </span>
                   </div>
                 </div>
@@ -247,12 +248,19 @@ export default {
         this.commentList = res.data
         this.total = res.data.length
         this.unreadCnt = 0
+        this.unreadList = []
         for(var i=0;i<this.total;i++){
           if(this.commentList[i].discuss.isRead==0 ){
             this.unreadList.push(res.data[i]);
             this.unreadCnt ++;
           }
         }
+      })
+    },
+    readComment(id){
+      message.readComment(id).then(res=>{
+        console.log(res.message)
+        this.getComment()
       })
     },
     validAvatar(){
@@ -281,10 +289,10 @@ export default {
     },
     getUserInfo(){ //用户信息 
       if(this.$store.state.token){
-        console.info('存在token')
-        console.info(this.$store.state.name)
+        // console.info('存在token')
+        // console.info(this.$store.state.name)
         user.getUserInfo().then(response=>{
-          console.info(response.data)
+          // console.info(response.data)
           var a = response.data
           this.userInfo.name = a.name
           this.userInfo.gender = a.gender

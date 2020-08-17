@@ -42,4 +42,7 @@
         order by discuss_time desc
     </select>
 
+    <update id="readDiscussById" parameterType="Integer">
+        update discuss set is_read = 1 where discuss_id = #{discussId}
+    </update>
 </mapper>

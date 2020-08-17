@@ -22,8 +22,6 @@ Vue.http = Vue.prototype.$http = axios
 Vue.prototype.$qs = qs
 Vue.prototype.$md5 = md5
 Vue.prototype.$HOST='https://'//国外镜像
-// Vue.prototype.$HOST='http://'//国内镜像
-// Vue.prototype.$HOST='http://'//开发环境
 Vue.prototype.$appid= ""
 Vue.prototype.$appsecret= ""
 let appid= ""
@@ -31,9 +29,11 @@ let appsecret= ""
 Vue.prototype.$sign=md5(appid + appsecret)
 
 import VueClipboard from 'vue-clipboard2'
-  VueClipboard.config.autoSetContainer = true
-  Vue.use(VueClipboard)
+VueClipboard.config.autoSetContainer = true
+Vue.use(VueClipboard)
 
+import VueParticles from 'vue-particles'
+Vue.use(VueParticles)
 
 Vue.config.productionTip = false
 /* eslint-disable no-new */

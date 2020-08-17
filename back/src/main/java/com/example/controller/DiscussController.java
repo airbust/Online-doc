@@ -38,6 +38,17 @@ public class DiscussController {
 		}
 	}
 
+	@PostMapping("/read/{discussId}")
+	Result readDiscuss(@PathVariable Integer discussId) {
+		try {
+			discussService.readDiscussById(discussId);
+			return Result.create(200, "已读成功");
+		}
+		catch (Exception e) {
+			return Result.create(200, "已读失败" + e.getMessage());
+		}
+	}
+
 	@GetMapping("/getByDocId/{fileId}")
 	Result getDiscussByDocId(@PathVariable String fileId) {
 		return Result.create(200, "查询成功", discussService.getDiscussByFileId(Integer.valueOf(fileId)));

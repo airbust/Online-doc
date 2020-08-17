@@ -9,8 +9,8 @@ import Register from "../views/Register";
 import WorkStation from "../views/WorkStation";
 import TeamSpace from "../views/TeamSpace";
 import Recycle from '../views/Recycle'
-import EditFileFromTemplate from '../views/EditFileFromTemplate'
-import EditTemplate from '../views/EditTemplate'
+import TemplateLibrary from '../views/TemplateLibrary'
+import Template from '../views/Template'
 
 Vue.use(Router)
 
@@ -57,14 +57,14 @@ export default new Router({
       component: File
     },
     {
-      path: '/EditFileFromTemplate',
-      name: 'EditFileFromTemplate',
-      component: EditFileFromTemplate
+      path: '/Template/:templateId',
+      name: 'Template',
+      component: Template
     },
     {
-      path: '/EditTemplate',
-      name: 'EditTemplate',
-      component: EditTemplate
+      path: '/TemplateLibrary',
+      name: 'TemplateLibrary',
+      component: TemplateLibrary
     }
   ]
 })

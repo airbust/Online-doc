@@ -101,7 +101,7 @@
       },
       onEditorReady (editor) {
         // 准备编辑器
-        console.log('111')
+        // console.log('111')
       },
       onEditorBlur () {
         // 失去焦点事件

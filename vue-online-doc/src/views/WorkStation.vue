@@ -16,7 +16,7 @@
       </el-tooltip>
       
       <div style="margin-top: 40px"><el-button @click="newFile()" style="width: 170px" type="info">新建</el-button></div>
-      <div style="margin-top: 15px"><el-button style="width: 170px">模板库</el-button></div>
+      <div style="margin-top: 15px"><el-button  @click="gotoTLibrary()" style="width: 170px">模板库</el-button></div>
 
     </el-main>
     
@@ -60,6 +60,9 @@
     methods: {
       newFile(){
         this.$router.push({path:'/Edit'})
+      },
+      gotoTLibrary(){
+          this.$router.push({path:'/TemplateLibrary'})
       },
       layoutTile(){
         this.$store.dispatch('setLayoutStatus',1)
