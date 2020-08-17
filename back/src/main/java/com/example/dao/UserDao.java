@@ -15,4 +15,6 @@ public interface UserDao {
     void saveUser(User newUser);
     void updateUser(User user);
     List<User> getMemberById(Integer groupId);
+
+    void updateAvatar(Integer userId, String avatar);
 }

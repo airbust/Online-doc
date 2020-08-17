@@ -22,12 +22,13 @@
       <div style="margin-top: 15px"><el-button @click="optionVisible = true" style="width: 170px">管理团队</el-button></div>
       <div style="margin-top: 15px"><el-button @click="attendVisible = true" style="width: 170px">加入团队</el-button></div>
       
-      <el-card class="card">
+      <el-card class="card">  
         <span style="font-size:18px;"><i style="margin-right:10px;font-size:22px;color:grey" class="el-icon-s-custom"></i>团队管理者</span>
         <div style="margin-top:-10px"><el-divider></el-divider></div>
         <div style="margin-top:-5px">
           <span class="left">
-            <img style="width: 50px" src="@/assets/avatar.png">
+            <img  v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference">
+            <img  v-else src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
           </span>
           <span class="right">
             <div class="rightTop">
@@ -45,7 +46,10 @@
         <div style="margin-top: -15px">
         <el-row style="display: flex; flex-wrap: wrap;" type="flex" :gutter="0" class="el-row" >
           <el-col :span="6" class="el-col" v-for="(o, id) in group.member" :key="id" :offset="1" >
-              <div style="text-align:center;"><img style="width:50px" src="@/assets/avatar.png"></div>
+              <div style="text-align:center;">
+                <img  v-if="validAvatar(o.avatar)" :src="o.avatar" class="avatar" alt=""  slot="reference" style="width:50px">
+                <img  v-else src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
+              </div>
               <div style="text-align:center;margin-bottom:5px">{{o.name}}</div>
           </el-col>
         </el-row>
@@ -76,7 +80,9 @@
             <div style="margin-top:-20px"><el-divider></el-divider></div>
             <el-table  :data="group.admin" style="width: 100%" :show-header="false">
               <el-table-column   label="头像" width="70">
-                <img style="width: 40px" src="@/assets/avatar.png">
+                <!-- TODO 显示用户头像? -->
+                <!-- <img v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference"> -->
+                <img class="avatar" src="@/assets/avatar.png">
               </el-table-column>
               <el-table-column  prop="name" label="用户名" width="120">
               </el-table-column>
@@ -92,7 +98,8 @@
             <div style="margin-top:-20px"><el-divider></el-divider></div>
             <el-table  :data="group.member" style="width: 100%" :show-header="false">
               <el-table-column   label="头像" width="70">
-                <img style="width: 40px" src="@/assets/avatar.png">
+                <!-- TODO 显示用户头像? -->
+                <img class="avatar" src="@/assets/avatar.png">
               </el-table-column>
               <el-table-column  prop="name" label="用户名" width="120">
               </el-table-column>
@@ -138,6 +145,7 @@
         //当前标签页团队属性
         adminName: '', 
         adminMail: '',
+        adminAvatar: '',
         isAdmin: false,
         groups: [
           // {groupId:0,groupName: '团队1'},{groupId:1,groupName: '团队2'},{groupId:2,groupName: '团队3'}
@@ -169,8 +177,11 @@
       this.getGroups()
     },
     methods: {
-      
-      
+      validAvatar(avatar){
+        console.log(this.adminAvatar)
+        if(avatar == null || avatar == undefined) return false
+        return avatar.length>0?true:false
+      },
       getGroupMem(groupName){
         group.getGroupMem(groupName).then(res=>{
           console.info('团队成员')
@@ -179,6 +190,7 @@
           if(this.group.admin.length>0){
             this.adminName = this.group.admin[0].name
             this.adminMail = this.group.admin[0].mail
+            this.adminAvatar = this.group.admin[0].avatar
             if(this.group.admin[0].name==this.$store.state.name) this.isAdmin = true
             else this.isAdmin = false
           }
@@ -303,7 +315,11 @@
     height: 20px;
     margin-top: 15px;
   }
-
+  .avatar{
+    width: 50px;
+    height: 50px;
+    border-radius:50%
+  }
   .card{
     margin-top:25px;
     border-radius: 5%

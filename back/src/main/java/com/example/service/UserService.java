@@ -34,6 +34,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    public void saveAvatar(Integer userId, String avatar){
+        User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+        userDao.updateAvatar(userId,avatar);
+    }
+
     /**
      * 登录
      * @param name 用户名

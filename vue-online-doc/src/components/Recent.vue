@@ -17,7 +17,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <img src="@/assets/doc1.png" @click="goto(fileId)" class="image">
+          <img src="@/assets/doc1.png" @click="goto(o.fileId)" class="image">
           <div style="margin-top: 14px; text-align: center">
             <a>{{o.fileName}}</a>
           </div>
@@ -91,7 +91,7 @@
         else if(command == 'share') {}
       },
       getFile(){
-        //TODO
+        //TODO api接口
         // file.getRecent().then((res)=>{
         file.getCreation().then((res)=>{
         this.FileData=res.data

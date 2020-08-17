@@ -1,12 +1,19 @@
 package com.example.controller;
 
+import com.example.dao.UserDao;
 import com.example.entity.Result;
+import com.example.entity.User;
 import com.example.service.UserService;
+import com.example.utils.JwtTokenUtil;
+import com.example.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 @CrossOrigin
@@ -17,7 +24,15 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private UserDao userDao;
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private FormatUtil formatUtil;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @GetMapping("/hello")
     public Result Hello(){
@@ -43,6 +58,31 @@ public class UserController {
         } catch (RuntimeException e) {
             return Result.create(200, e.getMessage());
         }
+    }
+
+
+    @RequestMapping(value = "/uploadAvatar", method = RequestMethod.POST)
+    @ResponseBody
+    public Result uploadAvatar(@RequestParam("file") MultipartFile file) {
+        try {
+            User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+            String path="/home/zero/avatar/";
+            String format = formatUtil.getFileFormat(file.getOriginalFilename());
+            File file1 = new File(path + user.getName() + format);
+            System.out.println();
+            System.out.println(path + user.getId() + format);
+            System.out.println();
+            if(!file1.getParentFile().exists()){
+                file1.getParentFile().mkdirs();
+            }
+            file.transferTo(file1);
+            userService.saveAvatar(user.getId(),"http://39.107.228.168/avatar/"+user.getName()+format);
+//            userService.saveAvatar(user.getId(),"http://127.0.0.1/avatar/"+user.getName()+format);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.create(200, "上传头像成功",null);
     }
 
     /**

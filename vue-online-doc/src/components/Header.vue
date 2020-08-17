@@ -7,11 +7,12 @@
 
     <el-dropdown @command="handleCommand_info" class="avatar">
       <span class="el-dropdown-link">
-        <img src="../assets/avatar.svg" alt=""  slot="reference" >
+        <!-- <img src="../assets/avatar.svg" alt=""  slot="reference" > -->
+        <img  src="http://39.107.228.168/avatar/zero.jpg" class="avatar" alt=""  slot="reference"
+                      onerror="javascript:this.src='../assets/avatar.svg'">
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="goUserInfo">个人中心</el-dropdown-item>
-        <el-dropdown-item>设置</el-dropdown-item>
         <el-dropdown-item divided ><a @click="loginout">退出登陆</a></el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -162,11 +163,13 @@
 
 <script>
 import user from '@/api/user'
+import axios from 'axios'
 export default {
   name: "Header",
   data(){
     return{
       name:'未登录',
+      avatar: '',
       activeNames: ['1', '2'], //激活的折叠面板
       activeName_info: 0, //默认标签
       activeName_notice: 0,
@@ -244,6 +247,7 @@ export default {
           this.userInfo.job = a.job
           this.userInfo.summary = a.info
           this.userInfo.avatar = a.avatar
+          this.avatar = a.avatar
         })
       }
     },
@@ -273,9 +277,9 @@ export default {
         let config = {
           headers: { 'Content-Type': 'multipart/form-data' },
         }
-        config.headers['Authorization'] = store.state.token
-        // console.log(param)
-        axios.post("/api/file/uploadAvatar/", param, config,{timeout:900000})
+        config.headers['Authorization'] = this.$store.state.token
+        console.log(param)
+        axios.post("/api/user/uploadAvatar/", param, config,{timeout:900000})
         .then(response => {
           if (response) { 
             this.$router.go(0)

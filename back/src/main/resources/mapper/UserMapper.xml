@@ -38,6 +38,10 @@
         where ug.group_id = #{groupId}
     </select>
 
+    <update id="updateAvatar">
+        update user set user_avatar = #{avatar} where user_id = #{userId}
+    </update>
+
     <update id="updateUser" parameterType="User">
         UPDATE user
         <set>
@@ -66,15 +70,5 @@
         WHERE user_id = #{id}
     </update>
 
-
-<!--    <insert id="updateRed" parameterType="String">-->
-<!--        insert into datered(red_date)-->
-<!--        values (#{datesave})-->
-<!--    </insert>-->
-
-<!--    <delete id="deleteTag" parameterType="Integer">-->
-<!--        DELETE FROM tag-->
-<!--        WHERE tag_id = #{value}-->
-<!--    </delete>-->
 
 </mapper>
