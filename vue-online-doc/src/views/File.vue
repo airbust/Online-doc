@@ -9,11 +9,7 @@
         <el-button @click="editFile" v-if="writable&&flag">更新保存</el-button>
 
         <el-button @click="dialogVisible=true">分享</el-button>
-        <el-dialog
-          title="分享"
-          :visible.sync="dialogVisible"
-          width="30%"
-          >
+        <el-dialog  title="分享"  :visible.sync="dialogVisible"  width="30%">
           <el-input v-model="url" :readonly="true">
             <el-button slot="append"
             v-clipboard:copy="url"
@@ -447,7 +443,6 @@
 
 
 .hd{
-    /* text-align: center; */
     text-align: left;
     font-size: 30px;
     font-weight: bold;
@@ -463,7 +458,7 @@
   .header{
     width: 100%;
     height: 100px;
-    box-shadow:  0 2px 6px 0 rgba(0,0,0,.05);
+    /* box-shadow:  0 2px 6px 0 rgba(0,0,0,.05); */
   }
   .el-header{
     width: 80%;

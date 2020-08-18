@@ -1,10 +1,15 @@
 <template>
   <el-container>
       <el-header>
-        <el-input v-model="title" placeholder="请输入标题" v-if="flag" style="width:60%"></el-input>
+        <div class="input-group">
+          <label>
+            <input v-model="title" placeholder="请输入标题" v-if="flag" style="width:60%"></input>&nbsp;
+          </label>
+        </div>
+        <!--        <el-input v-model="title" placeholder="请输入标题" v-if="flag" style="width:60%"></el-input>-->
         <div class="hd" v-if="!flag">{{this.title}}</div>
       </el-header>
-      
+
       <el-main style="width: 80%">
         <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
         <quill-editor
@@ -131,7 +136,7 @@
   }
   .el-header{
     width: 100%;
-    box-shadow:  0 2px 6px 0 rgba(0,0,0,.05);
+    /* box-shadow:  0 2px 6px 0 rgba(0,0,0,.05); */
   }
   .el-container{
     height: 100%;
@@ -144,5 +149,22 @@
     height: calc(100% - 62px);
     max-width: calc(100% - 194px);
   }
+  .input-group {display: flex;align-items: center;justify-content: flex-start;}
+  .input-group label {margin: 0;flex: 1;}
+
+  label {display: block;margin-bottom: 24px;width: 100%;}
+
+  input {border: 0;outline: 0;font-size: 16px;border-radius: 320px;padding: 1rem;background-color: #EBECF0;text-shadow: 1px 1px 0 #FFF;}
+  input {margin-right: 8px;box-shadow: inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF;width: 100%;box-sizing: border-box;transition: all 0.2s ease-in-out;appearance: none;-webkit-appearance: none;}
+  input:focus {box-shadow: inset 1px 1px 2px #BABECC, inset -1px -1px 2px #FFF;}
+
+  button{border: 0;outline: 0;font-size: 16px;border-radius: 320px;padding: 1rem;background-color: #F7F7F7;}
+  /*#F7F7F7 #EBECF0*/
+  button{color: #61677C;box-shadow: -5px -5px 20px #FFF, 5px 5px 20px #BABECC;transition: all 0.2s ease-in-out;cursor: pointer;font-weight: 600;}
+  button:hover {box-shadow: -2px -2px 5px #FFF, 2px 2px 5px #BABECC;}
+  button:hover{
+    transform: scale(0.95);
+  }
+  button:active {box-shadow: inset 1px 1px 2px #BABECC, inset -1px -1px 2px #FFF;}
 
 </style>

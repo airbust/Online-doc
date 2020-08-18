@@ -2,7 +2,7 @@
   <el-container>
     <el-aside style="width:75%; margin-right:50px">
       <el-tabs v-model="activeName" type="" @tab-click="handleClick">
-        <el-tab-pane label="我的回收" class="fontStyle" name="MyRecycle"><my-recycle/></el-tab-pane>
+        <el-tab-pane label="我的桌面" class="fontStyle" name="MyDesktop"><my-desktop/></el-tab-pane>
       </el-tabs>
     </el-aside>
     <el-main style=" background: rgb(247, 247, 247);">
@@ -30,15 +30,15 @@
 </template>
 
 <script>
-  import MyRecycle from "../components/MyRecycle";
+  import MyDesktop from "../components/MyDesktop";
   import collapse from "../assets/collapse.js";
   export default {
-    name: "Recycle",
-    components: {MyRecycle,collapse},
+    name: "Desktop",
+    components: {MyDesktop,collapse},
     data(){
       return{
         isActive: true,//默认不隐藏
-        activeName: 'MyRecycle'
+        activeName: 'MyDesktop'
       }
     },
     created() {

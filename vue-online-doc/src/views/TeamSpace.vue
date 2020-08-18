@@ -16,47 +16,60 @@
       <el-tooltip class="item" effect="dark" content="列表" placement="top">
         <span><i @click="layoutList()" style="font-size: 25px; color: grey" class="el-icon-s-unfold"></i></span>
       </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="隐藏" placement="top">
+        <span><i @click="isActive = !isActive" style="font-size: 25px; color: grey" class="el-icon-d-caret"></i></span>
+      </el-tooltip>
 
-      <div style="margin-top: 40px"><el-button @click="teamEdit()" style="width: 170px" type="info">新建</el-button></div>
-      <div style="margin-top: 15px"><el-button style="width: 170px">模板库</el-button></div>
-      <div style="margin-top: 15px"><el-button @click="optionVisible = true" style="width: 170px">管理团队</el-button></div>
-      <div style="margin-top: 15px"><el-button @click="attendVisible = true" style="width: 170px">加入团队</el-button></div>
-      
-      <el-card class="card">  
-        <span style="font-size:18px;"><i style="margin-right:10px;font-size:22px;color:grey" class="el-icon-s-custom"></i>团队管理者</span>
-        <div style="margin-top:-10px"><el-divider></el-divider></div>
-        <div style="margin-top:-5px">
-          <span class="left">
-            <img  v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference">
-            <img  v-else-if="groups.length>0" src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
-          </span>
-          <span class="right">
-            <div class="rightTop">
-              <span class="userName" >{{adminName}}</span>
+      <collapse>
+        <div class="collapse" v-show="isActive">
+          <div style="margin-top: 40px"><el-button @click="teamEdit()" style="width: 170px" type="info">新建</el-button></div>
+          <div style="margin-top: 15px"><el-button  @click="gotoTLibrary()" style="width: 170px">模板库</el-button></div>
+          <div style="margin-top: 15px"><el-button @click="optionVisible = true" style="width: 170px">管理团队</el-button></div>
+          <div style="margin-top: 15px"><el-button @click="attendVisible = true" style="width: 170px">加入团队</el-button></div>
+        </div>
+      </collapse>
+
+      <collapse>
+        <div class="collapse" v-show="isActive">
+          <el-card class="card">
+            <span style="font-size:18px;"><i style="margin-right:10px;font-size:22px;color:grey" class="el-icon-s-custom"></i>团队管理者</span>
+            <div style="margin-top:-10px"><el-divider></el-divider></div>
+            <div style="margin-top:-5px">
+              <span class="left">
+                <img  v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference">
+                <img  v-else-if="groups.length>0" src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
+              </span>
+              <span class="right">
+                <div class="rightTop">
+                  <span class="userName" >{{adminName}}</span>
+                </div>
+                <div class="rightCenter">{{adminMail}}</div>
+              </span>
             </div>
-            <div class="rightCenter">{{adminMail}}</div>
-          </span>
+          </el-card>
         </div>
-      </el-card>
+      </collapse>
 
-      <el-card class="card" >
-        <span style="font-size:18px"><i style="margin-right:10px;font-size:22px;color:grey" class="el-icon-user-solid"></i>团队成员</span>
-        <div style="margin-top:-10px"><el-divider></el-divider></div>
-        
-        <div style="margin-top: -15px">
-        <el-row style="display: flex; flex-wrap: wrap;" type="flex" :gutter="0" class="el-row" >
-          <el-col :span="6" class="el-col" v-for="(o, id) in group.member" :key="id" :offset="1" >
-              <div style="text-align:center;">
-                <img  v-if="validAvatar(o.avatar)" :src="o.avatar" class="avatar" alt=""  slot="reference" style="width:50px">
-                <img  v-else src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
-              </div>
-              <div style="text-align:center;margin-bottom:5px">{{o.name}}</div>
-          </el-col>
-        </el-row>
+      <collapse>
+        <div class="collapse" v-show="isActive">
+          <el-card class="card" >
+            <span style="font-size:18px"><i style="margin-right:10px;font-size:22px;color:grey" class="el-icon-user-solid"></i>团队成员</span>
+            <div style="margin-top:-10px"><el-divider></el-divider></div>
+
+            <div style="margin-top: -15px">
+              <el-row style="display: flex; flex-wrap: wrap;" type="flex" :gutter="0" class="el-row" >
+                <el-col :span="6" class="el-col" v-for="(o, id) in group.member" :key="id" :offset="1" >
+                  <div style="text-align:center;">
+                    <img  v-if="validAvatar(o.avatar)" :src="o.avatar" class="avatar" alt=""  slot="reference" style="width:50px">
+                    <img  v-else src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
+                  </div>
+                  <div style="text-align:center;margin-bottom:5px">{{o.name}}</div>
+                </el-col>
+              </el-row>
+            </div>
+          </el-card>
         </div>
-
-      </el-card>
-
+      </collapse>
     </el-main>
 
     <!-- 加入/创建团队 -->
@@ -121,8 +134,8 @@
         </div>
       </div>
     </el-dialog>
-    
-  </el-container>  
+
+  </el-container>
 </template>
 
 
@@ -132,18 +145,20 @@
   import MyTeam from "../components/MyTeam"
   import group from '@/api/group'
   import Edit from '@/views/Edit'
+  import collapse from "../assets/collapse.js";
   export default {
     name:"TeamSpace",
-    components: { TeamFile, MyTeam, Edit},
+    components: { TeamFile, MyTeam, Edit,collapse},
     data() {
       return {
+        isActive: true,//默认不隐藏
         user_keyword: '', //添加协作者用户名
         group_keyword: '', //申请加入/创建团队名
         optionVisible: false,
         attendVisible: false,
         activeName: '',
         //当前标签页团队属性
-        adminName: '', 
+        adminName: '',
         adminMail: '',
         adminAvatar: '',
         isAdmin: false,
@@ -151,7 +166,7 @@
           // {groupId:0,groupName: '团队1'},{groupId:1,groupName: '团队2'},{groupId:2,groupName: '团队3'}
           ],
         group:{
-          id: 0, 
+          id: 0,
           admin: [
             // {id:1, name:'马壮',mail:'1302540061@qq.com'}
           ],
@@ -177,6 +192,9 @@
       this.getGroups()
     },
     methods: {
+      gotoTLibrary(){
+        this.$router.push({path:'/TemplateLibrary'})
+      },
       validAvatar(avatar){
         // console.log(this.adminAvatar)
         if(avatar == null || avatar == undefined) return false
@@ -272,7 +290,7 @@
       handleClose(done) {
         done();
       },
-      
+
     }
   };
 </script>
@@ -330,8 +348,16 @@
     border-radius: 5%
   }
 
-  .button{
+  /*.button{
     margin-left:20px;
     width:170px
+  }*/
+  button{border: 0;outline: 0;font-size: 16px;border-radius: 320px;padding: 1rem;background-color: #F7F7F7;}
+  /*#F7F7F7 #EBECF0*/
+  button{color: #61677C;box-shadow: -5px -5px 20px #FFF, 5px 5px 20px #BABECC;transition: all 0.2s ease-in-out;cursor: pointer;font-weight: 600;}
+  button:hover {box-shadow: -2px -2px 5px #FFF, 2px 2px 5px #BABECC;}
+  button:hover{
+    transform: scale(0.95);
   }
+  button:active {box-shadow: inset 1px 1px 2px #BABECC, inset -1px -1px 2px #FFF;}
 </style>

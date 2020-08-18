@@ -1,6 +1,11 @@
 <template>
   <div>
-
+    <!-- 分享框 -->
+    <el-dialog title="分享"  :visible.sync="dialogVisible"  width="30%">
+      <el-input v-model="url" :readonly="true">
+        <el-button slot="append" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:fail="onError">复制链接</el-button>
+      </el-input>
+    </el-dialog>
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
@@ -11,8 +16,9 @@
                 <i v-if="showOption[fileId]" class="el-icon-s-tools" style="float:right;font-size: 17px; color: grey"></i>
               </div>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="recover">恢复</el-dropdown-item>
-                <el-dropdown-item command="delete">彻底删除</el-dropdown-item>
+                <el-dropdown-item command="open">新标签页打开</el-dropdown-item>
+                <el-dropdown-item command="collect" divided>收藏</el-dropdown-item>
+                <el-dropdown-item command="share">分享</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -47,9 +53,9 @@
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button v-waves size="mini" type="primary"
-                       @click="recoverFile(scope.row.fileId)">恢复</el-button>
-            <el-button v-waves size="mini" type="danger"
-                       @click="deleteFile(scope.row.fileId)">彻底删除</el-button>
+                       @click="goto(scope.row.fileId)">查看</el-button>
+            <el-button v-waves size="mini"
+                       @click="collectFile(scope.row.fileId)">收藏</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,10 +68,12 @@
   import file from '@/api/file'
   import waves from "../assets/waves/waves";
   export default {
-    name: "MyRecycle",
+    name: "MyDesktop",
     directives:{waves},
     data() {
       return {
+        url: '',
+        dialogVisible :false,
         FileData:[],
         showOption: [],
         index: 0,
@@ -79,7 +87,7 @@
       }
     },
     created() {
-      file.getDeleted().then((res) => {
+      file.getDesktop().then((res) => {
         this.FileData = res.data
         this.total = res.data.length
       })
@@ -88,13 +96,17 @@
       pEnter(index) {
         this.$set(this.showOption, index, 1)
         this.index = index
+        this.url = '/File/'+this.FileData[this.index].fileId
       },
       pLeave(index) {
         this.$set(this.showOption, index, 0)
       },
       handleCommand(command) {
-        if(command == 'recover') {this.recoverFile(this.FileData[this.index].fileId)}
-        else if(command == 'delete') {this.deleteFile(this.FileData[this.index].fileId)}
+        if(command == 'open') {
+          let routeUrl = this.$router.resolve({path: '/File/'+this.FileData[this.index].fileId});
+          window.open(routeUrl.href, '_blank') }
+        else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
+        else if(command == 'share') {this.dialogVisible = true}
       },
       recoverFile(id) {
         file.recoverDeleted(id).then(res => {
@@ -117,7 +129,11 @@
           })
           .catch(_ => {});
       },
-
+      collectFile(id){
+        file.collectDocument(id).then(res=>{
+          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
+        })
+      },
       getFileData() {
         file.getRecycle().then((res) => {
           this.FileData = [];
@@ -132,7 +148,16 @@
       },
       goto(id) {
         this.$router.push({path: '/File/' + id})
-      }
+      },
+      onCopy(){
+        this.$message({
+          message: '复制成功',
+          type: 'success'
+        });
+      },
+      onError(){
+        this.$message.error('复制失败');
+      },
     }
   }
 </script>

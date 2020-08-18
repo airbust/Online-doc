@@ -151,7 +151,15 @@ public class FileController {
             return Result.create(200, "获取团队文档失败" + e.getMessage());
         }
     }
-
+    @GetMapping("/getRelativeFile")
+    public Result getRelativeFile(){
+        try {
+            List<File> fileList = fileService.getRelativeFile();
+            return Result.create(200,"获取用户桌面文档成功",fileList);
+        } catch (RuntimeException e) {
+            return Result.create(200,"获取桌面文档失败",e.getMessage());
+        }
+    }
 
 
     /**

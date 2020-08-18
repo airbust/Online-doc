@@ -23,6 +23,9 @@
       </span>
     <!-- </el-dropdown> -->
 
+    <!--实现全屏功能-->
+    <el-button type="primary" class="button" icon="el-icon-full-screen" size="small" @click="screen" circle></el-button>
+
     <!--侧栏消息抽屉-->
      <el-drawer  :visible.sync="notice_drawer"  :show-close="true" :with-header="false" size="27%" :append-to-body="true" :modal="false"
           style="height: 100%; margin-top:70px;">
@@ -104,7 +107,7 @@
                         <span v-if="showUnreadButton(unread.info,unread.action)">
                           <el-button size="mini" @click="permit(unread.uid)">同意</el-button>
                         </span>
-                        <span v-else>{{unread.info}}</span> 
+                        <span v-else>{{unread.info}}</span>
                         <span @click="readComment(unread.uid)" class="el-icon-bell" style="float:right;font-size:20px"></span>
                       </div>
                     </span>
@@ -120,7 +123,7 @@
             </el-timeline>
           </div>
         </el-tab-pane>
-        
+
 
       </el-tabs>
     </el-drawer>
@@ -131,7 +134,7 @@
       <el-tabs style="margin-top: 50px; height: 100%;" type="border-card" tab-position="left" v-model="activeName_info">
           <el-tab-pane label="个人中心" name="0">
             <span slot="label"><i class="el-icon-user-solid"></i> 个人中心</span>
-            
+
             <el-form label-position="left" :model="userInfo" label-width="100px" ref="userInfo">
               <el-form-item label="用户头像" :label-width="labelWidth">
                 <el-upload
@@ -227,10 +230,13 @@
 import user from '@/api/user'
 import message from '@/api/message'
 import axios from 'axios'
+import screenfull from 'screenfull'//重新安装package.json中的依赖时，一定要注意其版本，发现在5.0上版本时全屏不可用，可用重新安装依赖: npm install --save screenfull@4.2.1
+
 export default {
   name: "Header",
   data(){
     return{
+      isFullscreen:false,//全屏的状态
       name:'未登录',
       avatar: '',
       total: 0, //总评论数量
@@ -274,6 +280,14 @@ export default {
     this.getMessage()
   },
   methods:{
+    screen(){//设置全屏操作
+      // 如果不允许进入全屏，发出不允许提示
+      if (!screenfull.enabled) {
+        this.$message('无法全屏');
+        return false;
+      }
+      screenfull.toggle();
+    },
     permit(id){
       console.log('同意')
       message.permit(id).then(res=>{
@@ -296,8 +310,8 @@ export default {
               uid: -res.data[i].discuss.discussId,
               user:res.data[i].user.name,
               action: '评论了',
-              item: res.data[i].fileName, 
-              info: res.data[i].discuss.discussBody, 
+              item: res.data[i].fileName,
+              info: res.data[i].discuss.discussBody,
               time: res.data[i].discuss.discussTime
             }
             this.unreadList.push(u);
@@ -315,7 +329,7 @@ export default {
               uid: res.data[i].noticeId,
               user:res.data[i].groupAdmin,
               action: res.data[i].info,
-              item: res.data[i].groupName, 
+              item: res.data[i].groupName,
               time: res.data[i].time,
               info: '',
             }
@@ -342,7 +356,7 @@ export default {
     showUnreadButton(discuss, action){
       if(discuss!='') return false
       if(action.substring(0,1)=='已') return false
-      return true 
+      return true
     },
     showNoticeButton(isRead,info){
       if(isRead==1) return false;
@@ -369,7 +383,7 @@ export default {
       };break;
       }
     },
-    getUserInfo(){ //用户信息 
+    getUserInfo(){ //用户信息
       if(this.$store.state.token){
         user.getUserInfo().then(response=>{
           var a = response.data
@@ -405,7 +419,7 @@ export default {
         this.file=e;
     },
     SubbmitFile(){//上传头像
-        let param = new FormData(); 
+        let param = new FormData();
         param.append("file", this.file.raw);
         let config = {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -414,7 +428,7 @@ export default {
         console.log(param)
         axios.post("/api/user/uploadAvatar/", param, config,{timeout:900000})
         .then(response => {
-          if (response) { 
+          if (response) {
             this.$router.go(0)
             this.file={}
             // console.log(response.data);
@@ -462,9 +476,14 @@ export default {
     height:30px;
     margin-right: 20px;
   }
+  button{
+    float: right;
+    margin-right: 21px;
+    margin-top: -7px;
+  }
   img{
     width: 30px;
-    margin-top: -5px;
+    margin-top: -7px;
   }
   .name{
     margin-left: 10px;

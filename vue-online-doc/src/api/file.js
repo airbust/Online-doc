@@ -8,6 +8,12 @@ export default {
       method:'get',
     })
   },
+  getDesktop(){
+    return request({
+      url: '/doc/getRelativeFile',
+      method: 'get'
+    })
+  },
   getStar() {
     return request({
       url:'/doc/getStar',

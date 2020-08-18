@@ -10,7 +10,7 @@
             </div>
           </div>
       </el-col>
-    </el-row>    
+    </el-row>
   </div>
 </template>
 
@@ -32,7 +32,7 @@
       }
     },
     computed:{
-      layout() { 
+      layout() {
         return this.$store.state.layout==1
       }
     },
@@ -40,7 +40,7 @@
       this.getTemplateList()
     },
     methods:{
-      pEnter(index) { 
+      pEnter(index) {
         this.$set(this.showOption,index,1)
         this.index = index
       },
@@ -101,8 +101,15 @@
     margin-bottom: 40px;
     /* background: #333; */
   }
-  .el-col :hover{
+  /*.el-col :hover{
     background: rgb(247, 247, 247);
+  }*/
+  .el-col :hover{
+    background: #E9E9E9;
   }
-  
+
+  .el-col :hover.image{
+    transform: scale(0.95);
+  }
+
 </style>

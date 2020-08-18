@@ -39,4 +39,6 @@ public interface FileDao {
     void setEditStatus(Integer isEdit, Integer fileId);
 
 
+    List<File> getGroupFileByUserId(Integer userId);
+    List<File> getGroupFileByAdminId(Integer userId);
 }

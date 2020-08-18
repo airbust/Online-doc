@@ -32,7 +32,12 @@
 
     <!-- 表格视图 -->
     <div v-if="!layout">
-      <el-input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></el-input>&nbsp;
+      <div class="input-group">
+        <label>
+          <input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></input>&nbsp;
+        </label>
+      </div>&nbsp;
+      <!--      <el-input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></el-input>&nbsp;-->
       <el-table :data="FileData" style="width: 100%">
         <el-table-column label="#" width="100">
           <template slot-scope="scope">
@@ -47,9 +52,9 @@
         </el-table-column>
         <el-table-column label="操作" width="250">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary"
+            <el-button v-waves size="mini" type="primary"
                        @click="goto(scope.row.fileId)">查看</el-button>
-            <el-button size="mini" type="success"
+            <el-button v-waves size="mini" type="success"
                        @click="unCollectFile(scope.row.fileId)">取消收藏</el-button>
           </template>
         </el-table-column>
@@ -61,9 +66,11 @@
 
 <script>
   import file from '@/api/file'
+  import waves from "../assets/waves/waves";
   export default {
     name: "MyStar",
     props:  {random : Number},
+    directives:{waves},
     data(){
       return{
         url: '',
@@ -184,8 +191,20 @@
     /* background: #333; */
   }
   .el-col :hover{
-    background: rgb(247, 247, 247);
+    background: #E9E9E9;
   }
+
+  .el-col :hover.image{
+    transform: scale(0.95);
+  }
+  .input-group {display: flex;align-items: center;justify-content: flex-start;}
+  .input-group label {margin: 0;flex: 1;}
+
+  label {display: block;margin-bottom: 24px;width: 100%;}
+
+  input {border: 0;outline: 0;font-size: 16px;border-radius: 320px;padding: 1rem;background-color: #EBECF0;text-shadow: 1px 1px 0 #FFF;}
+  input {margin-right: 8px;box-shadow: inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF;width: 100%;box-sizing: border-box;transition: all 0.2s ease-in-out;appearance: none;-webkit-appearance: none;}
+  input:focus {box-shadow: inset 1px 1px 2px #BABECC, inset -1px -1px 2px #FFF;}
 
   .zhuanti img { width: 100%; -moz-transition: all .5s ease; -webkit-transition: all .5s ease; -ms-transition: all .5s ease; -o-transition: all .5s ease; transition: all .5s ease; opacity: 0.5 }
   .zhuanti p { position: absolute; top: 30%; left: 0; right: 0; color: #FFF; text-align: center; font-size: 15px; overflow: hidden; margin-top: 5px; padding: 0 40px; }

@@ -135,22 +135,28 @@ public class FileService {
 		if(lock) fileDao.setEditStatus(1,fileId);
 		else fileDao.setEditStatus(0,fileId);
 	}
-
 	public List<File> getDeletedFile() {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		return fileDao.getDeletedFileByUserId(user.getId());
 	}
-
 	public List<File> getCreationFile() {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		return fileDao.getFileByUserId(user.getId());
 	}
-
 	public List<File> getTeamFile(String teamName) {
 		Group group = groupDao.getGroupByName(teamName);
 		return fileDao.getFileByGroupId(group.getGroupId());
 	}
-
+	public List<File> getRelativeFile() {
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		List<File> fileList = fileDao.getFileByUserId(user.getId());
+		List<File> tmp = fileDao.getGroupFileByUserId(user.getId());
+		List<File> tmp2 = fileDao.getGroupFileByAdminId(user.getId());
+		fileList.addAll(tmp);
+		fileList.addAll(tmp2);
+		System.out.println("fileList = " + fileList);
+		return fileList;
+	}
 	//////////////////////////////////////////////////////////////////////////////////////
 
 	/**
@@ -199,7 +205,5 @@ public class FileService {
 			else if(auth.equals("R")) roleDao.updateGroupAuth(fileId,0,0);
 		}
 	}
-
-
 
 }

@@ -9,6 +9,7 @@ import Register from "../views/Register";
 import WorkStation from "../views/WorkStation";
 import TeamSpace from "../views/TeamSpace";
 import Recycle from '../views/Recycle'
+import Desktop from '../views/Desktop'
 import TemplateLibrary from '../views/TemplateLibrary'
 import Template from '../views/Template'
 import layout from '@/layout/layout'
@@ -62,7 +63,15 @@ export default new Router({
         component: EditTeam,
       }]
     },
-    
+    {
+      path: '/Desktop',
+      name: 'Desktop',
+      component: layout,
+      children: [{
+        path: '',
+        component: Desktop,
+      }]
+    },
     {
       path: '/Recycle',
       name: 'Recycle',

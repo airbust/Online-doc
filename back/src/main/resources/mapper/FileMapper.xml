@@ -62,5 +62,14 @@
         update file set is_edit = #{isEdit} where file_id = #{fileId}
     </update>
 
+    <select id="getGroupFileByUserId" parameterType="Integer" resultMap="File">
+        select * from file f, user_group ug
+        where f.group_id = ug.group_id and ug.user_id = #{userId}
+    </select>
+
+    <select id="getGroupFileByAdminId" parameterType="Integer" resultMap="File">
+        select * from file f, `group` g
+        where f.group_id = g.group_id and g.admin_id = #{userId}
+    </select>
 </mapper>
 
