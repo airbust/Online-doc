@@ -13,7 +13,7 @@
       <el-main style="width: 80%">
         <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
         <quill-editor
-        v-model="content"
+        v-model="content" style="height:60vh"
         ref="myQuillEditor"
         :options="editorOption"
         @blur="onEditorBlur($event)"
@@ -139,7 +139,6 @@
   }
   .el-header{
     width: 100%;
-    box-shadow:  0 2px 6px 0 rgba(0,0,0,.05);
   }
   .el-container{
     height: 100%;

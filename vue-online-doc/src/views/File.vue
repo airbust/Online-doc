@@ -3,11 +3,11 @@
     <div class="header">
       
       <div style="float:right">
+        <el-button type="text" v-if="is_Edit">该文档正在被编辑</el-button>
         <el-button type="text" @click="showHistory()" v-if="writable">查看历史版本</el-button>
-        <el-button @click="startEdit" v-if="writable&&!flag">编辑</el-button>
-        <el-button @click="endEdit" v-if="writable&&flag">预览</el-button>
-        <el-button @click="editFile" v-if="writable&&flag">更新保存</el-button>
-
+        <el-button @click="startEdit" v-if="writable&&!editing">编辑</el-button>
+        <el-button @click="editing=false" v-if="writable&&editing">预览</el-button>
+        <el-button @click="updateFile" v-if="writable&&editing">更新保存</el-button>
         <el-button @click="dialogVisible=true">分享</el-button>
         <el-dialog  title="分享"  :visible.sync="dialogVisible"  width="30%">
           <el-input v-model="url" :readonly="true">
@@ -36,6 +36,7 @@
            </el-table>
         </el-dialog>
 
+        <!-- 历史文档 -->
         <el-dialog title="历史文档"  :visible.sync="historyFileVisible"  top="50px" width="80%"  :before-close="handleClose">
           <div style="height:600px;width:90%">
             <el-scrollbar style="height:100%">
@@ -46,7 +47,7 @@
         </el-dialog>
 
         <!-- 权限设置 -->
-        <el-cascader v-if="authable&&!flag"
+        <el-cascader v-if="authable&&!editing"
           style="width:120px"
           v-model="value"
           :options="options"
@@ -54,13 +55,12 @@
         </el-cascader>
       </div>
 
-      <el-input v-model="title" placeholder="请输入标题" v-if="writable&&flag"></el-input>
-      <div class="hd" v-if="!flag">{{this.title}}</div>
-      <!-- <p style="display: none">{{fileId = this.$route.params.fileId}}</p> -->
+      <el-input v-model="title" placeholder="请输入标题" v-if="writable&&editing"></el-input>
+      <div class="hd" v-if="!editing">{{this.title}}</div>
     </div>
     <el-divider content-position="right">䂖墨文档 </el-divider>
     <div>
-      <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
+      <div class="bd" v-if="!editing" v-html="this.content">{{this.content}}</div>
       <div>
         <quill-editor style="height:60vh;"
         v-model="content"
@@ -69,7 +69,7 @@
         @blur="onEditorBlur($event)"
         @focus="onEditorFocus($event)"
         @ready="onEditorReady($event)"
-        v-if="flag&&writable"
+        v-if="editing&&writable"
         ></quill-editor>
       </div>
       <el-divider></el-divider>
@@ -78,7 +78,7 @@
         <div style="margin-left:50px">[调试]当前文档权限是：{{auth}}</div>
       </div>
 
-      <el-card v-if="discussable&&!flag" style="margin-top: 50px">
+      <el-card v-if="discussable&&!editing" style="margin-top: 50px">
         <!-- 发评论 -->
         <div class="commentBox">
           <span class="right">
@@ -117,6 +117,16 @@
         </div>
       </el-card>
     </div>
+
+    <el-popover style="position: fixed; bottom: 40px; right: 40px"
+      placement="top-start" title="文档信息" width="300" trigger="hover" :content="fileInfo">
+      <div v-html="fileInfo">{{fileInfo}}</div>
+      <el-button slot="reference"><a class="cd-top">Info</a></el-button>
+    </el-popover>
+    <div>
+      
+    </div>
+
   </div>
 </template>
 
@@ -142,6 +152,7 @@
     data() {
       return {
         fileId: 0,
+        fileInfo: '',
         url: '',
         historyFileList:[],
         historyFile: {},
@@ -159,12 +170,12 @@
         loading: true, //是否加载中
         ////////////////
         title: '',
-        flag:false,
+        editing:false,
         readable:false,
         writable:false,
         authable: false,
         discussable: false,
-        //is_Edit:0,
+        is_Edit:false,
         auth: {},
         content:null,
         dialogVisible: false,
@@ -274,12 +285,16 @@
         var bytes = CryptoJS.AES.decrypt(tmp,"123")
         this.fileId = bytes.toString(CryptoJS.enc.Utf8)
         file.getDocument(this.fileId).then(res=>{
-          // console.log(res)
+          console.log(res)
           this.$store.commit('login', res.data.map)//存储token
-          this.auth = res.data.role
-          this.title = res.data.file.fileName
-          this.content = res.data.file.fileBody
-          this.is_Edit = res.data.file.is_Edit
+          var a = res.data
+          this.auth = a.role
+          this.title = a.file.fileName
+          this.content = a.file.fileBody
+          if(a.file.isEdit == 1) this.is_Edit =true
+          var sort = a.file.userId == 0 ? '个人文档': '团队文档'
+          var info = '文档名：'+a.file.fileName+'<br/>类别：'+sort+'<br/>修改次数：'+a.file.modifyCnt+'<br/>更新时间：'+a.file.modifyTime
+          this.fileInfo = info
           this.init_authority();
         })
       },
@@ -313,19 +328,18 @@
         }
       },
       startEdit(){
-        this.flag=true;
+        this.editing=true;
         file.isEditing(this.fileId).then(res=>{
           console.log('change is_edit to 1')
         })
       },
       endEdit(){
-        this.flag=false;
-        file.isEditable(this.params.fileId).then(res=>{
+        this.editing=false;
+        file.isEditable(this.fileId).then(res=>{
           console.log('change is_edit to 0')
         })
       },
-      editFile(){
-        //change is_edit to 0
+      updateFile(){   //change is_edit to 0
         console.log('save begin')
         file.updateDocument(this.fileId,this.title,this.content)
         .then(res=>{
@@ -358,6 +372,11 @@
 </script>
 
 <style scoped>
+  .cd-top { 
+    display: inline-block; height: 40px; width: 40px; position: fixed; bottom: 40px;  right: 40px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); overflow: hidden; text-indent: 100%; white-space: nowrap; 
+   background: rgba(0, 0, 0, 0.8)  url(../../static/info.png) no-repeat center; 
+   }
   
   .commentList {
     width: 100%;
