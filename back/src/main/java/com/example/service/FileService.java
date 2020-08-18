@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.config.JwtConfig;
 import com.example.dao.FileDao;
 import com.example.dao.GroupDao;
+import com.example.dao.RecentDao;
 import com.example.dao.RoleDao;
 import com.example.dao.UserDao;
 import com.example.entity.*;
@@ -29,6 +30,8 @@ public class FileService {
 	private FileDao fileDao;
 	@Autowired
 	private RoleDao roleDao;
+	@Autowired
+	private RecentDao recentDao;
 	@Autowired
 	private JwtConfig jwtConfig;
 	@Autowired
@@ -156,6 +159,10 @@ public class FileService {
 		fileList.addAll(tmp2);
 		System.out.println("fileList = " + fileList);
 		return fileList;
+	}
+	public List<File> getRecentFile() {
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		return fileDao.getRecentFileByUserId(user.getId());
 	}
 	//////////////////////////////////////////////////////////////////////////////////////
 
