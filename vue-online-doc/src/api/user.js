@@ -48,6 +48,12 @@ export default {
       method:'get'
     })
   },
+  getOtherInfo(userName){
+    return request({
+      url:'/user/getOtherInfo/'+userName,
+      method:'get'
+    })
+  },
   editUser(gen,bir,job,summary){
     return request({
       url:'/user/edituser',

@@ -59,7 +59,7 @@
             <div style="margin-top: -15px">
               <el-row style="display: flex; flex-wrap: wrap;" type="flex" :gutter="0" class="el-row" >
                 <el-col :span="6" class="el-col" v-for="(o, id) in group.member" :key="id" :offset="1" >
-                  <div style="text-align:center;">
+                  <div style="text-align:center;" @click="gotoUserPage(o.name)">
                     <img  v-if="validAvatar(o.avatar)" :src="o.avatar" class="avatar" alt=""  slot="reference" style="width:50px">
                     <img  v-else src="../../static/avatar.png" class="avatar" alt=""  slot="reference">
                   </div>
@@ -297,7 +297,9 @@
       handleClose(done) {
         done();
       },
-
+      gotoUserPage(name){
+        this.$router.push({path:'/Profile/'+name})
+      }
     }
   };
 </script>

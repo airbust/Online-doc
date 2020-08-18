@@ -12,6 +12,7 @@ import Recycle from '../views/Recycle'
 import Desktop from '../views/Desktop'
 import TemplateLibrary from '../views/TemplateLibrary'
 import Template from '../views/Template'
+import Profile from '../views/Profile'
 import layout from '@/layout/layout'
 Vue.use(Router)
 
@@ -106,6 +107,15 @@ export default new Router({
       children: [{
         path: '',
         component: TemplateLibrary,
+      }]
+    },
+    {
+      path: '/Profile/:userName',
+      name: 'Profile',
+      component: layout,
+      children: [{
+        path: '',
+        component: Profile,
       }]
     }
   ]

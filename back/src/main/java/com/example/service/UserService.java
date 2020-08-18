@@ -145,6 +145,9 @@ public class UserService implements UserDetailsService {
     public User getUserInfo(){
         return userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
     }
+    public User getOtherInfo(String userName) {
+        return userDao.getUserByName(userName);
+    }
     /**
      * 更新用户信息
      */
@@ -183,4 +186,6 @@ public class UserService implements UserDetailsService {
         }
         return new org.springframework.security.core.userdetails.User(user.getName(), "***********", authorities);
     }
+
+
 }

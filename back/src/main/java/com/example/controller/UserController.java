@@ -115,6 +115,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getOtherInfo/{userName}")
+    public Result getOtherInfo(@PathVariable String userName){
+        try {
+            return Result.create(200, "获取用户信息成功", userService.getOtherInfo(userName));
+        } catch (RuntimeException e) {
+            return Result.create(200, "获取用户信息失败",e.getMessage());
+        }
+    }
+
     @PostMapping("/edituser")
     public Result updateUser(String gender,String birth,String job,String summary){
         try {

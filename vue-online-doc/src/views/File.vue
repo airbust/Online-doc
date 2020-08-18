@@ -94,8 +94,8 @@
           <div v-for="message in messageList" :key="message.discuss.discussId">
             <div class="commentList">
               <span class="left p1">
-                <img v-if="!message.user.avatar" src="../../static/avatar.svg">
-                <img v-else :src="message.user.avatar"  style="width:50px; height:50px"
+                <img v-if="!message.user.avatar" src="../../static/avatar.svg" @click="gotoUserPage(message.user.name)">
+                <img v-else :src="message.user.avatar"  style="width:50px; height:50px" @click="gotoUserPage(message.user.name)"
                   onerror="javascript:this.src='../../static/avatar.svg'" />
               </span>
               <span class="right p1">
@@ -366,7 +366,9 @@
         // 内容改变事件
         console.log('333')
       },
-      
+      gotoUserPage(name){
+        this.$router.push({path:'/Profile/'+name})
+      }
     }
   }
 </script>

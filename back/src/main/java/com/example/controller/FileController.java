@@ -176,15 +176,6 @@ public class FileController {
             return Result.create(200, "获取团队文档失败" + e.getMessage());
         }
     }
-    @GetMapping("/getRecent")
-    public Result getRecent(){
-        try {
-            List<File> fileList = fileService.getRecentFile();
-            return Result.create(200, "获取最近文档成功", fileList);
-        } catch (RuntimeException e) {
-            return Result.create(200, "获取失败", e.getMessage());
-        }
-    }
     @GetMapping("/getRelativeFile")
     public Result getRelativeFile(){
         try {
@@ -194,8 +185,8 @@ public class FileController {
             return Result.create(200,"获取桌面文档失败",e.getMessage());
         }
     }
-    
-    
+
+
 
     /**
      * 编辑锁相关

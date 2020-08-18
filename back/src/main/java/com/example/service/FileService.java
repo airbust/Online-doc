@@ -29,8 +29,6 @@ public class FileService {
 	@Autowired
 	private RoleDao roleDao;
 	@Autowired
-	private RecentDao recentDao;
-	@Autowired
 	private JwtConfig jwtConfig;
 	@Autowired
 	private HttpServletRequest request;
@@ -137,10 +135,6 @@ public class FileService {
 	public void changeEditable(boolean lock, Integer fileId) throws RuntimeException{
 		if(lock) fileDao.setEditStatus(1,fileId);
 		else fileDao.setEditStatus(0,fileId);
-	}
-	public Object getRecentFile() {
-		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-		return fileDao.getRecentFileByUserId(user.getId());
 	}
 	public List<File> getDeletedFile() {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
