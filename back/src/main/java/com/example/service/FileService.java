@@ -29,6 +29,8 @@ public class FileService {
 	@Autowired
 	private RoleDao roleDao;
 	@Autowired
+	private RecentDao recentDao;
+	@Autowired
 	private JwtConfig jwtConfig;
 	@Autowired
 	private HttpServletRequest request;
@@ -171,6 +173,10 @@ public class FileService {
 		fileList.addAll(tmp2);
 		System.out.println("fileList = " + fileList);
 		return fileList;
+	}
+	public List<File> getRecentFile() {
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		return fileDao.getRecentFileByUserId(user.getId());
 	}
 	//////////////////////////////////////////////////////////////////////////////////////
 
