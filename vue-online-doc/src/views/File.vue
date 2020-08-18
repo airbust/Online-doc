@@ -89,9 +89,9 @@
           <div v-for="message in messageList" :key="message.discuss.discussId">
             <div class="commentList">
               <span class="left p1">
-                <img v-if="!message.user.avatar" src="@/assets/avatar.svg">
+                <img v-if="!message.user.avatar" src="../../static/avatar.svg">
                 <img v-else :src="message.user.avatar"  style="width:50px; height:50px"
-                  onerror="javascript:this.src='@/assets/avatar.svg'" />
+                  onerror="javascript:this.src='../../static/avatar.svg'" />
               </span>
               <span class="right p1">
                 <div class="rightTop" v-if="message.user.id">

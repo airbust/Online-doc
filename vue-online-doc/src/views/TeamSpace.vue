@@ -37,7 +37,7 @@
             <div style="margin-top:-5px">
               <span class="left">
                 <img  v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference">
-                <img  v-else-if="groups.length>0" src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
+                <img  v-else-if="groups.length>0" src="../../static/avatar.png" class="avatar" alt=""  slot="reference">
               </span>
               <span class="right">
                 <div class="rightTop">
@@ -61,7 +61,7 @@
                 <el-col :span="6" class="el-col" v-for="(o, id) in group.member" :key="id" :offset="1" >
                   <div style="text-align:center;">
                     <img  v-if="validAvatar(o.avatar)" :src="o.avatar" class="avatar" alt=""  slot="reference" style="width:50px">
-                    <img  v-else src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
+                    <img  v-else src="../../static/avatar.png" class="avatar" alt=""  slot="reference">
                   </div>
                   <div style="text-align:center;margin-bottom:5px">{{o.name}}</div>
                 </el-col>
@@ -93,9 +93,10 @@
             <div style="margin-top:-20px"><el-divider></el-divider></div>
             <el-table  :data="group.admin" style="width: 100%" :show-header="false">
               <el-table-column   label="头像" width="70">
-                <!-- TODO 显示用户头像? -->
-                <!-- <img v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference"> -->
-                <img class="avatar" src="@/assets/avatar.png">
+                <template slot-scope="scope">
+                    <img v-if="scope.row.avatar" class="avatar" :src="scope.row.avatar">
+                    <img v-else class="avatar" src="../../static/avatar.png">
+                    </template>
               </el-table-column>
               <el-table-column  prop="name" label="用户名" width="120">
               </el-table-column>
@@ -107,23 +108,29 @@
             </el-table>
           </div>
           <div style="margin-top:30px">
-            <span style="font-size:16px">协作者</span>
-            <div style="margin-top:-20px"><el-divider></el-divider></div>
-            <el-table  :data="group.member" style="width: 100%" :show-header="false">
-              <el-table-column   label="头像" width="70">
-                <!-- TODO 显示用户头像? -->
-                <img class="avatar" src="@/assets/avatar.png">
-              </el-table-column>
-              <el-table-column  prop="name" label="用户名" width="120">
-              </el-table-column>
-              <el-table-column  prop="mail" label="邮箱" width="220">
-              </el-table-column>
-              <el-table-column label="操作">
-                <template slot-scope="scope">
-                  <el-button v-if="isAdmin" plain @click="removeMem(scope.row.name)">移除协作者</el-button>
-              </template>
-              </el-table-column>
-            </el-table>
+            <div style="height:300px">
+              <el-scrollbar style="height:100%">
+                <span style="font-size:16px">协作者</span>
+                <div style="margin-top:-20px"><el-divider></el-divider></div>
+                <el-table  :data="group.member" style="width: 100%" :show-header="false">
+                  <el-table-column   label="头像" width="70">
+                    <template slot-scope="scope">
+                    <img v-if="scope.row.avatar" class="avatar" :src="scope.row.avatar">
+                    <img v-else class="avatar" src="../../static/avatar.png">
+                    </template>
+                  </el-table-column>
+                  <el-table-column  prop="name" label="用户名" width="120">
+                  </el-table-column>
+                  <el-table-column  prop="mail" label="邮箱" width="220">
+                  </el-table-column>
+                  <el-table-column label="操作">
+                    <template slot-scope="scope">
+                      <el-button v-if="isAdmin" plain @click="removeMem(scope.row.name)">移除协作者</el-button>
+                  </template>
+                  </el-table-column>
+                </el-table>
+              </el-scrollbar>
+            </div>
           </div>
         </div>
 
@@ -347,7 +354,9 @@
     margin-top:25px;
     border-radius: 5%
   }
-
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
   /*.button{
     margin-left:20px;
     width:170px

@@ -132,7 +132,7 @@ export default {
 
 .main{
   height: 100%;
-  background-image: url('../assets/Starry.jpg');
+  background-image: url('../../static/Starry.jpg');
   background-size: cover;
 }
 

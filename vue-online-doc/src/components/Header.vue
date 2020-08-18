@@ -8,7 +8,7 @@
     <el-dropdown @command="handleCommand_info" class="avatar">
       <span class="el-dropdown-link">
         <img v-if="validAvatar()" :src="avatar" class="avatar" alt=""  slot="reference">
-        <img v-else src="../assets/avatar.svg" alt=""  slot="reference" >
+        <img v-else src="../../static/avatar.svg" alt=""  slot="reference" >
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="goUserInfo">个人中心</el-dropdown-item>
@@ -18,8 +18,8 @@
 
     <!-- <el-dropdown class="avatar" style="margin-right: 20px" :trigger="hover"> -->
       <span  class="bell" @click="handleCommand_notice" >
-        <img v-if="unreadCnt" style="width:33px;height:33px" src="../assets/bell2.png" alt=""  slot="reference" >
-        <img v-else src="../assets/bell.png" style="width:34px;height:34px" alt=""  slot="reference" >
+        <img v-if="unreadCnt" style="width:33px;height:33px" src="../../static/bell2.png" alt=""  slot="reference" >
+        <img v-else src="../../static/bell.png" style="width:34px;height:34px" alt=""  slot="reference" >
       </span>
     <!-- </el-dropdown> -->
 
@@ -28,99 +28,104 @@
 
     <!--侧栏消息抽屉-->
      <el-drawer  :visible.sync="notice_drawer"  :show-close="true" :with-header="false" size="27%" :append-to-body="true" :modal="false"
-          style="height: 100%; margin-top:70px;">
+          style="margin-top:70px;">
       <el-tabs v-model="activeName_notice" type="border-card" style="padding:5px">
         <el-tab-pane label="文档评论" name="0">
-          <div style="width: 100%; height: 840px;">
-            <el-timeline style="margin-left: -40px">
-              <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" :timestamp="comment.discuss.discussTime">
-                <div style="height: 80px">
-                  <div class="commentList">
-                    <span class="left p1">
-                      <img src="@/assets/doc1.png">
-                    </span>
-                    <span class="right p1">
-                      <div class="rightTop">
-                        <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
-                        <span style="font-size:16px; font-weight:bold">「 {{comment.fileName}}」</span>
-                      </div>
-                      <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}}</div>
-                    </span>
+          <div style=" width: 100%;height: 90vh;">
+            <el-scrollbar style="height:100%">
+              <el-timeline style="margin-left: -40px">
+                <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" :timestamp="comment.discuss.discussTime">
+                  <div style="height: 80px">
+                    <div class="commentList">
+                      <span class="left p1">
+                        <img src="../../static/doc1.png">
+                      </span>
+                      <span class="right p1">
+                        <div class="rightTop">
+                          <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
+                          <span style="font-size:16px; font-weight:bold">「 {{comment.fileName}}」</span>
+                        </div>
+                        <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}}</div>
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <el-divider style="magin-top:20px"></el-divider>
-              </el-timeline-item>
-              <el-timeline-item v-if="commentList.length == 0" placement="top">
-                <el-card>
-                  <span style="font-size: 16px">空空如也~</span>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
+                  <el-divider style="magin-top:20px"></el-divider>
+                </el-timeline-item>
+                <el-timeline-item v-if="commentList.length == 0" placement="top">
+                  <el-card>
+                    <span style="font-size: 16px">空空如也~</span>
+                  </el-card>
+                </el-timeline-item>
+              </el-timeline>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <el-tab-pane label="系统通知" name="2">
-          <div style="width: 100%; height: 840px;">
-            <el-timeline style="margin-left: -40px">
-              <el-timeline-item v-for="notice in noticeList" :key="notice.noticeId"  placement="top" :timestamp="notice.time">
-                <div style="height: 80px">
-                  <div class="commentList">
-                    <span class="left p1">
-                      <img src="@/assets/doc1.png">
-                    </span>
-                    <span class="right p1">
-                      <div class="rightTop">
-                        <span style="font-size: 16px;margin-left:17px"> {{notice.groupAdmin}}&nbsp;&nbsp;{{notice.info}}</span>
-                        <span style="font-size:16px; font-weight:bold">「 {{notice.groupName}}」</span>
-                      </div>
-                      <div class="rightCenter" style="font-size:14px;">
-                        <span @click="readNotice(notice.noticeId)" class="el-icon-bell" style="float:right;font-size:20px"></span>
-                        <span><el-button size="mini" v-if="showNoticeButton(notice.isRead,notice.info)" @click="permit(notice.noticeId)">同意</el-button></span>
-                      </div>
-                    </span>
+          <div style=" width: 100%;height: 90vh;">
+            <el-scrollbar style="height:100%">
+              <el-timeline style="width:100%; margin-left: -40px;">
+                <el-timeline-item v-for="notice in noticeList" :key="notice.noticeId"  placement="top" :timestamp="notice.time">
+                  <div style="height: 80px; width:100%">
+                    <div class="commentList">
+                      <span class="left p1">
+                        <img src="../../static/doc1.png">
+                      </span>
+                      <span class="right p1">
+                        <div class="rightTop">
+                          <span style="font-size: 16px;margin-left:17px"> {{notice.groupAdmin}}&nbsp;&nbsp;{{notice.info}}</span>
+                          <span style="font-size:16px; font-weight:bold">「 {{notice.groupName}}」</span>
+                        </div>
+                        <div class="rightCenter" style="font-size:14px;">
+                          <span><el-button size="mini" v-if="showNoticeButton(notice.isRead,notice.info)" @click="permit(notice.noticeId)">同意</el-button></span>
+                        </div>
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <el-divider style="magin-top:20px"></el-divider>
-              </el-timeline-item>
-              <el-timeline-item v-if="noticeList.length == 0" placement="top">
-                <el-card>
-                  <span style="font-size: 16px">空空如也~</span>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
+                  <el-divider style="magin-top:20px"></el-divider>
+                </el-timeline-item>
+                <el-timeline-item v-if="noticeList.length == 0" placement="top">
+                  <el-card>
+                    <span style="font-size: 16px">空空如也~</span>
+                  </el-card>
+                </el-timeline-item>
+              </el-timeline>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <el-tab-pane :label="unreadTitle" name="1">
-          <div style="width: 100%; height: 840px;">
-            <el-timeline style="margin-left: -40px">
-              <el-timeline-item v-for="unread in unreadList" :key="unread.id" placement="top" :timestamp="unread.time">
-                <div style="height: 80px">
-                  <div class="commentList">
-                    <span class="left p1">
-                      <img src="@/assets/doc1.png">
-                    </span>
-                    <span class="right p1">
-                      <div class="rightTop">
-                        <span style="font-size: 16px;margin-left:17px"> {{unread.user}}&nbsp;&nbsp;{{unread.action}}</span>
-                        <span style="font-size:16px; font-weight:bold">「 {{unread.item}}」</span>
-                      </div>
-                      <div class="rightCenter" style="font-size:14px;">
-                        <span v-if="showUnreadButton(unread.info,unread.action)">
-                          <el-button size="mini" @click="permit(unread.uid)">同意</el-button>
-                        </span>
-                        <span v-else>{{unread.info}}</span>
-                        <span @click="readComment(unread.uid)" class="el-icon-bell" style="float:right;font-size:20px"></span>
-                      </div>
-                    </span>
+          <div style=" width: 100%;height: 90vh;">
+            <el-scrollbar style="height:100%">
+              <el-timeline style="margin-left: -40px">
+                <el-timeline-item v-for="unread in unreadList" :key="unread.id" placement="top" :timestamp="unread.time">
+                  <div style="height: 80px">
+                    <div class="commentList">
+                      <span class="left p1">
+                        <img src="../../static/doc1.png">
+                      </span>
+                      <span class="right p1">
+                        <div class="rightTop">
+                          <span style="font-size: 16px;margin-left:17px"> {{unread.user}}&nbsp;&nbsp;{{unread.action}}</span>
+                          <span style="font-size:16px; font-weight:bold">「 {{unread.item}}」</span>
+                        </div>
+                        <div class="rightCenter" style="font-size:14px;">
+                          <span v-if="showUnreadButton(unread.info,unread.action)">
+                            <el-button size="mini" @click="permit(unread.uid)">同意</el-button>
+                          </span>
+                          <span v-else>{{unread.info}}</span>
+                          <span @click="readComment(unread.uid)" class="el-icon-bell" style="float:right;font-size:20px"></span>
+                        </div>
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <el-divider style="magin-top:20px"></el-divider>
-              </el-timeline-item>
-              <el-timeline-item v-if="unreadList.length == 0" placement="top">
-                <el-card>
-                  <span style="font-size: 16px">空空如也~</span>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
+                  <el-divider style="magin-top:20px"></el-divider>
+                </el-timeline-item>
+                <el-timeline-item v-if="unreadList.length == 0" placement="top">
+                  <el-card>
+                    <span style="font-size: 16px">空空如也~</span>
+                  </el-card>
+                </el-timeline-item>
+              </el-timeline>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
 
@@ -143,7 +148,7 @@
                   :on-change="fileChange"
                   :http-request="SubbmitFile" >
                   <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar"
-                      onerror="javascript:this.src='../../static/images/defaultAvatar.png'">
+                      onerror="javascript:this.src='../../static/avatar.png'">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-form-item>
@@ -529,5 +534,9 @@ export default {
     width:30px;
     height:30px;
     border-radius: 50%;
+  }
+
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
 </style>
