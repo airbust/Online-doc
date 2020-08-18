@@ -223,14 +223,15 @@
             this.group_keyword=''
             this.attendVisible = false
           })
-        }
+        }this.$router.go(0)
+        // this.getGroups()
       },
       addMem(){
         if(this.user_keyword!=''){
           group.addMem(this.user_keyword,this.$store.state.groupName).then(res=>{
             this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
             this.user_keyword=''
-            this.attendVisible =false
+            this.optionVisible =false
           })
         }
       },

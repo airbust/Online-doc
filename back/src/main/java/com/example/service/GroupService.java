@@ -1,14 +1,8 @@
 package com.example.service;
 
 import com.example.config.JwtConfig;
-import com.example.dao.FileDao;
-import com.example.dao.GroupDao;
-import com.example.dao.RoleDao;
-import com.example.dao.UserDao;
-import com.example.entity.File;
-import com.example.entity.Group;
-import com.example.entity.GroupResult;
-import com.example.entity.User;
+import com.example.dao.*;
+import com.example.entity.*;
 import com.example.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,15 +21,9 @@ public class GroupService {
     @Autowired
     private GroupDao groupDao;
     @Autowired
-    private FileDao fileDao;
-    @Autowired
-    private RoleDao roleDao;
-    @Autowired
-    private JwtConfig jwtConfig;
+    private NoticeDao noticeDao;
     @Autowired
     private HttpServletRequest request;
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
@@ -55,7 +44,9 @@ public class GroupService {
         for(Group i : tmp){
             if(i.getGroupId().equals((group.getGroupId()))) throw new RuntimeException("已在该团队中");
         }
-        groupDao.saveGroupMem(group.getGroupId(),user.getId());
+        String groupAdmin = userDao.getUserById(group.getAdminId()).getName();
+        noticeDao.saveNotice(new Notice(user.getName(),groupAdmin,groupName,2,"申请加入",new Date(),0));
+//        groupDao.saveGroupMem(group.getGroupId(),user.getId());
     }
 
     public List<Group> getGroups() {
@@ -68,9 +59,6 @@ public class GroupService {
         List<Integer> groupIdList2 = groupDao.getGroupByUserIdAsAdmin(user.getId());
         for(Integer i : groupIdList2)
             groupList.add(groupDao.getGroupById(i));
-//        Group tmp = groupDao.getGroupByAdminId(user.getId());
-//        System.out.println("tmp = " + tmp);
-//        if(tmp!=null) groupList.add(tmp);
         System.out.println("groupList = " + groupList);
         return groupList;
     }
@@ -84,7 +72,9 @@ public class GroupService {
                 throw new RuntimeException("该用户已在团队中");
         if(group.getAdminId().equals(user.getId()))
             throw new RuntimeException("该用户已在团队中");
-        groupDao.saveGroupMem(group.getGroupId(),user.getId());
+        String groupAdmin = userDao.getUserById(group.getAdminId()).getName();
+        noticeDao.saveNotice(new Notice(userName,groupAdmin,teamName,1,"邀请你加入",new Date(),0));
+//        groupDao.saveGroupMem(group.getGroupId(),user.getId());
     }
 
     public GroupResult getGroupMem(String teamName) {

@@ -83,6 +83,7 @@ public class DiscussService {
 	}
 
 	public void readDiscussById(Integer discussId) {
+		System.out.println("Read discussId = " + discussId);
 		discussDao.readDiscussById(discussId);
 	}
 }

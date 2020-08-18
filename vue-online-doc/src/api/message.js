@@ -32,5 +32,23 @@ export default {
       url: '/discuss/getAllDiscuss',
       method: 'get'
     })
+  },
+  getNotice(){
+    return request({
+      url: '/notice',
+      method: 'get'
+    })
+  },
+  readNotice(noticeId){
+    return request({
+      url: '/notice/read/' + noticeId,
+      method: 'post'
+    })
+  },
+  permit(noticeId){
+    return request({
+      url: '/notice/permit/' + noticeId,
+      method: 'post'
+    })
   }
 }

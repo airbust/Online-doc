@@ -27,10 +27,10 @@
      <el-drawer  :visible.sync="notice_drawer"  :show-close="true" :with-header="false" size="27%" :append-to-body="true" :modal="false"
           style="height: 100%; margin-top:70px;">
       <el-tabs v-model="activeName_notice" type="border-card" style="padding:5px">
-        <el-tab-pane label="全部消息" name="0">
+        <el-tab-pane label="文档评论" name="0">
           <div style="width: 100%; height: 840px;">
             <el-timeline style="margin-left: -40px">
-              <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" timestamp="2020-6-25">
+              <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" :timestamp="comment.discuss.discussTime">
                 <div style="height: 80px">
                   <div class="commentList">
                     <span class="left p1">
@@ -55,10 +55,10 @@
             </el-timeline>
           </div>
         </el-tab-pane>
-        <el-tab-pane :label="unread" name="1">
+        <el-tab-pane label="系统通知" name="2">
           <div style="width: 100%; height: 840px;">
             <el-timeline style="margin-left: -40px">
-              <el-timeline-item v-for="comment in unreadList" :key="comment.discuss.discussId"  placement="top" timestamp="2020-6-25">
+              <el-timeline-item v-for="notice in noticeList" :key="notice.noticeId"  placement="top" :timestamp="notice.time">
                 <div style="height: 80px">
                   <div class="commentList">
                     <span class="left p1">
@@ -66,11 +66,47 @@
                     </span>
                     <span class="right p1">
                       <div class="rightTop">
-                        <span style="font-size: 16px;margin-left:17px"> {{comment.user.name}}&nbsp;&nbsp;评论了</span>
-                        <span style="font-size:16px; font-weight:bold">「 {{comment.fileName}}」</span>
+                        <span style="font-size: 16px;margin-left:17px"> {{notice.groupAdmin}}&nbsp;&nbsp;{{notice.info}}</span>
+                        <span style="font-size:16px; font-weight:bold">「 {{notice.groupName}}」</span>
                       </div>
-                      <div class="rightCenter" style="font-size:14px;">{{comment.discuss.discussBody}} 
-                        <span @click="readComment(comment.discuss.discussId)" class="el-icon-bell" style="float:right;font-size:20px"></span></div>
+                      <div class="rightCenter" style="font-size:14px;">
+                        <span @click="readNotice(notice.noticeId)" class="el-icon-bell" style="float:right;font-size:20px"></span>
+                        <span><el-button size="mini" v-if="showNoticeButton(notice.isRead,notice.info)" @click="permit(notice.noticeId)">同意</el-button></span>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+                <el-divider style="magin-top:20px"></el-divider>
+              </el-timeline-item>
+              <el-timeline-item v-if="noticeList.length == 0" placement="top">
+                <el-card>
+                  <span style="font-size: 16px">空空如也~</span>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="unreadTitle" name="1">
+          <div style="width: 100%; height: 840px;">
+            <el-timeline style="margin-left: -40px">
+              <el-timeline-item v-for="unread in unreadList" :key="unread.id" placement="top" :timestamp="unread.time">
+                <div style="height: 80px">
+                  <div class="commentList">
+                    <span class="left p1">
+                      <img src="@/assets/doc1.png">
+                    </span>
+                    <span class="right p1">
+                      <div class="rightTop">
+                        <span style="font-size: 16px;margin-left:17px"> {{unread.user}}&nbsp;&nbsp;{{unread.action}}</span>
+                        <span style="font-size:16px; font-weight:bold">「 {{unread.item}}」</span>
+                      </div>
+                      <div class="rightCenter" style="font-size:14px;">
+                        <span v-if="showUnreadButton(unread.info,unread.action)">
+                          <el-button size="mini" @click="permit(unread.uid)">同意</el-button>
+                        </span>
+                        <span v-else>{{unread.info}}</span> 
+                        <span @click="readComment(unread.uid)" class="el-icon-bell" style="float:right;font-size:20px"></span>
+                      </div>
                     </span>
                   </div>
                 </div>
@@ -203,6 +239,7 @@ export default {
       activeName_info: "0", //默认标签
       activeName_notice: "1",
       noticeList: [],//系统通知
+      unread: {user:'',action: '', item: '', info: '', time: ''},
       unreadList: [],
       commentList: [
         // {id:1,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
@@ -232,40 +269,88 @@ export default {
     }
   },
   computed:{
-    unread() {return '未读('+this.unreadCnt+')'}
+    unreadTitle() {return '未读('+this.unreadCnt+')'}
   },
   components:{ },
   created(){
     this.name=localStorage.getItem('name')
     this.getUserInfo()
-    this.getComment()
+    this.getMessage()
   },
   methods:{
-    getComment(){
-      console.info('getComment')
+    permit(id){
+      console.log('同意')
+      message.permit(id).then(res=>{
+        console.log(res.message)
+        this.getMessage()
+      })
+    },
+    getMessage(){
+      console.info('getMessage')
+      this.unreadCnt = 0
+      this.unreadList = []
       message.getAllDiscuss().then(res=>{
-        console.log(res.data)
+        // console.log(res.data)
         this.commentList = res.data
         this.total = res.data.length
-        this.unreadCnt = 0
-        this.unreadList = []
         for(var i=0;i<this.total;i++){
           if(this.commentList[i].discuss.isRead==0 ){
-            this.unreadList.push(res.data[i]);
+            let u = {
+              uid: -res.data[i].discuss.discussId,
+              user:res.data[i].user.name,
+              action: '评论了',
+              item: res.data[i].fileName, 
+              info: res.data[i].discuss.discussBody, 
+              time: res.data[i].discuss.discussTime
+            }
+            this.unreadList.push(u);
             this.unreadCnt ++;
           }
         }
       })
+      message.getNotice().then(res=>{
+        // console.log(res.data)
+        this.noticeList = res.data
+        this.total = res.data.length
+        for(var i=0;i<this.total;i++){
+          if(this.noticeList[i].isRead==0 ){
+            let u = {
+              uid: res.data[i].noticeId,
+              user:res.data[i].groupAdmin,
+              action: res.data[i].info,
+              item: res.data[i].groupName, 
+              time: res.data[i].time,
+              info: '',
+            }
+            if(u.user == this.$store.state.name)
+                u.user = res.data[i].userName
+            this.unreadList.push(u);
+            this.unreadCnt ++;
+          }
+        }
+      })
+      // console.log(this.unreadList)
     },
     readComment(id){
-      message.readComment(id).then(res=>{
-        console.log(res.message)
-        this.getComment()
-      })
+      if(id>0)
+        message.readNotice(id).then(res=>{ console.log(res.message) })
+      else
+        message.readComment(-id).then(res=>{ console.log(res.message) })
+      this.getMessage()
     },
     validAvatar(){
       if(this.avatar == null || this.avatar == undefined) return false
       return this.avatar.length>0?true:false
+    },
+    showUnreadButton(discuss, action){
+      if(discuss!='') return false
+      if(action.substring(0,1)=='已') return false
+      return true 
+    },
+    showNoticeButton(isRead,info){
+      if(isRead==1) return false;
+      if(info.substring(0,1)=='已') return false
+      return true
     },
     loginout(){
       user.logout().then(res=>{

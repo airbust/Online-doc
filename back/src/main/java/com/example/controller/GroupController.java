@@ -30,10 +30,10 @@ public class GroupController {
     public Result attendGroup(@PathVariable String groupName){
         try {
             groupService.attendGroup(groupName);
-            return Result.create(200, "加入团队成功");
+            return Result.create(200, "申请发送成功");
         }
         catch(Exception e) {
-            return Result.create(200, "加入团队失败," + e.getMessage());
+            return Result.create(200, "申请发送失败," + e.getMessage());
         }
     }
     @GetMapping("/getGroups")
@@ -49,10 +49,10 @@ public class GroupController {
     public Result saveGroupMem(String userName,String teamName){
         try {
             groupService.saveGroupMem(userName,teamName);
-            return Result.create(200, "添加成功");
+            return Result.create(200, "邀请发送成功");
         }
         catch(Exception e) {
-            return Result.create(200, "添加失败," + e.getMessage());
+            return Result.create(200, "邀请发送失败," + e.getMessage());
         }
     }
     @GetMapping("/getGroupMem/{teamName}")
@@ -76,14 +76,14 @@ public class GroupController {
         }
     }
     @PostMapping("/deleteGroup")
-    public Result deleteGroup(String teamName,String userName){
+    public Result deleteGroup(String teamName){
         try {
             System.out.println("Remove: teamName = "+teamName);
             groupService.deleteGroup(teamName);
-            return Result.create(200, "移除成员成功");
+            return Result.create(200, "解散团队成功");
         }
         catch(Exception e) {
-            return Result.create(200, "移除成员失败," + e.getMessage());
+            return Result.create(200, "解散团队失败," + e.getMessage());
         }
     }
 }
