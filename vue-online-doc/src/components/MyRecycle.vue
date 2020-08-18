@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js"
   import file from '@/api/file'
   import waves from "../assets/waves/waves";
   export default {
@@ -131,7 +132,12 @@
         })
       },
       goto(id) {
-        this.$router.push({path: '/File/' + id})
+        var tmp = id.toString()
+        var fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+        while(fileId.indexOf("/") != -1){
+          fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+        }
+        this.$router.push({path: '/File/'+fileId})
       }
     }
   }

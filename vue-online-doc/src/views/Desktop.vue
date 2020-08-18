@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js"
   import MyDesktop from "../components/MyDesktop";
   import collapse from "../assets/collapse.js";
   export default {

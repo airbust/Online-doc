@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js"
   import file from '@/api/file'
   import waves from "../assets/waves/waves";
   export default {
@@ -122,7 +123,12 @@
       },
       handleCommand(command) {
         if(command == 'open') {
-          let routeUrl = this.$router.resolve({path: '/File/'+this.FileData[this.index].fileId});
+          var iid = this.FileData[this.index].fileId
+          var str = iid.toString()
+          var fileId = CryptoJS.AES.encrypt(str,"123").toString()
+          while(fileId.indexOf("/") != -1)
+            fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+          let routeUrl = this.$router.resolve({path: '/File/'+fileId});
           window.open(routeUrl.href, '_blank') }
         else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
         else if(command == 'share') {this.dialogVisible = true}
@@ -152,7 +158,12 @@
         })
       },
       goto(id){
-        this.$router.push({path: '/File/'+id})
+        var tmp = id.toString()
+        var fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+        while(fileId.indexOf("/") != -1){
+          fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+        }
+        this.$router.push({path: '/File/'+fileId})
       },
       onCopy(){
         this.$message({

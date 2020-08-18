@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js"
   import template from '@/api/template'
   export default {
     name: "TempleteLibrary",
@@ -55,7 +56,12 @@
         })
       },
       goto(id){
-        this.$router.push({path: '/template/'+id})
+        var tmp = id.toString()
+        var fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+        while(fileId.indexOf("/") != -1){
+          fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+        }
+        this.$router.push({path: '/File/'+fileId})
       }
     }
   }

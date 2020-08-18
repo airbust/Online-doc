@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js"
   import MyRecycle from "../components/MyRecycle";
   import collapse from "../assets/collapse.js";
   export default {

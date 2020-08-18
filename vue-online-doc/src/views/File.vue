@@ -51,7 +51,7 @@
 
       <el-input v-model="title" placeholder="请输入标题" v-if="writable&&flag"></el-input>
       <div class="hd" v-if="!flag">{{this.title}}</div>
-      <p style="display: none">{{fileId = this.$route.params.fileId}}</p>
+      <!-- <p style="display: none">{{fileId = this.$route.params.fileId}}</p> -->
     </div>
     <el-divider content-position="right">䂖墨文档 </el-divider>
     <div>
@@ -129,12 +129,14 @@
   Quill.register('modules/imageDrop', ImageDrop);
 
   import file from '@/api/file'
+  import CryptoJS from "crypto-js";
   import message from '@/api/message'
   export default {
     name: "Edit",
     components:{ quillEditor },
     data() {
       return {
+        fileId: 0,
         url: '',
         FileHistory:[
           {fileId:"1",fileName:"123",modifyInfo:"init 123",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"1"},
@@ -154,8 +156,6 @@
         messageBody: '',
         loading: true, //是否加载中
         ////////////////
-
-        fileId: -1,//文件id
         title: '',
         flag:false,
         readable:false,
@@ -214,12 +214,12 @@
       },
       handleChange(){
         // console.log(this.value)
-        file.updateAuth(this.$route.params.fileId,this.value[0],this.value[1]).then(res=>{
+        file.updateAuth(this.fileId,this.value[0],this.value[1]).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 })
         })
       },
       loadMessage () {
-        message.getMessage(this.$route.params.fileId).then(res => {
+        message.getMessage(this.fileId).then(res => {
           this.messageList = res.data
           console.log(res.data)
           this.loading = false
@@ -230,7 +230,7 @@
           this.$notify({title: '提示',type: 'error',message: '字段不完整',duration: 2000 });
           return;
         }
-        message.sendMessage(this.$route.params.fileId,this.messageBody).then(res => {
+        message.sendMessage(this.fileId,this.messageBody).then(res => {
           this.$notify({title: '提示',type: 'success',message: '留言成功',duration: 1500 });
           this.messageBody = ''
           this.loadMessage()
@@ -253,8 +253,15 @@
         });
       },
       loadFile(){
-        console.log('getFile: id='+this.$route.params.fileId)
-        file.getDocument(this.$route.params.fileId).then(res=>{
+        // console.log('getFile: id='+this.$route.params.fileId)
+        console.info('start')
+        var tmp = this.$route.params.fileId
+        console.log(tmp)
+        var bytes = CryptoJS.AES.decrypt(tmp,"123")
+        this.fileId = bytes.toString(CryptoJS.enc.Utf8)
+        console.info('decrypt')
+        console.log(this.fileId)
+        file.getDocument(this.fileId).then(res=>{
           console.log(res)
           this.$store.commit('login', res.data.map)//存储token
           this.auth = res.data.role
@@ -295,20 +302,20 @@
       },
       startEdit(){
         this.flag=true;
-        file.isEditing(this.$route.params.fileId).then(res=>{
+        file.isEditing(this.fileId).then(res=>{
           console.log('change is_edit to 1')
         })
       },
       endEdit(){
         this.flag=false;
-        file.isEditable(this.$route.params.fileId).then(res=>{
+        file.isEditable(this.params.fileId).then(res=>{
           console.log('change is_edit to 0')
         })
       },
       editFile(){
         //change is_edit to 0
         console.log('save begin')
-        file.updateDocument(this.$route.params.fileId,this.title,this.content)
+        file.updateDocument(this.fileId,this.title,this.content)
         .then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
         })
