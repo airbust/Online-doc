@@ -11,31 +11,11 @@ import TeamSpace from "../views/TeamSpace";
 import Recycle from '../views/Recycle'
 import TemplateLibrary from '../views/TemplateLibrary'
 import Template from '../views/Template'
-
+import layout from '@/layout/layout'
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      name: 'WorkStation',
-      component: WorkStation,
-    },
-    {
-      path:'/TeamSpace',
-      name:'TeamSpace',
-      component: TeamSpace
-    },
-    {
-      path: '/Edit',
-      name: 'Edit',
-      component: Edit
-    },
-    {  //区别个人文档与团队文档，下策
-      path: '/EditTeam',
-      name: 'EditTeam',
-      component: EditTeam
-    },
     {
       path: '/Login',
       name: 'Login',
@@ -47,24 +27,77 @@ export default new Router({
       component: Register
     },
     {
+      path: '/',
+      name: 'WorkStation',
+      component: layout,
+      children: [{
+        path: '',
+        component: WorkStation,
+      }]
+    },
+    {
+      path:'/TeamSpace',
+      name:'TeamSpace',
+      component: layout,
+      children: [{
+        path: '',
+        component: TeamSpace,
+      }]
+    },
+    {
+      path: '/Edit',
+      name: 'Edit',
+      component: layout,
+      children: [{
+        path: '',
+        component: Edit,
+      }]
+    },
+    {  //区别个人文档与团队文档，下策
+      path: '/EditTeam',
+      name: 'EditTeam',
+      component: layout,
+      children: [{
+        path: '',
+        component: EditTeam,
+      }]
+    },
+    
+    {
       path: '/Recycle',
       name: 'Recycle',
-      component: Recycle
+      component: layout,
+      children: [{
+        path: '',
+        component: Recycle,
+      }]
     },
     {
       path: '/File/:fileId',
       name: 'File',
-      component: File
+      component: layout,
+      children: [{
+        path: '',
+        component: File,
+      }]
     },
     {
       path: '/Template/:templateId',
       name: 'Template',
-      component: Template
+      component: layout,
+      children: [{
+        path: '',
+        component: Template,
+      }]
     },
     {
       path: '/TemplateLibrary',
       name: 'TemplateLibrary',
-      component: TemplateLibrary
+      component: layout,
+      children: [{
+        path: '',
+        component: TemplateLibrary,
+      }]
     }
   ]
 })

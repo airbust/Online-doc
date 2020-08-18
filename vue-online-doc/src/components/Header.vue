@@ -241,16 +241,12 @@ export default {
       noticeList: [],//系统通知
       unread: {user:'',action: '', item: '', info: '', time: ''},
       unreadList: [],
-      commentList: [
-        // {id:1,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
-        // {id:2,user:{name:"小明"},file:{title:"测试文档1",id:12},body:"呵呵哈哈哈1232323"},
-      ],//用户评论
+      commentList: [],//用户评论
       userInfo: {
         name: '', gender: '',  birth: '', email: '', job:'', summary:'', avatar: ''
       },
       notice_drawer: false,
       info_drawer:false,
-
       file: {}, //头像图片
       oldPassword: '',
       newPassword: '',
