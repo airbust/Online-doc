@@ -1,5 +1,11 @@
 <template>
   <div style="height:75vh">
+    <!-- 分享框 -->
+    <el-dialog title="分享"  :visible.sync="dialogVisible"  width="30%">
+      <el-input v-model="url" :readonly="true">
+        <el-button slot="append" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:fail="onError">复制链接</el-button>
+      </el-input>
+    </el-dialog>
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
@@ -14,7 +20,7 @@
                   <el-dropdown-item command="collect" divided>收藏</el-dropdown-item>
                   <el-dropdown-item command="share">分享</el-dropdown-item>
                   <el-dropdown-item command="delete">删除</el-dropdown-item>
-                  <el-dropdown-item command="rename" divided>重命名</el-dropdown-item>
+                  <!-- <el-dropdown-item command="rename" divided>重命名</el-dropdown-item> -->
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -63,13 +69,11 @@
     name: "MyCreation",
     data(){
       return{
-        FileData:[
-          // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-        ],
+        url: '',
+        FileData:[],
         index: 0, //当前高亮的图标
         showOption: [],
+        dialogVisible:false,
         total: 0,
         keyword:''
       }
@@ -86,14 +90,17 @@
       pEnter(index) { 
         this.$set(this.showOption,index,1)
         this.index = index
+        this.url = '/File/'+this.FileData[this.index].fileId
       },
       pLeave(index) {
         this.$set(this.showOption,index,0)
       },
       handleCommand(command) {
-        if(command == 'open') {}
+        if(command == 'open') {
+          let routeUrl = this.$router.resolve({path: '/File/'+this.FileData[this.index].fileId});
+          window.open(routeUrl.href, '_blank') }
         else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
-        else if(command == 'share') {}
+        else if(command == 'share') { this.dialogVisible = true}
         else if(command == 'delete') {this.deleteFile(this.FileData[this.index].fileId)}
         else if(command == 'rename') {}
       },
@@ -129,7 +136,16 @@
       },
       goto(id){
         this.$router.push({path: '/File/'+id})
-      }
+      },
+      onCopy(){
+        this.$message({
+          message: '复制成功',
+          type: 'success'
+        });
+      },
+      onError(){
+        this.$message.error('复制失败');
+      },
     }
   }
 </script>

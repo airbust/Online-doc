@@ -10,10 +10,6 @@
         <i class="el-icon-tickets"></i>
         <span class="font" slot="title">工作台</span>
       </el-menu-item>
-      <el-menu-item index="3">
-        <i class="el-icon-message"></i>
-        <span class="font" slot="title">收件箱</span>
-      </el-menu-item>
       <el-divider></el-divider>
       <el-menu-item index="/Desktop">
         <i class="el-icon-monitor"></i>

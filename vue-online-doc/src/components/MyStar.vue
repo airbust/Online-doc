@@ -1,6 +1,11 @@
 <template>
   <div style="height:75vh">
-
+    <!-- 分享框 -->
+    <el-dialog title="分享"  :visible.sync="dialogVisible"  width="30%">
+      <el-input v-model="url" :readonly="true">
+        <el-button slot="append" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:fail="onError">复制链接</el-button>
+      </el-input>
+    </el-dialog>
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
@@ -61,6 +66,8 @@
     props:  {random : Number},
     data(){
       return{
+        url: '',
+        dialogVisible: false,
         FileData:[],
         index: 0,
         showOption: [],
@@ -90,14 +97,17 @@
       pEnter(index) {
         this.$set(this.showOption,index,1)
         this.index = index
+        this.url = '/File/'+this.FileData[this.index].fileId
       },
       pLeave(index) {
         this.$set(this.showOption,index,0)
       },
       handleCommand(command) {
-        if(command == 'open') {}
+        if(command == 'open') {
+          let routeUrl = this.$router.resolve({path: '/File/'+this.FileData[this.index].fileId});
+          window.open(routeUrl.href, '_blank') }
         else if(command == 'collect') {this.unCollectFile(this.FileData[this.index].fileId)}
-        else if(command == 'share') {}
+        else if(command == 'share') {this.dialogVisible =true }
       },
       unCollectFile(id){
         file.removeCollectedDocument(id).then(res=>{
@@ -119,7 +129,16 @@
       },
       goto(id){
         this.$router.push({path: '/File/'+id})
-      }
+      },
+      onCopy(){
+        this.$message({
+          message: '复制成功',
+          type: 'success'
+        });
+      },
+      onError(){
+        this.$message.error('复制失败');
+      },
     }
   }
 </script>

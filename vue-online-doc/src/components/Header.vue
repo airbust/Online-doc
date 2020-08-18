@@ -282,6 +282,7 @@ export default {
       console.log('同意')
       message.permit(id).then(res=>{
         console.log(res.message)
+        this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
         this.getMessage()
       })
     },
@@ -374,10 +375,7 @@ export default {
     },
     getUserInfo(){ //用户信息 
       if(this.$store.state.token){
-        // console.info('存在token')
-        // console.info(this.$store.state.name)
         user.getUserInfo().then(response=>{
-          // console.info(response.data)
           var a = response.data
           this.userInfo.name = a.name
           this.userInfo.gender = a.gender

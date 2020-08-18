@@ -28,7 +28,7 @@
         <div style="margin-top:-5px">
           <span class="left">
             <img  v-if="validAvatar(adminAvatar)" :src="adminAvatar" class="avatar" alt=""  slot="reference">
-            <img  v-else src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
+            <img  v-else-if="groups.length>0" src="@/assets/avatar.png" class="avatar" alt=""  slot="reference">
           </span>
           <span class="right">
             <div class="rightTop">
@@ -178,7 +178,7 @@
     },
     methods: {
       validAvatar(avatar){
-        console.log(this.adminAvatar)
+        // console.log(this.adminAvatar)
         if(avatar == null || avatar == undefined) return false
         return avatar.length>0?true:false
       },
@@ -204,7 +204,8 @@
             this.$store.dispatch('setCurGroupName',this.groups[0].groupName)
           this.activeName = this.groups[0].groupName
           }
-          this.getGroupMem(this.$store.state.groupName)
+          if(this.groups.length>0)
+            this.getGroupMem(this.$store.state.groupName)
         })
       },
       attendGroup(){
@@ -239,6 +240,8 @@
         console.log('移除成员：'+name)
         group.removeMem(this.$store.state.groupName,name).then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
+          this.getGroups()
+          this.optionVisible = false
         })
       },
       leaveGroup(){
@@ -268,7 +271,8 @@
       },
       handleClose(done) {
         done();
-      }
+      },
+      
     }
   };
 </script>

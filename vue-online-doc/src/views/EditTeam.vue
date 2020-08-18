@@ -90,6 +90,7 @@
         file.saveTeamFile(this.title,this.content,this.$store.state.groupName)
         .then(res=>{
           this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
+          this.$router.push({path:'/TeamSpace'})
         })
       },
       startEdit(){

@@ -1,6 +1,11 @@
 <template>
   <div style="height:75vh">
-
+    <!-- 分享框 -->
+    <el-dialog title="分享"  :visible.sync="dialogVisible"  width="30%">
+      <el-input v-model="url" :readonly="true">
+        <el-button slot="append" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:fail="onError">复制链接</el-button>
+      </el-input>
+    </el-dialog>
     <!-- 平铺视图 -->
     <el-row  v-if="layout" type="flex" :gutter="0" class="el-row" >
       <el-col :span="1" class="el-col" v-for="(o, fileId) in FileData" :key="fileId" :offset="1" >
@@ -61,11 +66,9 @@
     props:  {random : Number},
     data(){
       return{
-        FileData:[
-          // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-        ],
+        FileData:[],
+        dialogVisible:false,
+        url: '',
         index: 0,
         showOption: [],
         total: 0,
@@ -86,9 +89,11 @@
 
     methods:{
       handleCommand(command) {
-        if(command == 'open') {}
+        if(command == 'open') {
+          let routeUrl = this.$router.resolve({path: '/File/'+this.FileData[this.index].fileId});
+          window.open(routeUrl.href, '_blank') }
         else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
-        else if(command == 'share') {}
+        else if(command == 'share') {this.dialogVisible = true}
       },
       getFile(){
         //TODO api接口
@@ -120,13 +125,23 @@
       pEnter(index) {
         this.$set(this.showOption,index,1)
         this.index = index
+        this.url = '/File/'+this.FileData[this.index].fileId
       },
       pLeave(index) {
         this.$set(this.showOption,index,0)
       },
       goto(id){
         this.$router.push({path: '/File/'+id})
-      }
+      },
+      onCopy(){
+        this.$message({
+          message: '复制成功',
+          type: 'success'
+        });
+      },
+      onError(){
+        this.$message.error('复制失败');
+      },
     }
   }
 </script>

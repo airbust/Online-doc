@@ -8,6 +8,20 @@
         <el-button @click="endEdit" v-if="writable&&flag">预览</el-button>
         <el-button @click="editFile" v-if="writable&&flag">更新保存</el-button>
 
+        <el-button @click="dialogVisible=true">分享</el-button>
+        <el-dialog
+          title="分享"
+          :visible.sync="dialogVisible"
+          width="30%"
+          >
+          <el-input v-model="url" :readonly="true">
+            <el-button slot="append"
+            v-clipboard:copy="url"
+            v-clipboard:success="onCopy"
+            v-clipboard:fail="onError">复制链接</el-button>
+          </el-input>
+        </el-dialog>
+
         <!-- 历史版本 -->
         <el-dialog
           title="历史版本"
@@ -125,6 +139,7 @@
     components:{ quillEditor },
     data() {
       return {
+        url: '',
         FileHistory:[
           {fileId:"1",fileName:"123",modifyInfo:"init 123",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"1"},
           {fileId:"1",fileName:"233",modifyInfo:"123->233",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"2"},
@@ -152,9 +167,9 @@
         authable: false,
         discussable: false,
         //is_Edit:0,
-        auth: {},//{groupWrite:1,otherRead:1,otherWrite:0}, 当前文档对应权限：user默认有全部权限，group默认有读权限 
-        //role:"OTHER",
+        auth: {},
         content:null,
+        dialogVisible: false,
         historyVisible: false,
         editorOption:{
             theme:'snow',
@@ -183,11 +198,21 @@
     created(){
       this.loadFile();
       this.loadMessage()
+      this.url = this.$route.path;
     },
     mounted() {
       addQuillTitle();
     },
     methods:{
+      onCopy(){
+        this.$message({
+          message: '复制成功',
+          type: 'success'
+        });
+      },
+      onError(){
+        this.$message.error('复制失败');
+      },
       myComment(name){
         return this.$store.state.name == name ? true : false
       },
