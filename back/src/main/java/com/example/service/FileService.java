@@ -1,10 +1,7 @@
 package com.example.service;
 
 import com.example.config.JwtConfig;
-import com.example.dao.FileDao;
-import com.example.dao.GroupDao;
-import com.example.dao.RoleDao;
-import com.example.dao.UserDao;
+import com.example.dao.*;
 import com.example.entity.*;
 import com.example.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,8 @@ public class FileService {
 	@Autowired
 	private GroupDao groupDao;
 	@Autowired
+	private RecentDao recentDao;
+	@Autowired
 	private FileDao fileDao;
 	@Autowired
 	private RoleDao roleDao;
@@ -43,6 +42,7 @@ public class FileService {
 		Role role = roleDao.getAuthByFileId(fileId); //文档权限
 		System.out.println("role = " + role);
 		String userName = jwtTokenUtil.getUsernameFromRequest(request);
+		User user = userDao.getUserByName(userName);
 		final UserDetails userDetails = this.loadUserByUsername(Integer.toString(fileId));
 		final String token = jwtTokenUtil.generateToken(userDetails);
 		//获取用户权限
@@ -62,6 +62,7 @@ public class FileService {
 			throw new RuntimeException("文件不存在");
 		if(role == null)
 			throw new RuntimeException("文件权限损坏");
+		recentDao.saveRecent(new Recent(user.getId(), fileId, new Date()));
 		return new DocResult(file,role,map);//文档、文档权限、角色Token
 	}
 
@@ -135,6 +136,10 @@ public class FileService {
 		if(lock) fileDao.setEditStatus(1,fileId);
 		else fileDao.setEditStatus(0,fileId);
 	}
+	public Object getRecentFile() {
+		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		return fileDao.getRecentFileByUserId(user.getId());
+	}
 	public List<File> getDeletedFile() {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
 		return fileDao.getDeletedFileByUserId(user.getId());
@@ -146,6 +151,16 @@ public class FileService {
 	public List<File> getTeamFile(String teamName) {
 		Group group = groupDao.getGroupByName(teamName);
 		return fileDao.getFileByGroupId(group.getGroupId());
+	}
+	public List<File> getHistoryFile(Integer fileId) {
+		List<File> fileList = fileDao.getHistoryFile(fileId);
+		System.out.println("fileList = " + fileList);
+		return fileList;
+	}
+	public File getHistoryFileById(Integer fileId, Integer modifyCnt) {
+		File file = fileDao.getHistoryFileById(fileId,modifyCnt);
+		System.out.println("file = " + file);
+		return file;
 	}
 	public List<File> getRelativeFile() {
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
@@ -205,5 +220,7 @@ public class FileService {
 			else if(auth.equals("R")) roleDao.updateGroupAuth(fileId,0,0);
 		}
 	}
+
+
 
 }

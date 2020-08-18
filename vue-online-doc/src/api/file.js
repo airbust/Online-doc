@@ -14,6 +14,18 @@ export default {
       method: 'get'
     })
   },
+  getHistory(fileId){
+    return request({
+      url: '/doc/getHistoryFile/'+fileId,
+      method: 'get'
+    })
+  },
+  getHistoryFile(fileId,modifyCnt){
+    return request({
+      url: '/doc/getHistoryFile/'+fileId+'/'+modifyCnt,
+      method: 'get'
+    })
+  },
   getStar() {
     return request({
       url:'/doc/getStar',

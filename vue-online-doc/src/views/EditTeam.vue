@@ -114,7 +114,7 @@
       },
       onEditorFocus (event) {
         // 获得焦点事件
-        event.enable(this.flag);
+        // event.enable(this.flag);
       },
       onEditorChange () {
         // 内容改变事件
@@ -126,8 +126,11 @@
 
 <style scoped>
   .hd{
-    text-align: center;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
     line-height: 50px;
+    width:75%
   }
   .bd{
     width: 75%;

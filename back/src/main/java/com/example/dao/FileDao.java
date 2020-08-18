@@ -41,4 +41,10 @@ public interface FileDao {
 
     List<File> getGroupFileByUserId(Integer userId);
     List<File> getGroupFileByAdminId(Integer userId);
+
+    List<File> getRecentFileByUserId(Integer userId);
+
+    List<File> getHistoryFile(Integer fileId);
+
+    File getHistoryFileById(Integer fileId, Integer modifyCnt);
 }

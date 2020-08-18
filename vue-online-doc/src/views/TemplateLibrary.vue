@@ -4,7 +4,7 @@
     <el-row type="flex" :gutter="0" class="el-row" >
       <el-col :span="4" class="el-col" v-for="(o, index) in templateData" :key="index" :offset="1" >
           <div @mouseenter="pEnter(index)" @mouseleave="pLeave(index)">
-            <img :src="o.cover" @click="goto(o.id)" class="image">
+            <img :src="o.cover" @click="gotoTemplete(o.id)" class="image">
             <div style="margin-top: 14px; text-align: center">
               <a>{{o.name}}</a>
             </div>
@@ -21,11 +21,7 @@ import CryptoJS from "crypto-js"
     name: "TempleteLibrary",
     data(){
       return{
-        templateData:[
-          // {"templateId":1,"templateName":"123","templateInfo":null,"templateBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"templateId":2,"templateName":"demo","templateInfo":null,"templateBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"templateId":3,"templateName":"test","templateInfo":null,"templateBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-        ],
+        templateData:[],
         index: 0, //当前高亮的图标
         showOption: [],
         total: 0,
@@ -55,13 +51,8 @@ import CryptoJS from "crypto-js"
           for(var i=0;i<this.total;++i) this.showOption[i]=0 //暂未获取文章数total
         })
       },
-      goto(id){
-        var tmp = id.toString()
-        var fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
-        while(fileId.indexOf("/") != -1){
-          fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
-        }
-        this.$router.push({path: '/File/'+fileId})
+      gotoTemplete(id){
+        this.$router.push({path: '/Template/'+id})
       }
     }
   }

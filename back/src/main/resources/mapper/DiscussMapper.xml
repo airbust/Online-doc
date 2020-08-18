@@ -30,13 +30,13 @@
         SELECT * from discuss where file_id = #{value} order by discuss_time desc
     </select>
     <select id="getUserFileDiscussByUserId" resultMap="Discuss">
-        SELECT d.discuss_id, d.user_id, d.file_id, discuss_body, discuss_time ,is_read
+        SELECT distinct d.discuss_id, d.user_id, d.file_id, discuss_body, discuss_time ,is_read
         from discuss d, file f
         where d.file_id = f.file_id and f.user_id = #{value} order by discuss_time desc
     </select>
 
     <select id="getTeamFileDiscussByUserId" resultMap="Discuss">
-        SELECT d.discuss_id, d.user_id, d.file_id, discuss_body, discuss_time,is_read
+        SELECT distinct d.discuss_id, d.user_id, d.file_id, discuss_body, discuss_time,is_read
         from user_group ug, file f, discuss d
         where f.file_id = d.file_id and ug.group_id = f.group_id and ug.user_id = #{userId}
         order by discuss_time desc

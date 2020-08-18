@@ -13,7 +13,7 @@
       <el-main>
         <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
         <quill-editor
-        v-model="content"
+        v-model="content" style="height: 60vh"
         ref="myQuillEditor"
         :options="editorOption"
         @blur="onEditorBlur($event)"
@@ -85,6 +85,7 @@
     },
     methods:{
       loadTemplate(){
+        console.log('begin')
         template.getTemplate(this.$route.params.templateId).then(res=>{
         this.title = res.data.name
         this.content = res.data.body
@@ -125,8 +126,11 @@
 
 <style scoped>
   .hd{
-    text-align: center;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
     line-height: 50px;
+    width:75%
   }
   .bd{
     margin-left: 50px;

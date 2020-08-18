@@ -18,35 +18,51 @@
     </resultMap>
 
     <select id="getFileById" resultMap="File">
-        SELECT  * FROM file WHERE file_id = #{value} ORDER BY modify_cnt limit 1
+        SELECT  * FROM file WHERE file_id = #{value} ORDER BY modify_cnt desc limit 1
     </select>
 
-	<insert id="saveFile" parameterType="File">
+    <insert id="saveFile" parameterType="File">
         INSERT INTO File(file_id,file_name,file_info,file_body,modify_time,modify_cnt,user_id,group_id,is_edit,is_delete)
         VALUES (#{fileId},#{fileName},#{fileInfo},#{fileBody},#{modifyTime},#{modifyCnt},#{userId},#{groupId},#{isEdit},#{isDelete})
     </insert>
 
     <select id="getAllFileById" resultMap="File">
-        select * from file where file_id = #{value}
+        select * from file where file_id = #{value} ORDER BY modify_cnt desc
     </select>
 
     <select id="getFileByUserId" resultMap="File">
-        select * from file where user_id = #{value} and is_delete = 0 order by file_id
+        select * from file,(select file_id,max(modify_cnt) as max from file where user_id = #{value} group by file_id) as latest(id,max)
+
+        where file.file_id = latest.id and file.modify_cnt = latest.max and file.is_delete = 0
+
+        <!-- <!select * from file where user_id = #{value} and is_delete = 0 order by file_id> -->
     </select>
 
     <select id="getFileByGroupId" resultMap="File">
-        select * from file where group_id = #{value} and is_delete = 0
+        select * from file,(select file_id,max(modify_cnt) as max from file where group_id = #{value} group by file_id) as latest(id,max)
+
+        where file.file_id = latest.id and file.modify_cnt = latest.max and file.is_delete = 0
+
+
+        <!-- select * from file where group_id = #{value} and is_delete = 0 -->
     </select>
 
     <select id="getDeletedFileByUserId" resultMap="File">
-        select * from file where user_id = #{value} and is_delete != 0
+        select * from file,(select file_id,max(modify_cnt) as max from file where user_id = #{value} group by file_id)  as latest(id,max)
+
+        where file.file_id = latest.id and file.modify_cnt = latest.max and file.is_delete != 0
+        <!-- select * from file where user_id = #{value} and is_delete != 0 -->
     </select>
 
     <select id="getDeletedFileByGroupId" resultMap="File">
-        select * from file where group_id = #{value} and is_delete != 0
+        select * from file,(select file_id,max(modify_cnt) as max from file where group_id = #{value} group by file_id) as latest(id,max)
+
+        where file.file_id = latest.id and file.modify_cnt = latest.max and file.is_delete != 0
+
+        <!-- select * from file where group_id = #{value} and is_delete != 0 -->
     </select>
 
-    <update id="deleteFile" parameterType="File">
+    <update id="deleteFile" parameterType="Integer">
         update file set is_delete = 1 where file_id = #{value}
     </update>
 
@@ -54,7 +70,7 @@
         delete from file where file_id = #{fileId}
     </delete>
 
-    <update id="recoverFile" parameterType="File">
+    <update id="recoverFile" parameterType="Integer">
         update file set is_delete = 0 where file_id = #{value}
     </update>
 
@@ -63,13 +79,30 @@
     </update>
 
     <select id="getGroupFileByUserId" parameterType="Integer" resultMap="File">
-        select * from file f, user_group ug
-        where f.group_id = ug.group_id and ug.user_id = #{userId}
+        select * from file f, user_group ug ,(select file_id,max(modify_cnt) as max from file group by file_id) as latest(id,max)
+        where f.group_id = ug.group_id and ug.user_id = #{userId} and f.file_id = latest.id and f.modify_cnt = latest.max
     </select>
 
     <select id="getGroupFileByAdminId" parameterType="Integer" resultMap="File">
-        select * from file f, `group` g
-        where f.group_id = g.group_id and g.admin_id = #{userId}
+        select * from file f, `group` g ,(select file_id,max(modify_cnt) as max from file group by file_id) as latest(id,max)
+        where f.group_id = g.group_id and g.admin_id = #{userId} and f.file_id = latest.id and f.modify_cnt = latest.max
     </select>
+
+    <select id="getRecentFileByUserId" resultMap="File">
+        select file.* from file,
+                           (select file_id,max(recent_time) as max from recent where user_id = #{value} group by file_id order by max desc limit 15) as rec(id,recent_time),
+                           (select file_id,max(modify_cnt) as max from file group by file_id) as latest(id,max)
+        where file.file_id = rec.id and file.file_id = latest.id and file.modify_cnt = latest.max
+    </select>
+
+    <select id="getHistoryFile" parameterType="Integer" resultMap="File">
+        select * from file where file_id = #{fileId} ORDER BY modify_cnt desc
+    </select>
+
+    <select id="getHistoryFileById" parameterType="Integer" resultMap="File">
+        select * from file where file_id = #{fileId} and modify_cnt = #{modifyCnt}
+    </select>
+
 </mapper>
+
 

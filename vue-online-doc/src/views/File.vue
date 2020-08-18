@@ -3,7 +3,7 @@
     <div class="header">
       
       <div style="float:right">
-        <el-button type="text" @click="historyVisible = true" v-if="writable">查看历史版本</el-button>
+        <el-button type="text" @click="showHistory()" v-if="writable">查看历史版本</el-button>
         <el-button @click="startEdit" v-if="writable&&!flag">编辑</el-button>
         <el-button @click="endEdit" v-if="writable&&flag">预览</el-button>
         <el-button @click="editFile" v-if="writable&&flag">更新保存</el-button>
@@ -19,25 +19,30 @@
         </el-dialog>
 
         <!-- 历史版本 -->
-        <el-dialog
-          title="历史版本"
-          :visible.sync="historyVisible"
-          width="70%"
-          :before-close="handleClose">
-          <el-table :data="FileHistory" style="width: 100%">
-                <el-table-column prop="fileName" label="文件名" width="200">
+        <el-dialog title="历史版本"  :visible.sync="historyVisible"  width="70%"  :before-close="handleClose">
+          <el-table :data="historyFileList" style="width: 100%">
+                <el-table-column prop="modifyCnt" label="修改次数" width="200">
                 </el-table-column>
-                <el-table-column prop="modifyInfo" label="修改信息" width="300">
+                <el-table-column prop="fileName" label="文件名" width="300">
                 </el-table-column>
-                <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
+                <el-table-column prop="modifyTime"  label="最后修改时间" width="350">
                 </el-table-column>
                 <el-table-column label="操作" width="250">
                   <template slot-scope="scope">
                       <el-button size="mini" type="primary"
-                          @click="gotoHistory(scope.row.fileId,scope.row.versionNum)">跳转</el-button>
+                          @click="gotoHistory(scope.row.fileId,scope.row.modifyCnt)">查看</el-button>
                   </template>
                 </el-table-column>
            </el-table>
+        </el-dialog>
+
+        <el-dialog title="历史文档"  :visible.sync="historyFileVisible"  top="50px" width="80%"  :before-close="handleClose">
+          <div style="height:600px;width:90%">
+            <el-scrollbar style="height:100%">
+              <div class="hd" >{{this.historyFile.fileName}}</div>
+              <div class="bd" v-html="this.historyFile.fileBody">{{this.historyFile.fileBody}}</div>
+            </el-scrollbar>
+          </div>
         </el-dialog>
 
         <!-- 权限设置 -->
@@ -138,11 +143,8 @@
       return {
         fileId: 0,
         url: '',
-        FileHistory:[
-          {fileId:"1",fileName:"123",modifyInfo:"init 123",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"1"},
-          {fileId:"1",fileName:"233",modifyInfo:"123->233",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"2"},
-          {fileId:"1",fileName:"2333",modifyInfo:"233->2333",modifyTime:"2020-08-14T00:00:00.000+00:00",versionNum:"3"}
-        ],
+        historyFileList:[],
+        historyFile: {},
         value: ['other','RD'],
         options: [{
           value: 'other', label: '权限设置-其他用户',
@@ -167,6 +169,7 @@
         content:null,
         dialogVisible: false,
         historyVisible: false,
+        historyFileVisible: false,
         editorOption:{
             theme:'snow',
             modules:{
@@ -200,6 +203,13 @@
       addQuillTitle();
     },
     methods:{
+      gotoHistory(id,modifyCnt){//跳转至历史版本文档
+        this.historyFileVisible = true
+        file.getHistoryFile(id,modifyCnt).then(res=>{
+          this.historyFile = res.data
+          console.log(res.message)
+        })
+      },
       onCopy(){
         this.$message({
           message: '复制成功',
@@ -208,6 +218,13 @@
       },
       onError(){
         this.$message.error('复制失败');
+      },
+      showHistory(){
+        this.historyVisible = true
+        file.getHistory(this.fileId).then(res=>{
+          console.log(res.message)
+          this.historyFileList = res.data
+        })
       },
       myComment(name){
         return this.$store.state.name == name ? true : false
@@ -237,7 +254,7 @@
         })
       },
       cancelSendMessage() {
-      this.messageBody = '';
+        this.messageBody = '';
       },
       deleteMessage(id) {
         this.$confirm('是否删除此留言?', '提示', {
@@ -253,16 +270,11 @@
         });
       },
       loadFile(){
-        // console.log('getFile: id='+this.$route.params.fileId)
-        console.info('start')
         var tmp = this.$route.params.fileId
-        console.log(tmp)
         var bytes = CryptoJS.AES.decrypt(tmp,"123")
         this.fileId = bytes.toString(CryptoJS.enc.Utf8)
-        console.info('decrypt')
-        console.log(this.fileId)
         file.getDocument(this.fileId).then(res=>{
-          console.log(res)
+          // console.log(res)
           this.$store.commit('login', res.data.map)//存储token
           this.auth = res.data.role
           this.title = res.data.file.fileName
@@ -334,15 +346,13 @@
       },
       onEditorFocus (event) {
         // 获得焦点事件
-        event.enable(false);
+        // event.enable(false);
       },
       onEditorChange () {
         // 内容改变事件
         console.log('333')
       },
-      gotoHistory(id,versionNum){//跳转至历史版本文档
-        this.$router.push({path: '/File/'+id+'/'+versionNum})
-      }
+      
     }
   }
 </script>
@@ -447,9 +457,7 @@
     margin-top: 15px;
     margin-right: 17px;
   }
-
-
-.hd{
+  .hd{
     text-align: left;
     font-size: 30px;
     font-weight: bold;
@@ -479,5 +487,7 @@
     height: calc(100% - 62px);
     max-width: calc(100% - 194px);
   }
-
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
 </style>

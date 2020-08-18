@@ -133,12 +133,37 @@ public class FileController {
      * 获取各类文档列表
      * @return
      */
+    @GetMapping("/getRecent")
+    public Result getRecent() {
+        try {
+            return Result.create(200,"获取成功",fileService.getRecentFile());
+        } catch (RuntimeException e) {
+            return Result.create(200,"获取失败，" + e.getMessage());
+        }
+    }
     @GetMapping("/getCreation")
     public Result getCreation() {
         try {
             return Result.create(200, "获取成功",fileService.getCreationFile());
         } catch (RuntimeException e) {
             return Result.create(200, "获取失败，" + e.getMessage());
+        }
+    }
+    @GetMapping("/getHistoryFile/{fileId}")
+    public Result getTeamFile(@PathVariable Integer fileId){
+        try {
+            List<File> fileList = fileService.getHistoryFile(fileId);
+            return Result.create(200, "获取获取文档成功",fileList);
+        } catch (RuntimeException e) {
+            return Result.create(200, "获取获取文档失败" + e.getMessage());
+        }
+    }
+    @GetMapping("/getHistoryFile/{fileId}/{modifyCnt}")
+    public Result getTeamFile(@PathVariable Integer fileId,@PathVariable Integer modifyCnt){
+        try {
+            return Result.create(200, "获取获取文档成功",fileService.getHistoryFileById(fileId,modifyCnt));
+        } catch (RuntimeException e) {
+            return Result.create(200, "获取获取文档失败" + e.getMessage());
         }
     }
     @GetMapping("/getTeamFile/{teamName}")

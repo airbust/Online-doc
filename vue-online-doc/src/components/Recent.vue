@@ -110,8 +110,7 @@ import CryptoJS from "crypto-js"
       },
       getFile(){
         //TODO api接口
-        // file.getRecent().then((res)=>{
-        file.getCreation().then((res)=>{
+        file.getRecent().then((res)=>{
         this.FileData=res.data
         this.total = res.data.length
         for(var i=0;i<this.total;++i) this.showOption[i]=0
