@@ -1,6 +1,6 @@
 <template>
   <el-card class="box-card">
-    <a href="javascript:void(0)"  class="nav first">䂖墨文档</a>
+    <a href="javascript:void(0)"  class="nav first">金刚䂖文档</a>
     <a href="javascript:void(0)"  class="nav"></a>
     <a href="javascript:void(0)"  class="nav"></a>
     <span style="float: right;" class="name">{{name}}</span>
@@ -518,7 +518,8 @@ export default {
   margin-top: -20px;
   margin-left: 40px;
   font-family: PingFangSC-Semibold;
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: bold;
   color: black;
   text-decoration: none;
   }

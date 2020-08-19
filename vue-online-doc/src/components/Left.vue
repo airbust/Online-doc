@@ -2,6 +2,7 @@
   <el-container>
     <el-main>
       <el-switch
+      style="margin-left:23px"
         v-model="isCollapse"
         active-color="#909399"
         inactive-color="#8CC3fC">
@@ -41,6 +42,7 @@
       name: "Left",
       data(){
         return {
+          value2: 0,
           isCollapse: false
         }
       }

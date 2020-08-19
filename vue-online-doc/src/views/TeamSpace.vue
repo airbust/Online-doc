@@ -236,7 +236,10 @@
       attendGroup(){
         if(this.group_keyword!=''){
           group.attendGroup(this.group_keyword).then(res=>{
-            this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
+            if(res.message=='申请发送失败,')
+              this.$notify({title: '提示',type: 'error',message: res.message,duration: 1500 });
+            else
+              this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
             this.group_keyword=''
             this.attendVisible =false
           })
@@ -245,7 +248,10 @@
       createGroup(){
         if(this.group_keyword!=''){
           group.createGroup(this.group_keyword).then(res=>{
-            this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
+            if(res.message=='创建失败,')
+              this.$notify({title: '提示',type: 'error',message: res.message,duration: 1500 });
+            else
+              this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
             this.group_keyword=''
             this.attendVisible = false
           })
@@ -255,7 +261,10 @@
       addMem(){
         if(this.user_keyword!=''){
           group.addMem(this.user_keyword,this.$store.state.groupName).then(res=>{
-            this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
+            if(res.message=='邀请发送失败,')
+              this.$notify({title: '提示',type: 'error',message: res.message,duration: 1500 });
+            else
+              this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
             this.user_keyword=''
             this.optionVisible =false
           })

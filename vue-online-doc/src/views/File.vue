@@ -20,13 +20,13 @@
         </el-dialog>
 
         <!-- 历史版本 -->
-        <el-dialog title="历史版本"  :visible.sync="historyVisible"  width="70%"  :before-close="handleClose">
+        <el-dialog title="历史版本"  :visible.sync="historyVisible"  width="60%"  :before-close="handleClose">
           <el-table :data="historyFileList" style="width: 100%">
-                <el-table-column prop="modifyCnt" label="修改次数" width="200">
+                <el-table-column prop="modifyCnt" label="修改次数" width="180">
                 </el-table-column>
-                <el-table-column prop="fileName" label="文件名" width="300">
+                <el-table-column prop="fileName" label="文件名" width="250">
                 </el-table-column>
-                <el-table-column prop="modifyTime|datefmt('YYYY-MM-DD HH:mm:ss')"  label="最后修改时间" width="350">
+                <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
                 </el-table-column>
                 <el-table-column label="操作" width="250">
                   <template slot-scope="scope">
@@ -37,8 +37,8 @@
            </el-table>
         </el-dialog>
 
-        <el-dialog title="历史文档"  :visible.sync="historyFileVisible"  top="50px" width="80%"  :before-close="handleClose">
-          <div style="height:600px;width:90%">
+        <el-dialog title="历史文档"  :visible.sync="historyFileVisible"  top="50px" width="75%"  :before-close="handleClose">
+          <div style="height:700px;width:80%;margin-left:10%">
             <el-scrollbar style="height:100%">
               <div class="hd" >{{this.historyFile.fileName}}</div>
               <div class="ql-snow"><div class="ql-editor" v-html="this.historyFile.fileBody">{{this.historyFile.fileBody}}</div></div>
@@ -81,7 +81,7 @@
         <div style="margin-left:50px">[调试]当前文档权限是：{{auth}}</div>
       </div>
 
-      <el-card v-if="discussable&&!editing" style="margin-top: 50px">
+      <el-card v-if="discussable&&!editing" style="margin-top: 50px" show="never">
         <!-- 发评论 -->
         <div class="commentBox">
           <span class="right">
@@ -96,7 +96,7 @@
         <div class="message_infos">
           <div v-for="message in messageList" :key="message.discuss.discussId">
             <div class="commentList">
-              <span class="left p1">
+              <span class="left p1" @click="gotoUserPage(message.user.name)">
                 <img v-if="!message.user.avatar" src="../../static/avatar.svg">
                 <img v-else :src="message.user.avatar"  style="width:50px; height:50px"
                   onerror="javascript:this.src='../../static/avatar.svg'" />
@@ -247,6 +247,8 @@
         file.getHistory(this.fileId).then(res=>{
           console.log(res.message)
           this.historyFileList = res.data
+          for(var i=0;i<res.data.length;++i)
+            this.historyFileList[i].modifyTime = this.dateFormat(res.data[i].modifyTime)
         })
       },
       myComment(name){
@@ -373,6 +375,9 @@
       },
       handleClose(done) {
         done()
+      },
+      gotoUserPage(name){
+        this.$router.push({path:'/Profile/'+name})
       },
       onEditorReady (editor) {
         // 准备编辑器
