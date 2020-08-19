@@ -5,7 +5,7 @@
       <div style="float:right">
         <el-button type="text" v-if="is_Edit">该文档正在被编辑</el-button>
         <el-button type="text" @click="showHistory()" v-if="writable">查看历史版本</el-button>
-        <el-button @click="startEdit" v-if="writable&&!editing">编辑</el-button>
+        <el-button @click="startEdit" v-if="!is_Edit&&writable&&!editing">编辑</el-button>
         <el-button @click="editing=false" v-if="writable&&editing">预览</el-button>
         <el-button @click="updateFile" v-if="writable&&editing">更新保存</el-button>
         <el-button @click="dialogVisible=true">分享</el-button>
@@ -101,7 +101,7 @@
               <span class="right p1">
                 <div class="rightTop" v-if="message.user.id">
                   <el-link class="userName" :underline="false">{{message.user.name}}</el-link>
-                  <span class="timeAgo" >{{message.discuss.discussTime}}</span>
+                  <span class="timeAgo" >{{dateFormat(message.discuss.discussTime)}}</span>
                 </div>  
                 <div class="rightCenter">{{message.discuss.discussBody}}</div>
                 <div class="rightBottom">
@@ -213,6 +213,9 @@
     mounted() {
       addQuillTitle();
     },
+    destroyed(){
+      this.endEdit()
+    },
     methods:{
       gotoHistory(id,modifyCnt){//跳转至历史版本文档
         this.historyFileVisible = true
@@ -234,7 +237,10 @@
         this.historyVisible = true
         file.getHistory(this.fileId).then(res=>{
           console.log(res.message)
-          this.historyFileList = res.data
+          var resTmp = res.data
+          for(var j=0;j<resTmp.length;++j)
+            resTmp[j].modifyTime = this.dateFormat(resTmp[j].modifyTime)
+          this.historyFileList = resTmp
         })
       },
       myComment(name){
@@ -293,7 +299,8 @@
           this.content = a.file.fileBody
           if(a.file.isEdit == 1) this.is_Edit =true
           var sort = a.file.userId == 0 ? '个人文档': '团队文档'
-          var info = '文档名：'+a.file.fileName+'<br/>类别：'+sort+'<br/>修改次数：'+a.file.modifyCnt+'<br/>更新时间：'+a.file.modifyTime
+          var updateTime = this.dateFormat(a.file.modifyTime)
+          var info = '文档名：'+a.file.fileName+'<br/>类别：'+sort+'<br/>修改次数：'+a.file.modifyCnt+'<br/>更新时间：'+updateTime
           this.fileInfo = info
           this.init_authority();
         })
@@ -368,7 +375,17 @@
       },
       gotoUserPage(name){
         this.$router.push({path:'/Profile/'+name})
-      }
+      },
+      dateFormat(time) {
+        var date=new Date(time);
+        var year=date.getFullYear();
+        var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+        var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+        var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+        var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+        var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+        return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+      },
     }
   }
 </script>

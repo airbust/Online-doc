@@ -119,6 +119,7 @@ import CryptoJS from "crypto-js"
       },
       getFile(){
         file.getCreation().then((res)=>{
+          console.log(res.message)
           this.FileData=res.data
           this.total = res.data.length
           for(var i=0;i<this.total;++i) this.showOption[i]=0 //暂未获取文章数total

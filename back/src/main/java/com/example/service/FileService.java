@@ -62,7 +62,8 @@ public class FileService {
 			throw new RuntimeException("文件不存在");
 		if(role == null)
 			throw new RuntimeException("文件权限损坏");
-		recentDao.saveRecent(new Recent(user.getId(), fileId, new Date()));
+		if(recentDao.findRecent(user.getId(), fileId)==null)
+			recentDao.saveRecent(new Recent(user.getId(), fileId, new Date()));
 		return new DocResult(file,role,map);//文档、文档权限、角色Token
 	}
 
@@ -77,14 +78,16 @@ public class FileService {
 			File file = new File(fileName, fileBody, new Date(), 0, group.getGroupId());
 			fileDao.saveFile(file);
 			Role role = new Role(file.getFileId());
-			roleDao.saveAuthByFileId(role);
+			if(roleDao.getAuthByFileId(file.getFileId())==null)
+				roleDao.saveAuthByFileId(role);
 		}
 		else {
 			File file = new File(fileName, fileBody, new Date(), user.getId(), 0);
 			fileDao.saveFile(file);
 			Role role = new Role(file.getFileId());
+			if(roleDao.getAuthByFileId(file.getFileId())==null)
 			//		System.out.println("role = " + role);
-			roleDao.saveAuthByFileId(role);
+				roleDao.saveAuthByFileId(role);
 			//		System.out.println("saveEnd");
 		}
 	}
@@ -112,9 +115,6 @@ public class FileService {
 		File file = fileDao.getFileById(fileId);
 		if(file == null)
 			throw new RuntimeException("文件未删除");
-//		fileCnt bug 暂时注释
-//		if(fileId > File.fileCnt || fileId <= 0)
-//			throw new RuntimeException("文件不存在");
 		fileDao.recoverFile(fileId);
 
 	}
@@ -124,14 +124,6 @@ public class FileService {
 			throw new RuntimeException("文件未删除");
 		fileDao.foreverDeleted(fileId);
 	}
-
-	public void updateFileState(Integer fileId) throws RuntimeException {
-		File file = fileDao.getFileById(fileId);
-		if(file == null)
-			throw new RuntimeException("文件不存在");
-		fileDao.updateEditState(fileId);
-	}
-
 	public void changeEditable(boolean lock, Integer fileId) throws RuntimeException{
 		if(lock) fileDao.setEditStatus(1,fileId);
 		else fileDao.setEditStatus(0,fileId);

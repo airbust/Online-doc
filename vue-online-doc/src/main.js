@@ -16,6 +16,8 @@ import 'quill/dist/quill.bubble.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/display.css';
 import md5 from 'js-md5'
+Vue.config.productionTip = false
+ 
 
 Vue.use(ElementUI,Vuex)
 Vue.http = Vue.prototype.$http = axios

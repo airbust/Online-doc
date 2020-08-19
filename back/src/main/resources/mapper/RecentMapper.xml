@@ -5,15 +5,19 @@
 <mapper namespace="com.example.dao.RecentDao">
 
     <resultMap id="Recent" type="recent">
-        <id property="RecentId" column="recent_id"/>
+        <id property="recentId" column="recent_id"/>
         <result property="userId" column="user_id"/>
         <result property="fileId" column="file_id"/>
-        <result property="RecentTime" column="recent_time"/>
+        <result property="recentTime" column="recent_time"/>
     </resultMap>
 
     <insert id="saveRecent" parameterType="Recent">
         insert into recent(user_id, file_id, recent_time)
         values (#{userId},#{fileId},#{recentTime})
     </insert>
+
+    <select id="findRecent" resultMap="Recent">
+        select * from recent where user_id = #{id} and  file_id = #{fileId}
+    </select>
 
 </mapper>

@@ -34,7 +34,7 @@
           <div style=" width: 100%;height: 90vh;">
             <el-scrollbar style="height:100%">
               <el-timeline style="margin-left: -40px">
-                <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" :timestamp="comment.discuss.discussTime">
+                <el-timeline-item v-for="comment in commentList" :key="comment.discuss.discussId"  placement="top" :timestamp="dateFormat(comment.discuss.discussTime)">
                   <div style="height: 80px">
                     <div class="commentList">
                       <span class="left p1">
@@ -64,7 +64,7 @@
           <div style=" width: 100%;height: 90vh;">
             <el-scrollbar style="height:100%">
               <el-timeline style="width:100%; margin-left: -40px;">
-                <el-timeline-item v-for="notice in noticeList" :key="notice.noticeId"  placement="top" :timestamp="notice.time">
+                <el-timeline-item v-for="notice in noticeList" :key="notice.noticeId"  placement="top" :timestamp="dateFormat(notice.time)">
                   <div style="height: 80px; width:100%">
                     <div class="commentList">
                       <span class="left p1">
@@ -96,7 +96,7 @@
           <div style=" width: 100%;height: 90vh;">
             <el-scrollbar style="height:100%">
               <el-timeline style="margin-left: -40px">
-                <el-timeline-item v-for="unread in unreadList" :key="unread.id" placement="top" :timestamp="unread.time">
+                <el-timeline-item v-for="unread in unreadList" :key="unread.id" placement="top" :timestamp="dateFormat(unread.time)">
                   <div style="height: 80px">
                     <div class="commentList">
                       <span class="left p1">
@@ -335,7 +335,7 @@ export default {
               user:res.data[i].groupAdmin,
               action: res.data[i].info,
               item: res.data[i].groupName,
-              time: res.data[i].time,
+              time: res.data[i].time,//|datefmt('YYYY-MM-DD HH:mm:ss'),
               info: '',
             }
             if(u.user == this.$store.state.name)
@@ -346,6 +346,16 @@ export default {
         }
       })
       // console.log(this.unreadList)
+    },
+    dateFormat(time) {
+      var date=new Date(time);
+      var year=date.getFullYear();
+      var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+      var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+      var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+      var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+      var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+      return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
     },
     readComment(id){
       if(id>0)
