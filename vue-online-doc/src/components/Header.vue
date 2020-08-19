@@ -287,6 +287,7 @@ export default {
     this.getMessage()
   },
   methods:{
+    
     screen(){//设置全屏操作
       // 如果不允许进入全屏，发出不允许提示
       if (!screenfull.enabled) {
@@ -439,6 +440,43 @@ export default {
           })
         }
       });
+    },
+    updatePwd() {//修改密码
+      if (this.oldPassword.length <= 0) {
+        this.$notify({title: '提示',type: 'warning',message: '原密码不能为空',duration: 2000 });   return;
+      }
+      if (this.newPassword != this.confirmPassword) {
+        this.$notify({title: '提示',type: 'warning',message: '两次输入密码不一致',duration: 2000 });   return;
+      }
+      user.updatePassword(this.oldPassword, this.newPassword).then(res => {
+        this.$notify({title: '提示',type: 'success',message: '修改成功',duration: 2500 });
+        this.drawer=false
+        this.$store.commit('logout')//清除token等信息
+        this.$router.push({path: '/Login'})
+      })
+    },
+    updateMailSendMailToNew() {  //更改密码发送验证码到新邮箱
+        this.updateMailToNewSendFlag = true
+        user.sendmail(this.newMail).then(res=>{
+          this.$notify({title: '提示',type: 'success',message: res.message,duration: 2000 })
+          this.updateMailToNewSendFlag = false;
+        }).catch(error=> {console.log(error), this.updateMailToNewSendFlag = false;})
+      },
+    updateMail() {//修改邮箱
+      var reg = new RegExp(/^([a-zA-Z0-9._-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/);
+      if (!reg.test(this.newMail)) {//检测字符串是否符合正则表达式
+        this.$notify({title: '提示',type: 'warning',message: '邮箱格式不正确',duration: 2000 });   return;
+      }
+      if (this.newMailCode.length <= 0) {//
+        this.$notify({title: '提示',type: 'warning',message: '请填写验证码',duration: 2000 });     return;
+      }
+      user.updateMail(this.newMail, this.newMailCode).then(res => {
+        this.$notify({title: '提示',type: 'success',message: '改绑成功',duration: 2500 });
+        this.drawer=false
+        this.newMail = '';
+        this.newMailCode = '';
+        this.getUserInfo()
+      })
     },
     fileChange(e,list){//上传头像.子函数
         this.file=e;

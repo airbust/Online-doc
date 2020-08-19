@@ -64,5 +64,18 @@ export default {
       })
     })
   },
-
+  updatePassword(oldPassword, newPassword) {
+    return request({
+      url: '/user/updatePassword',
+      method: 'post',
+      data: qs.stringify({'oldPassword': oldPassword, 'newPassword': newPassword})
+    })
+  },
+  updateMail(newMail, newMailCode) {
+    return request({
+      url: '/user/updateMail',
+      method: 'post',
+      data: qs.stringify({'newMail': newMail, 'newMailCode': newMailCode})
+    })
+  },
 }

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -128,6 +129,30 @@ public class UserService implements UserDetailsService {
         rabbitTemplate.convertAndSend("MAIL", map);
     }
 
+    public void updateUserPassword(String oldPassword, String newPassword) {
+        //校验原密码
+        String name = jwtTokenUtil.getUsernameFromRequest(request);
+        User user = new User();
+        user.setName(name);
+        user = userDao.getUserByName(user.getName());
+//        if (!encoder.matches(oldPassword, user.getPassword()))
+        if(!oldPassword.equals(user.getPassword()))
+            throw new RuntimeException("密码错误");
+//        user.setPassword(encoder.encode(newPassword));
+        user.setPassword(newPassword);
+        userDao.updateUser(user);
+
+    }
+    public void updateUserMail(String newMail, String newMailCode) {
+        //获取向旧邮箱发出的验证码
+        String userName = jwtTokenUtil.getUsernameFromRequest(request);
+        User user = userDao.getUserByName(userName);
+        //校验新邮箱验证码
+        if (!checkMailCode(newMail,newMailCode))
+            throw new RuntimeException("新邮箱无效验证码");
+        user.setMail(newMail);
+        userDao.updateUser(user);
+    }
 
     /**
      * 通过用户名加载用户到 Spring Security

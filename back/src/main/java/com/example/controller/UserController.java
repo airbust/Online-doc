@@ -133,4 +133,30 @@ public class UserController {
             return Result.create(200, "更新失败，" + e.getMessage());
         }
     }
+
+    @PostMapping("/updatePassword")
+    public Result updatePassword(String oldPassword, String newPassword) {
+        try {
+            userService.updateUserPassword(oldPassword, newPassword);
+            return Result.create(200, "修改密码成功");
+        } catch (RuntimeException e) {
+            return Result.create(200, e.getMessage());
+        }
+    }
+    @PostMapping("/updateMail")
+    public Result updateMail(String newMail, String newMailCode) {
+        if (!formatUtil.checkStringNull(newMail,newMailCode)) {
+            return Result.create(200, "参数错误");
+        }
+        //检查邮箱格式
+        if (!formatUtil.checkMail(newMail)) {
+            return Result.create(200, "参数错误");
+        }
+        try {
+            userService.updateUserMail(newMail, newMailCode);
+            return Result.create(200, "改绑成功");
+        } catch (RuntimeException e) {
+            return Result.create(200, e.getMessage());
+        }
+    }
 }

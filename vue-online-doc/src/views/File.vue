@@ -1,7 +1,7 @@
 <template>
   <div style="height:100%; width:80%" v-if="readable" >
     <div class="header">
-      
+
       <div style="float:right">
         <el-button type="text" v-if="is_Edit">此文档正在被编辑</el-button>
         <el-button type="text" @click="showHistory()" v-if="writable">查看历史版本</el-button>
@@ -15,7 +15,7 @@
             <el-button slot="append"
             v-clipboard:copy="url"
             v-clipboard:success="onCopy"
-            v-clipboard:fail="onError">复制链接</el-button>
+            v-clipboard:error="onError">复制链接</el-button>
           </el-input>
         </el-dialog>
 
@@ -62,7 +62,7 @@
     <el-divider content-position="right">䂖墨文档 </el-divider>
     <div>
       <div class="ql-snow">
-          <div class="ql-editor" v-if="!editing" v-html="this.content">{{this.content}}</div>
+          <div class="ql-editor" style="min-height:700px" v-if="!editing" v-html="this.content">{{this.content}}</div>
         </div>
       <div>
         <quill-editor style="height:60vh;"
@@ -89,8 +89,8 @@
           </span>
         </div>
         <div class="bottom">
-          <el-button class="p2" style="margin-right:80px" type="primary"  @click="sendMessage">发送评论</el-button>
-          <el-button class="p2" type="info" @click="cancelSendMessage()">取消评论</el-button>
+          <el-button class="p2" v-waves style="margin-right:80px" type="primary"  @click="sendMessage">发送评论</el-button>
+          <el-button class="p2" v-waves type="info" @click="cancelSendMessage()">取消评论</el-button>
         </div>
         <!-- 评论列表 -->
         <div class="message_infos">
@@ -104,8 +104,8 @@
               <span class="right p1">
                 <div class="rightTop" v-if="message.user.id">
                   <el-link class="userName" :underline="false">{{message.user.name}}</el-link>
-                  <span class="timeAgo" >{{message.discuss.discussTime}}</span>
-                </div>  
+                  <span class="timeAgo" >{{dateFormat(message.discuss.discussTime)}}</span>
+                </div>
                 <div class="rightCenter">{{message.discuss.discussBody}}</div>
                 <div class="rightBottom">
                     <el-divider content-position="right">
@@ -121,11 +121,11 @@
       </el-card>
     </div>
 
-    <el-popover style="position: fixed; bottom: 40px; right: 40px" 
-      placement="top-start" title="文档信息" width="300" trigger="hover" :content="fileInfo"> 
-      <div v-html="fileInfo">{{fileInfo}}</div> 
-      <el-button slot="reference"><a class="cd-top">Info</a></el-button> 
-    </el-popover> 
+    <el-popover style="position: fixed; bottom: 40px; right: 40px"
+      placement="top-start" title="文档信息" width="300" trigger="hover" :content="fileInfo">
+      <div v-html="fileInfo">{{fileInfo}}</div>
+      <el-button slot="reference"><a class="cd-top">Info</a></el-button>
+    </el-popover>
 
     </div>
 </template>
@@ -136,6 +136,8 @@
   import 'quill/dist/quill.snow.css'
   import 'quill/dist/quill.bubble.css'
 
+  import waves from "../assets/waves/waves";
+
   //引入组件，可以直接使用这个组件
   import { quillEditor } from 'vue-quill-editor'
   import { addQuillTitle } from '../quill-title.js'
@@ -144,18 +146,19 @@
   Quill.register('modules/imageDrop', ImageDrop);
   var fonts = ['Microsoft-YaHei','SimSun', 'SimHei','KaiTi','Arial','Times-New-Roman'];
   var Font = Quill.import('formats/font');
-  Font.whitelist = fonts; 
+  Font.whitelist = fonts;
 
   import file from '@/api/file'
   import CryptoJS from "crypto-js";
   import message from '@/api/message'
   export default {
     name: "Edit",
+    directives:{waves},
     components:{ quillEditor },
     data() {
       return {
         fileId: 0,
-        fileInfo: '', 
+        fileInfo: '',
         url: '',
         historyFileList:[],
         historyFile: {},
@@ -215,7 +218,7 @@
     created(){
       this.loadFile();
       this.loadMessage()
-      this.url = this.$route.path;
+      this.url = 'http://39.107.228.168/#'+this.$route.path;
     },
     mounted() {
       addQuillTitle()
@@ -296,17 +299,17 @@
         file.getDocument(this.fileId).then(res=>{
           console.log(res.data)
           this.$store.commit('login', res.data.map)//存储token
-          var a = res.data 
-          this.auth = a.role 
-          this.title = a.file.fileName 
-          this.content = a.file.fileBody 
-          if(a.file.isEdit == 1) {this.is_Edit =true 
+          var a = res.data
+          this.auth = a.role
+          this.title = a.file.fileName
+          this.content = a.file.fileBody
+          if(a.file.isEdit == 1) {this.is_Edit =true
           console.info('fuck')}
-          var sort = a.file.userId != 0 ? '个人文档': '团队文档' 
-          var updateTime = this.dateFormat(a.file.modifyTime) 
+          var sort = a.file.userId != 0 ? '个人文档': '团队文档'
+          var updateTime = this.dateFormat(a.file.modifyTime)
           var info = '文档名：'+a.file.fileName+'<br/>类别：'+sort+'<br/>修改次数：'+a.file.modifyCnt+'<br/>更新时间：'+ updateTime
-          this.fileInfo = info 
-          this.init_authority(); 
+          this.fileInfo = info
+          this.init_authority();
         })
       },
       dateFormat(time) {
@@ -323,7 +326,7 @@
         //初始化其他用户权限设置选项  ！！bug:不能初始化团队选项
         if(this.auth.otherRead==0) this.value = ['other','N']
         else if(this.auth.otherDiscuss===0)  this.value = ['other','R']
-        
+
         if(this.$store.state.roles=="USER"){
           this.readable=true
           this.writable=true
@@ -387,17 +390,17 @@
         // 内容改变事件
         console.log('333')
       },
-      
+
     }
   }
 </script>
 
 <style scoped>
-  .cd-top {  
-    display: inline-block; height: 40px; width: 40px; position: fixed; bottom: 40px;  right: 40px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); overflow: hidden; text-indent: 100%; white-space: nowrap;  
-    background: rgba(0, 0, 0, 0.8)  url(../../static/info.png) no-repeat center;  
-   } 
+  .cd-top {
+    display: inline-block; height: 40px; width: 40px; position: fixed; bottom: 40px;  right: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); overflow: hidden; text-indent: 100%; white-space: nowrap;
+    background: rgba(0, 0, 0, 0.8)  url(../../static/info.png) no-repeat center;
+   }
   .commentList {
     width: 100%;
     margin: 0 auto;

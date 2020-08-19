@@ -190,6 +190,10 @@ import CryptoJS from "crypto-js"
   .el-col :hover.image{
     transform: scale(0.95);
   }
+  /*修改el-button默认颜色*/
+  .el-button--primary,.el-button--primary:focus,.el-button--primary.is-active, .el-button--primary:active{background: #afbfc8;}
+  .el-button--success,.el-button--success:focus,.el-button--success.is-active, .el-button--success:active{background: #c3c89d;}
+  .el-button--danger,.el-button--danger:focus,.el-button--danger.is-active, .el-button--danger:active{background: #fcc4b5;}
   .input-group {display: flex;align-items: center;justify-content: flex-start;}
   .input-group label {margin: 0;flex: 1;}
 

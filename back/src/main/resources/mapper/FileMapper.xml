@@ -22,7 +22,7 @@
     </select>
 
     <insert id="saveFile" parameterType="File">
-        INSERT INTO File(file_id,file_name,file_info,file_body,modify_time,modify_cnt,user_id,group_id,is_edit,is_delete)
+        INSERT INTO file(file_id,file_name,file_info,file_body,modify_time,modify_cnt,user_id,group_id,is_edit,is_delete)
         VALUES (#{fileId},#{fileName},#{fileInfo},#{fileBody},#{modifyTime},#{modifyCnt},#{userId},#{groupId},#{isEdit},#{isDelete})
     </insert>
 
@@ -90,7 +90,7 @@
         select file.* from file,
                            (select file_id as id,max(recent_time) as max from recent where user_id = #{value} group by file_id order by max desc limit 15) as rec,
                            (select file_id as id,max(modify_cnt) as max from file group by file_id) as latest
-        where file.file_id = rec.id and file.file_id = latest.id and file.modify_cnt = latest.max
+        where file.file_id = rec.id and file.file_id = latest.id and file.modify_cnt = latest.max and file.is_delete = 0
     </select>
 
     <select id="getHistoryFile" parameterType="Integer" resultMap="File">

@@ -3,7 +3,7 @@
     <!-- 分享框 -->
     <el-dialog title="分享"  :visible.sync="dialogVisible"  width="30%">
       <el-input v-model="url" :readonly="true">
-        <el-button slot="append" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:fail="onError">复制链接</el-button>
+        <el-button slot="append" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:error="onError">复制链接</el-button>
       </el-input>
     </el-dialog>
     <!-- 平铺视图 -->
@@ -37,28 +37,32 @@
           <input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></input>&nbsp;
         </label>
       </div>&nbsp;
-      <!--      <el-input placeholder="keyword" v-model="keyword" suffix="el-icon-search"  @change="getFileData"></el-input>&nbsp;-->&nbsp;
-      <el-table :data="FileData" style="width: 100%">
-        <el-table-column label="#" width="100">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.fileId }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="fileName" label="文件名" width="200">
-        </el-table-column>
-        <el-table-column prop="modifyCnt" label="修改次数" width="200">
-        </el-table-column>
-        <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
-        </el-table-column>
-        <el-table-column label="操作" width="160">
-          <template slot-scope="scope">
-            <el-button v-waves size="mini" type="primary"
-                       @click="goto(scope.row.fileId)">查看</el-button>
-            <el-button v-waves size="mini"
-                       @click="collectFile(scope.row.fileId)">收藏</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+
+      <div style="height:650px">
+        <el-scrollbar style="height:100%">
+          <el-table :data="FileData" style="width: 100%">
+            <el-table-column label="#" width="100">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.fileId }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="fileName" label="文件名" width="200">
+            </el-table-column>
+            <el-table-column prop="modifyCnt" label="修改次数" width="200">
+            </el-table-column>
+            <el-table-column prop="modifyTime"  label="最后修改时间" width="300">
+            </el-table-column>
+            <el-table-column label="操作" width="160">
+              <template slot-scope="scope">
+                <el-button v-waves size="mini" type="primary"
+                          @click="goto(scope.row.fileId)">查看</el-button>
+                <el-button v-waves size="mini" type="success"
+                          @click="collectFile(scope.row.fileId)">收藏</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-scrollbar>
+      </div>
     </div>
 
   </div>
@@ -73,11 +77,7 @@ import CryptoJS from "crypto-js"
     directives:{waves},
     data(){
       return{
-        FileData:[
-          // {"fileId":1,"fileName":"123","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":2,"fileName":"demo","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-          // {"fileId":3,"fileName":"test","fileInfo":null,"fileBody":"<p>111</p>","modifyTime":"2020-08-14T00:00:00.000+00:00","modifyCnt":0,"userId":1,"groupId":0,"isEdit":0,"isDelete":0},
-        ],
+        FileData:[],
         url: '',
         dialogVisible:false,
         showOption: [],
@@ -116,7 +116,6 @@ import CryptoJS from "crypto-js"
       pEnter(index) {
         this.$set(this.showOption,index,1)
         this.index = index
-        this.url = '/File/'+this.FileData[this.index].fileId
       },
       pLeave(index) {
         this.$set(this.showOption,index,0)
@@ -131,7 +130,16 @@ import CryptoJS from "crypto-js"
           let routeUrl = this.$router.resolve({path: '/File/'+fileId});
           window.open(routeUrl.href, '_blank') }
         else if(command == 'collect') {this.collectFile(this.FileData[this.index].fileId)}
-        else if(command == 'share') {this.dialogVisible = true}
+        else if(command == 'share') {
+          var idd = this.FileData[this.index].fileId
+          var tmp = idd.toString()
+          var fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+          while(fileId.indexOf("/") != -1){
+            fileId = CryptoJS.AES.encrypt(tmp,"123").toString()
+          } 
+          this.url = 'http://39.107.228.168/#/File/'+fileId
+          this.dialogVisible = true
+        }
       },
       deleteFile(id){
         console.info('delete file: id='+id)
@@ -225,6 +233,10 @@ import CryptoJS from "crypto-js"
   .el-col :hover.image{
     transform: scale(0.95);
   }
+  /*修改el-button默认颜色*/
+  .el-button--primary,.el-button--primary:focus,.el-button--primary.is-active, .el-button--primary:active{background: #afbfc8;}
+  .el-button--success,.el-button--success:focus,.el-button--success.is-active, .el-button--success:active{background: #c3c89d;}
+  .el-button--danger,.el-button--danger:focus,.el-button--danger.is-active, .el-button--danger:active{background: #fcc4b5;}
   .input-group {display: flex;align-items: center;justify-content: flex-start;}
   .input-group label {margin: 0;flex: 1;}
 
