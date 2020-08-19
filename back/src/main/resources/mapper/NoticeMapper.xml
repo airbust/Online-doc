@@ -19,6 +19,7 @@
         SELECT * FROM notice where user_name = #{name} and (op=1 or op=3 or op=5)
         UNION
         SELECT * FROM notice where group_admin = #{name} and (op=2 or op=4)
+        order by time desc
     </select>
 
     <select id="getNoticeById" parameterType="Integer" resultMap="Notice">

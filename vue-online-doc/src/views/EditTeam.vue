@@ -11,9 +11,11 @@
       </el-header>
 
       <el-main style="width: 80%">
-        <div class="bd" v-if="!flag" v-html="this.content">{{this.content}}</div>
+        <div class="ql-snow">
+          <div class="ql-editor" v-if="!flag" v-html="this.content">{{this.content}}</div>
+        </div>
         <quill-editor
-        v-model="content" style="height:60vh"
+        v-model="content" style="height: 60vh"
         ref="myQuillEditor"
         :options="editorOption"
         @blur="onEditorBlur($event)"
@@ -42,7 +44,9 @@
   import Quill from 'quill' //引入编辑器
   import { ImageDrop } from 'quill-image-drop-module'
   Quill.register('modules/imageDrop', ImageDrop);
-
+  var fonts = ['Microsoft-YaHei','SimSun', 'SimHei','KaiTi','Arial','Times-New-Roman'];
+  var Font = Quill.import('formats/font');
+  Font.whitelist = fonts; //将字体加入到白名单
   import file from '@/api/file'
   export default {
     name: "EditTeam",
@@ -57,25 +61,20 @@
             modules:{
               imageDrop:true,
               toolbar:[
+                [{ 'size': ['12px', false , '20px' ,'24px', '32px','48px']}],
                 ['bold', 'italic', 'underline', 'strike'],    //加粗，斜体，下划线，删除线
                 ['blockquote', 'code-block'],     //引用，代码块
-
                 [{ 'header': 1 }, { 'header': 2 }],        // 标题，键值对的形式；1、2表示字体大小
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],     //列表
                 [{ 'script': 'sub'}, { 'script': 'super' }],   // 上下标
                 [{ 'indent': '-1'}, { 'indent': '+1' }],     // 缩进
                 [{ 'direction': 'rtl' }],             // 文本方向
-
-
-                [{ 'size': ['small', false, 'large', 'huge'] }], // 字体大小
+                [{ 'font': fonts }],
+                //[{ 'size': ['small', false, 'large', 'huge'] }], // 字体大小
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],     //几级标题
-
-
                 [{ 'color': [] }, { 'background': [] }],     // 字体颜色，字体背景颜色
-                [{ 'font': [] }],     //字体
+                //[{ 'font': [] }],     //字体
                 [{ 'align': [] }],    //对齐方式
-
-
                 ['clean'],    //清除字体样式
                 ['image','video']    //上传图片、上传视频
               ]
@@ -91,12 +90,16 @@
     },
     methods:{
       saveFile(){
-        console.log('save begin')
-        file.saveTeamFile(this.title,this.content,this.$store.state.groupName)
-        .then(res=>{
-          this.$notify({title: '提示',type: 'success',message: res.message,duration: 1000 });
-          this.$router.push({path:'/TeamSpace'})
-        })
+        if(this.title=='') this.$notify({title: '提示',type: 'warning',message: '请填写标题',duration: 2500 })
+        else if(this.content==null || this.content=='') 
+        this.$notify({title: '提示',type: 'warning',message: '请输入文档内容',duration: 2500 })
+        else{
+          file.saveTeamFile(this.title,this.content,this.$store.state.groupName)
+          .then(res=>{
+            this.$notify({title: '提示',type: 'success',message: res.message,duration: 1500 });
+            this.$router.push({path:'/TeamSpace'})
+          })
+        }
       },
       startEdit(){
         this.flag=true;

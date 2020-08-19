@@ -72,7 +72,7 @@ import CryptoJS from "crypto-js"
     float: right;
   }
   .image {
-    margin-left: 24px;
+    margin-left: 17px;
     width: 200px;
     cursor:pointer;
     display: block;

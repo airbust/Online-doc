@@ -72,11 +72,13 @@
                       </span>
                       <span class="right p1">
                         <div class="rightTop">
-                          <span style="font-size: 16px;margin-left:17px"> {{notice.groupAdmin}}&nbsp;&nbsp;{{notice.info}}</span>
+                          <span style="font-size: 16px;margin-left:17px"> {{notice.userName}}&nbsp;&nbsp;{{notice.info}}</span>
                           <span style="font-size:16px; font-weight:bold">「 {{notice.groupName}}」</span>
                         </div>
                         <div class="rightCenter" style="font-size:14px;">
-                          <span><el-button size="mini" v-if="showNoticeButton(notice.isRead,notice.info)" @click="permit(notice.noticeId)">同意</el-button></span>
+                          <span style="float:left">
+                            <el-button size="mini" v-if="showNoticeButton(notice.isRead,notice.info)" @click="permit(notice.noticeId)">同意</el-button>
+                          </span>
                         </div>
                       </span>
                     </div>
@@ -109,7 +111,7 @@
                         </div>
                         <div class="rightCenter" style="font-size:14px;">
                           <span v-if="showUnreadButton(unread.info,unread.action)">
-                            <el-button size="mini" @click="permit(unread.uid)">同意</el-button>
+                            <el-button style="float:left" size="mini" @click="permit(unread.uid)">同意</el-button>
                           </span>
                           <span v-else>{{unread.info}}</span>
                           <span @click="readComment(unread.uid)" class="el-icon-bell" style="float:right;font-size:20px"></span>
@@ -329,19 +331,21 @@ export default {
         this.noticeList = res.data
         this.total = res.data.length
         for(var i=0;i<this.total;i++){
+          if(this.noticeList[i].userName == this.$store.state.name )
+            this.noticeList[i].userName = res.data[i].groupAdmin
           if(this.noticeList[i].isRead==0 ){
             let u = {
               uid: res.data[i].noticeId,
               user:res.data[i].groupAdmin,
               action: res.data[i].info,
               item: res.data[i].groupName,
-              time: res.data[i].time,//|datefmt('YYYY-MM-DD HH:mm:ss'),
+              time: res.data[i].time,
               info: '',
             }
             if(u.user == this.$store.state.name)
                 u.user = res.data[i].userName
-            this.unreadList.push(u);
-            this.unreadCnt ++;
+            this.unreadList.push(u)
+            this.unreadCnt ++
           }
         }
       })
@@ -358,11 +362,17 @@ export default {
       return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
     },
     readComment(id){
+      console.log('read'+id)
       if(id>0)
-        message.readNotice(id).then(res=>{ console.log(res.message) })
+        message.readNotice(id).then(res=>{ 
+          console.log(res.message)
+          this.getMessage()
+         })
       else
-        message.readComment(-id).then(res=>{ console.log(res.message) })
-      this.getMessage()
+        message.readComment(-id).then(res=>{ 
+          console.log(res.message) 
+          this.getMessage()
+        })
     },
     validAvatar(){
       if(this.avatar == null || this.avatar == undefined) return false

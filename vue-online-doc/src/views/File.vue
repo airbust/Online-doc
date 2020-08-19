@@ -3,11 +3,12 @@
     <div class="header">
       
       <div style="float:right">
-        <el-button type="text" v-if="is_Edit">该文档正在被编辑</el-button>
+        <el-button type="text" v-if="is_Edit">此文档正在被编辑</el-button>
         <el-button type="text" @click="showHistory()" v-if="writable">查看历史版本</el-button>
         <el-button @click="startEdit" v-if="!is_Edit&&writable&&!editing">编辑</el-button>
         <el-button @click="editing=false" v-if="writable&&editing">预览</el-button>
         <el-button @click="updateFile" v-if="writable&&editing">更新保存</el-button>
+
         <el-button @click="dialogVisible=true">分享</el-button>
         <el-dialog  title="分享"  :visible.sync="dialogVisible"  width="30%">
           <el-input v-model="url" :readonly="true">
@@ -25,7 +26,7 @@
                 </el-table-column>
                 <el-table-column prop="fileName" label="文件名" width="300">
                 </el-table-column>
-                <el-table-column prop="modifyTime"  label="最后修改时间" width="350">
+                <el-table-column prop="modifyTime|datefmt('YYYY-MM-DD HH:mm:ss')"  label="最后修改时间" width="350">
                 </el-table-column>
                 <el-table-column label="操作" width="250">
                   <template slot-scope="scope">
@@ -36,12 +37,11 @@
            </el-table>
         </el-dialog>
 
-        <!-- 历史文档 -->
         <el-dialog title="历史文档"  :visible.sync="historyFileVisible"  top="50px" width="80%"  :before-close="handleClose">
           <div style="height:600px;width:90%">
             <el-scrollbar style="height:100%">
               <div class="hd" >{{this.historyFile.fileName}}</div>
-              <div class="bd" v-html="this.historyFile.fileBody">{{this.historyFile.fileBody}}</div>
+              <div class="ql-snow"><div class="ql-editor" v-html="this.historyFile.fileBody">{{this.historyFile.fileBody}}</div></div>
             </el-scrollbar>
           </div>
         </el-dialog>
@@ -57,10 +57,13 @@
 
       <el-input v-model="title" placeholder="请输入标题" v-if="writable&&editing"></el-input>
       <div class="hd" v-if="!editing">{{this.title}}</div>
+      <!-- <p style="display: none">{{fileId = this.$route.params.fileId}}</p> -->
     </div>
     <el-divider content-position="right">䂖墨文档 </el-divider>
     <div>
-      <div class="bd" v-if="!editing" v-html="this.content">{{this.content}}</div>
+      <div class="ql-snow">
+          <div class="ql-editor" v-if="!editing" v-html="this.content">{{this.content}}</div>
+        </div>
       <div>
         <quill-editor style="height:60vh;"
         v-model="content"
@@ -94,14 +97,14 @@
           <div v-for="message in messageList" :key="message.discuss.discussId">
             <div class="commentList">
               <span class="left p1">
-                <img v-if="!message.user.avatar" src="../../static/avatar.svg" @click="gotoUserPage(message.user.name)">
-                <img v-else :src="message.user.avatar"  style="width:50px; height:50px" @click="gotoUserPage(message.user.name)"
+                <img v-if="!message.user.avatar" src="../../static/avatar.svg">
+                <img v-else :src="message.user.avatar"  style="width:50px; height:50px"
                   onerror="javascript:this.src='../../static/avatar.svg'" />
               </span>
               <span class="right p1">
                 <div class="rightTop" v-if="message.user.id">
                   <el-link class="userName" :underline="false">{{message.user.name}}</el-link>
-                  <span class="timeAgo" >{{dateFormat(message.discuss.discussTime)}}</span>
+                  <span class="timeAgo" >{{message.discuss.discussTime}}</span>
                 </div>  
                 <div class="rightCenter">{{message.discuss.discussBody}}</div>
                 <div class="rightBottom">
@@ -118,16 +121,13 @@
       </el-card>
     </div>
 
-    <el-popover style="position: fixed; bottom: 40px; right: 40px"
-      placement="top-start" title="文档信息" width="300" trigger="hover" :content="fileInfo">
-      <div v-html="fileInfo">{{fileInfo}}</div>
-      <el-button slot="reference"><a class="cd-top">Info</a></el-button>
-    </el-popover>
-    <div>
-      
-    </div>
+    <el-popover style="position: fixed; bottom: 40px; right: 40px" 
+      placement="top-start" title="文档信息" width="300" trigger="hover" :content="fileInfo"> 
+      <div v-html="fileInfo">{{fileInfo}}</div> 
+      <el-button slot="reference"><a class="cd-top">Info</a></el-button> 
+    </el-popover> 
 
-  </div>
+    </div>
 </template>
 
 <script>
@@ -139,9 +139,12 @@
   //引入组件，可以直接使用这个组件
   import { quillEditor } from 'vue-quill-editor'
   import { addQuillTitle } from '../quill-title.js'
-  import Quill from 'quill' //引入编辑器er
+  import Quill from 'quill' //引入编辑器
   import { ImageDrop } from 'quill-image-drop-module'
   Quill.register('modules/imageDrop', ImageDrop);
+  var fonts = ['Microsoft-YaHei','SimSun', 'SimHei','KaiTi','Arial','Times-New-Roman'];
+  var Font = Quill.import('formats/font');
+  Font.whitelist = fonts; 
 
   import file from '@/api/file'
   import CryptoJS from "crypto-js";
@@ -152,7 +155,7 @@
     data() {
       return {
         fileId: 0,
-        fileInfo: '',
+        fileInfo: '', 
         url: '',
         historyFileList:[],
         historyFile: {},
@@ -170,6 +173,8 @@
         loading: true, //是否加载中
         ////////////////
         title: '',
+        originalTitle: '',
+        originalContent: '',
         editing:false,
         readable:false,
         writable:false,
@@ -186,6 +191,7 @@
             modules:{
               imageDrop:true,
               toolbar:[
+                [{ 'size': ['12px', false ,'20px','24px', '32px','48px']}],
                 ['bold', 'italic', 'underline', 'strike'],    //加粗，斜体，下划线，删除线
                 ['blockquote', 'code-block'],     //引用，代码块
                 [{ 'header': 1 }, { 'header': 2 }],        // 标题，键值对的形式；1、2表示字体大小
@@ -193,10 +199,11 @@
                 [{ 'script': 'sub'}, { 'script': 'super' }],   // 上下标
                 [{ 'indent': '-1'}, { 'indent': '+1' }],     // 缩进
                 [{ 'direction': 'rtl' }],             // 文本方向
-                [{ 'size': ['small', false, 'large', 'huge'] }], // 字体大小
+                [{ 'font': fonts }],
+                //[{ 'size': ['small', false, 'large', 'huge'] }], // 字体大小
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],     //几级标题
                 [{ 'color': [] }, { 'background': [] }],     // 字体颜色，字体背景颜色
-                [{ 'font': [] }],     //字体
+                //[{ 'font': [] }],     //字体
                 [{ 'align': [] }],    //对齐方式
                 ['clean'],    //清除字体样式
                 ['image','video']    //上传图片、上传视频
@@ -210,12 +217,11 @@
       this.loadMessage()
       this.url = this.$route.path;
     },
-    mounted() {
-      addQuillTitle();
-    },
-    destroyed(){
-      this.endEdit()
-    },
+    mounted() {
+      addQuillTitle()
+      window.onbeforeunload = e => {this.endEdit() }
+    },
+    destroyed(){this.endEdit()},
     methods:{
       gotoHistory(id,modifyCnt){//跳转至历史版本文档
         this.historyFileVisible = true
@@ -237,10 +243,7 @@
         this.historyVisible = true
         file.getHistory(this.fileId).then(res=>{
           console.log(res.message)
-          var resTmp = res.data
-          for(var j=0;j<resTmp.length;++j)
-            resTmp[j].modifyTime = this.dateFormat(resTmp[j].modifyTime)
-          this.historyFileList = resTmp
+          this.historyFileList = res.data
         })
       },
       myComment(name){
@@ -291,19 +294,30 @@
         var bytes = CryptoJS.AES.decrypt(tmp,"123")
         this.fileId = bytes.toString(CryptoJS.enc.Utf8)
         file.getDocument(this.fileId).then(res=>{
-          console.log(res)
+          console.log(res.data)
           this.$store.commit('login', res.data.map)//存储token
-          var a = res.data
-          this.auth = a.role
-          this.title = a.file.fileName
-          this.content = a.file.fileBody
-          if(a.file.isEdit == 1) this.is_Edit =true
-          var sort = a.file.userId == 0 ? '个人文档': '团队文档'
-          var updateTime = this.dateFormat(a.file.modifyTime)
-          var info = '文档名：'+a.file.fileName+'<br/>类别：'+sort+'<br/>修改次数：'+a.file.modifyCnt+'<br/>更新时间：'+updateTime
-          this.fileInfo = info
-          this.init_authority();
+          var a = res.data 
+          this.auth = a.role 
+          this.title = a.file.fileName 
+          this.content = a.file.fileBody 
+          if(a.file.isEdit == 1) {this.is_Edit =true 
+          console.info('fuck')}
+          var sort = a.file.userId != 0 ? '个人文档': '团队文档' 
+          var updateTime = this.dateFormat(a.file.modifyTime) 
+          var info = '文档名：'+a.file.fileName+'<br/>类别：'+sort+'<br/>修改次数：'+a.file.modifyCnt+'<br/>更新时间：'+ updateTime
+          this.fileInfo = info 
+          this.init_authority(); 
         })
+      },
+      dateFormat(time) {
+        var date=new Date(time);
+        var year=date.getFullYear();
+        var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+        var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+        var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+        var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+        var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+        return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
       },
       init_authority(){
         //初始化其他用户权限设置选项  ！！bug:不能初始化团队选项
@@ -373,30 +387,17 @@
         // 内容改变事件
         console.log('333')
       },
-      gotoUserPage(name){
-        this.$router.push({path:'/Profile/'+name})
-      },
-      dateFormat(time) {
-        var date=new Date(time);
-        var year=date.getFullYear();
-        var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
-        var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
-        var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
-        var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
-        var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
-        return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
-      },
+      
     }
   }
 </script>
 
 <style scoped>
-  .cd-top { 
-    display: inline-block; height: 40px; width: 40px; position: fixed; bottom: 40px;  right: 40px;
-   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); overflow: hidden; text-indent: 100%; white-space: nowrap; 
-   background: rgba(0, 0, 0, 0.8)  url(../../static/info.png) no-repeat center; 
-   }
-  
+  .cd-top {  
+    display: inline-block; height: 40px; width: 40px; position: fixed; bottom: 40px;  right: 40px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); overflow: hidden; text-indent: 100%; white-space: nowrap;  
+    background: rgba(0, 0, 0, 0.8)  url(../../static/info.png) no-repeat center;  
+   } 
   .commentList {
     width: 100%;
     margin: 0 auto;

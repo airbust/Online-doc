@@ -193,11 +193,11 @@ public class FileController {
      * @param docId
      * @return
      */
-    @GetMapping("/{docId}/isEditable")
-    public Result isEditable(@PathVariable String docId) {
+    @PostMapping("/{docId}/isEditable")
+    public Result isEditable(@PathVariable Integer docId) {
         try {
-            System.out.println("结束编辑 docId = " + Integer.valueOf(docId));
-            fileService.changeEditable(false,Integer.valueOf(docId));
+            System.out.println("结束编辑 docId = " + docId);
+            fileService.changeEditable(false,docId);
             return Result.create(200, "结束编辑-lock");
         }
         catch(Exception e) {
@@ -205,11 +205,11 @@ public class FileController {
         }
     }
 
-    @GetMapping("/{docId}/isEditing")
-    public Result isEditing(@PathVariable String docId) {
+    @PostMapping("/{docId}/isEditing")
+    public Result isEditing(@PathVariable Integer docId) {
         try {
-            System.out.println("开始编辑 docId = " + Integer.valueOf(docId));
-            fileService.changeEditable(true,Integer.valueOf(docId));
+            System.out.println("开始编辑 docId = " + docId);
+            fileService.changeEditable(true,docId);
             return Result.create(200, "开始编辑-unlock");
         }
         catch(Exception e) {

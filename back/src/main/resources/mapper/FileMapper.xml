@@ -101,4 +101,7 @@
         select * from file where file_id = #{fileId} and modify_cnt = #{modifyCnt}
     </select>
 
+    <select id="getLastFileId" resultType="Integer">
+        select max(file_id) from file
+    </select>
 </mapper>

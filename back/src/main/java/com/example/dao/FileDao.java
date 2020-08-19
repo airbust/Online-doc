@@ -35,7 +35,6 @@ public interface FileDao {
     void foreverDeleted(Integer fileId);
     void recoverFile(Integer fileId);
 
-    void updateEditState(Integer fileId);
     void setEditStatus(Integer isEdit, Integer fileId);
 
 
@@ -47,4 +46,6 @@ public interface FileDao {
     List<File> getHistoryFile(Integer fileId);
 
     File getHistoryFileById(Integer fileId, Integer modifyCnt);
+
+    Integer getLastFileId();
 }

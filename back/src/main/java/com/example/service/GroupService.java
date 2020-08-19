@@ -52,14 +52,13 @@ public class GroupService {
     public List<Group> getGroups() {
         User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
         List<Group> groupList = new ArrayList<>();
-
-        List<Integer> groupIdList = groupDao.getGroupByUserIdAsMem(user.getId());
-        for(Integer i : groupIdList)
-            groupList.add(groupDao.getGroupById(i));
         List<Integer> groupIdList2 = groupDao.getGroupByUserIdAsAdmin(user.getId());
         for(Integer i : groupIdList2)
             groupList.add(groupDao.getGroupById(i));
-        System.out.println("groupList = " + groupList);
+        List<Integer> groupIdList = groupDao.getGroupByUserIdAsMem(user.getId());
+        for(Integer i : groupIdList)
+            groupList.add(groupDao.getGroupById(i));
+//        System.out.println("groupList = " + groupList);
         return groupList;
     }
 

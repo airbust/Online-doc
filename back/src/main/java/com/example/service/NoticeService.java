@@ -31,9 +31,8 @@ public class NoticeService {
 
     public List<Notice> getUserNotice() {
         User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
-        List<Notice> noticeList = noticeDao.getNotice(user.getName());
-        System.out.println("noticeList = " + noticeList);
-        return noticeList;
+        //        System.out.println("noticeList = " + noticeList);
+        return noticeDao.getNotice(user.getName());
     }
 
     public void readNotice(Integer noticeId) {

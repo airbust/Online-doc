@@ -105,16 +105,16 @@ export default {
   },
 
   // 编辑锁相关
-  isEditable(docId){  //获取是否具有编辑权限
+  isEditable(docId){ 
     return request({
       url: '/doc/' + docId + '/isEditable',
-      method: 'get',
+      method: 'post',
     })
   },
-  isEditing(docId){   //获取文档当前状态
+  isEditing(docId){   
     return request({
       url: '/doc/' + docId + '/isEditing',
-      method: 'get',
+      method: 'post',
     })
   },
   updateAuth(docId,role,auth){

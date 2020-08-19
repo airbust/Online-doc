@@ -73,16 +73,17 @@ public class FileService {
 		if (fileName.equals(""))
 			throw new RuntimeException("标题为空");
 		User user = userDao.getUserByName(jwtTokenUtil.getUsernameFromRequest(request));
+		Integer newFileId = fileDao.getLastFileId()+1;
 		if(teamName != null) {
 			Group group = groupDao.getGroupByName(teamName);
-			File file = new File(fileName, fileBody, new Date(), 0, group.getGroupId());
+			File file = new File(newFileId,fileName, fileBody, new Date(), 0, group.getGroupId());
 			fileDao.saveFile(file);
 			Role role = new Role(file.getFileId());
 			if(roleDao.getAuthByFileId(file.getFileId())==null)
 				roleDao.saveAuthByFileId(role);
 		}
 		else {
-			File file = new File(fileName, fileBody, new Date(), user.getId(), 0);
+			File file = new File(newFileId,fileName, fileBody, new Date(), user.getId(), 0);
 			fileDao.saveFile(file);
 			Role role = new Role(file.getFileId());
 			if(roleDao.getAuthByFileId(file.getFileId())==null)
